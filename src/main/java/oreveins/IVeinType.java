@@ -7,6 +7,12 @@ import javax.annotation.Nonnull;
 
 public abstract class IVeinType {
 
+    // Vein Types
+    // Cluster: one big spherical cluster (modifiers for density, horizontal and vertical size)
+    // Vertical Column: vertical column. Nuff said
+    // Scattered Cluster: a collection of smaller spherical clusters
+    // P2P Vein / Linear Vein: a line between two points.
+
     final BlockPos pos;
     private final IBlockState state;
 
@@ -15,12 +21,18 @@ public abstract class IVeinType {
         this.state = state;
     }
 
-    protected boolean inRange(BlockPos pos){
-        return this.pos.getDistance(pos.getX(), pos.getY(), pos.getZ()) <= WorldGen.MAX_RADIUS;
+    protected final boolean inRange(BlockPos pos1){
+        return Math.pow(pos1.getX() - this.pos.getX(),2) + Math.pow(pos1.getZ() - this.pos.getZ(),2) <= WorldGen.MAX_RADIUS_SQUARED;
+    }
+    protected int getLowestY(){
+        return pos.getY() - WorldGen.MAX_RADIUS / 2;
+    }
+    protected int getHighestY(){
+        return pos.getY() + WorldGen.MAX_RADIUS / 2;
     }
 
     @Nonnull
-    protected BlockPos getStartPos(){
+    protected BlockPos getPos(){
         return pos;
     }
 
