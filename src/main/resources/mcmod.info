@@ -1,0 +1,16 @@
+[
+{
+  "modid": "oreveins",
+  "name": "Ore Veins",
+  "description": "Adds realistic ore veins",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["alcatrazEscapee"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
