@@ -1,16 +1,18 @@
-package oreveins;
+package oreveins.world.vein;
 
 import java.util.Random;
 
 import net.minecraft.util.math.BlockPos;
+import oreveins.GenHandler;
+import oreveins.world.WorldGenVeins;
 
-public class Vein{
+public class VeinTypeCluster {
 
-    final WorldGen.Ore ore;
+    public final GenHandler.Ore ore;
     private final BlockPos pos;
     private final Cluster[] spawnPoints;
 
-    Vein(WorldGen.Ore ore, BlockPos startPos, Random rand){
+    public VeinTypeCluster(GenHandler.Ore ore, BlockPos startPos, Random rand){
 
         this.ore = ore;
         this.pos = startPos;
@@ -43,17 +45,11 @@ public class Vein{
 
             if (shortestRadius == -1 || radius < shortestRadius) shortestRadius = radius;
         }
-        return ore.density * (1.0 - shortestRadius);
+        return 0.002 * ore.density * (1.0 - shortestRadius);
     }
 
-    protected final boolean inRange(BlockPos pos1){
-        return Math.pow(pos1.getX() - this.pos.getX(),2) + Math.pow(pos1.getZ() - this.pos.getZ(),2) <= WorldGen.MAX_RADIUS_SQUARED;
-    }
-    protected int getLowestY(){
-        return pos.getY() - WorldGen.MAX_RADIUS / 2;
-    }
-    protected int getHighestY(){
-        return pos.getY() + WorldGen.MAX_RADIUS / 2;
+    public final boolean inRange(BlockPos pos1){
+        return Math.pow(pos1.getX() - this.pos.getX(),2) + Math.pow(pos1.getZ() - this.pos.getZ(),2) <= this.ore.horizontalSize * this.ore.horizontalSize;
     }
 
     final class Cluster

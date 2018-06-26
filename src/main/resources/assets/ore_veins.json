@@ -1,0 +1,61 @@
+{
+  "iron_ore_example": {
+    "ore": "minecraft:iron_ore",
+    "stone": "minecraft:stone"
+  },
+  "gold_ore_example": {
+    "ore": "minecraft:gold_ore",
+    "stone": "minecraft:stone",
+    "rarity": 40,
+    "min_y": 16,
+    "max_y": 64,
+    "density": 120,
+    "vertical_size": 20,
+    "horizontal_size": 10
+  },
+  "coal_ore_example": {
+    "ore": [
+      {
+        "block": "minecraft:coal_ore",
+        "weight": 39
+      },
+      {
+        "block": "minecraft:diamond_ore",
+        "weight": 1
+      }
+    ],
+    "stone": "minecraft:stone",
+    "rarity": 30,
+    "min_y": 32,
+    "max_y": 128,
+    "density": 80,
+    "vertical_size": 15,
+    "horizontal_size": 30
+  },
+  "redstone_ore_example": {
+    "ore": "minecraft:redstone_ore",
+    "stone": "minecraft:stone",
+    "rarity": 40,
+    "min_y": 0,
+    "max_y": 40,
+    "density": 20,
+    "vertical_size": 30,
+    "horizontal_size": 20
+  },
+  "emerald_ore_example": {
+    "ore": "minecraft:emerald_ore",
+    "stone": "minecraft:stone",
+    "rarity": 10,
+    "min_y": 0,
+    "max_y": 32,
+    "density": 15,
+    "vertical_size": 15,
+    "horizontal_size": 25,
+    "biomes": [
+      "extreme_hills",
+      "extreme_hills_with_trees",
+      "mutated_extreme_hills",
+      "mutated_extreme_hills_with_trees"
+    ]
+  }
+}
