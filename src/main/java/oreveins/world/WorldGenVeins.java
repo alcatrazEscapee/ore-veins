@@ -5,6 +5,7 @@ import com.google.common.collect.LinkedListMultimap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
@@ -30,7 +31,7 @@ public class WorldGenVeins implements IWorldGenerator {
     public static ImmutableList<GenHandler.Ore> ORE_SPAWN_DATA;
 
     @Override
-    public void generate(Random random, int chunkX, int chunkZ, net.minecraft.world.World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
+    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         // Check dimension is overworld
         if (world.provider.getDimension() != 0) return;
 
@@ -45,7 +46,8 @@ public class WorldGenVeins implements IWorldGenerator {
                 for (int z = 0; z < 16; z++) {
                     // Do checks here that are specific to the the horizontal position, not the vertical one
                     Biome biomeAt = world.getBiome(new BlockPos(xoff + x, 0, zoff + z));
-                    if (!vein.inRange(new BlockPos(xoff + x, 0, zoff + z)) || !doesMatchBiome(vein.ore.biomes, biomeAt)) continue;
+                    if (!vein.inRange(new BlockPos(xoff + x, 0, zoff + z)) || !doesMatchBiome(vein.ore.biomes, biomeAt))
+                        continue;
 
                     for (int y = vein.ore.minY; y <= vein.ore.maxY; y++) {
 
@@ -109,11 +111,12 @@ public class WorldGenVeins implements IWorldGenerator {
         throw new RuntimeException("Problem choosing IBlockState from weighted list");
     }
 
-    private boolean doesMatchBiome(@Nullable List<String> biomes, Biome biome){
-        if(biomes == null) return true;
-        for(String s : biomes){
+    private boolean doesMatchBiome(@Nullable List<String> biomes, Biome biome) {
+        if (biomes == null) return true;
+        for (String s : biomes) {
             ResourceLocation loc = biome.getRegistryName();
-            if(loc != null && (s.equals(loc.getResourcePath()) || s.equals(biome.getTempCategory().name()))) return true;
+            if (loc != null && (s.equals(loc.getResourcePath()) || s.equals(biome.getTempCategory().name())))
+                return true;
         }
         return false;
     }

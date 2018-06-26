@@ -79,8 +79,8 @@ public class GenHandler {
                     try {
                         Ore ore = parseOreEntry(data.getConfig(entry.getKey()));
                         b.add(ore);
-                        if(ore.horizontalSize >> 4 > maxRadius) maxRadius = ore.horizontalSize >> 4;
-                    } catch (Exception e){
+                        if (ore.horizontalSize >> 4 > maxRadius) maxRadius = ore.horizontalSize >> 4;
+                    } catch (Exception e) {
                         log.warn("Generation entry '" + entry.getKey() + "' failed to parse correctly, skipping. Check that the json is valid.", e);
                     }
                 }
@@ -111,91 +111,94 @@ public class GenHandler {
 
         return new Ore(oreStates, stoneStates, rarity, minY, maxY, density, horizontalSize, verticalSize, biomes);
     }
+
     @Nonnull
-    private static List<IBlockState> getStones(Config config) throws IllegalArgumentException{
+    private static List<IBlockState> getStones(Config config) throws IllegalArgumentException {
         log.info("Parsing a block list of some sort");
         String key = "stone";
         List<IBlockState> states = new ArrayList<>();
 
-        if(config.getValue(key).valueType() == ConfigValueType.LIST){
+        if (config.getValue(key).valueType() == ConfigValueType.LIST) {
             config.getConfigList(key).forEach(c -> {
-                    states.add(getState(c));
+                states.add(getState(c));
             });
-        }else if(config.getValue(key).valueType() == ConfigValueType.OBJECT){
+        } else if (config.getValue(key).valueType() == ConfigValueType.OBJECT) {
             states.add(getState(config.getConfig(key)));
 
-        }else if(config.getValue(key).valueType() == ConfigValueType.STRING){
+        } else if (config.getValue(key).valueType() == ConfigValueType.STRING) {
             states.add(getState(config.getString(key)));
 
-        }else{
+        } else {
             throw new IllegalArgumentException("Stone entry is not in the correct format");
         }
         return states;
     }
+
     @Nonnull
-    private static LinkedListMultimap<IBlockState, Integer> getOres(Config config) throws IllegalArgumentException{
+    private static LinkedListMultimap<IBlockState, Integer> getOres(Config config) throws IllegalArgumentException {
         log.info("Parsing a block list of some sort");
         String key = "ore";
         LinkedListMultimap<IBlockState, Integer> states = LinkedListMultimap.create();
 
-        if(config.getValue(key).valueType() == ConfigValueType.LIST){
+        if (config.getValue(key).valueType() == ConfigValueType.LIST) {
             config.getConfigList(key).forEach(c -> {
                 states.put(getState(c), getValue(c, "weight", 1));
             });
-        }else if(config.getValue(key).valueType() == ConfigValueType.OBJECT){
-            states.put(getState(config.getConfig(key)), getValue(config.getConfig(key),"weight",1));
+        } else if (config.getValue(key).valueType() == ConfigValueType.OBJECT) {
+            states.put(getState(config.getConfig(key)), getValue(config.getConfig(key), "weight", 1));
 
-        }else if(config.getValue(key).valueType() == ConfigValueType.STRING){
-            states.put(getState(config.getString(key)),1);
+        } else if (config.getValue(key).valueType() == ConfigValueType.STRING) {
+            states.put(getState(config.getString(key)), 1);
 
-        }else{
+        } else {
             throw new IllegalArgumentException("Ore entry is not in the correct format");
         }
         return states;
     }
+
     @Nonnull
-    private static IBlockState getState(String name) throws IllegalArgumentException{
-        try{
+    private static IBlockState getState(String name) throws IllegalArgumentException {
+        try {
             Block block = Block.getBlockFromName(name);
-            if(block == null) throw new IllegalArgumentException("Block is null when getting block from String");
+            if (block == null) throw new IllegalArgumentException("Block is null when getting block from String");
             return block.getDefaultState();
-        }catch(Exception e){
+        } catch (Exception e) {
             log.warn("Problem parsing block entry; Skipping");
             throw new IllegalArgumentException("Unable to parse IBlockState from String");
         }
     }
 
-    @Nonnull @SuppressWarnings("deprecation")
-    private static IBlockState getState(Config config) throws IllegalArgumentException{
+    @Nonnull
+    @SuppressWarnings("deprecation")
+    private static IBlockState getState(Config config) throws IllegalArgumentException {
         try {
             String name = config.getString("block");
             int meta = getValue(config, "meta", -1);
             Block block = Block.getBlockFromName(name);
-            if(block == null) throw new IllegalArgumentException("Block is null when getting block from Config");
+            if (block == null) throw new IllegalArgumentException("Block is null when getting block from Config");
             return (meta == -1) ? block.getDefaultState() : block.getStateFromMeta(meta);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Unable to parse IBlockState from Config");
         }
     }
-    private static int getValue(Config config, String key, int defaultValue){
-        log.info("Reading a value: "+key);
+
+    private static int getValue(Config config, String key, int defaultValue) {
+        log.info("Reading a value: " + key);
         int result;
-        try{
+        try {
             result = config.getInt(key);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             result = defaultValue;
         }
         return result;
     }
+
     @Nullable
-    private static List<String> getBiomes(Config config){
-        try{
+    private static List<String> getBiomes(Config config) {
+        try {
             List<String> biomes = config.getStringList("biomes");
             return biomes.isEmpty() ? null : biomes;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -214,7 +217,7 @@ public class GenHandler {
 
         public final List<String> biomes;
 
-        public Ore(LinkedListMultimap<IBlockState, Integer> oreStates, List<IBlockState> stoneStates,
+        public Ore(@Nonnull LinkedListMultimap<IBlockState, Integer> oreStates, @Nonnull List<IBlockState> stoneStates,
                    int rarity, int minY, int maxY, int density, int horizontalSize, int verticalSize, @Nullable List<String> biomes) {
             this.oreStates = oreStates;
             this.stoneStates = stoneStates;
