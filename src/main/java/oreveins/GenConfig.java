@@ -5,7 +5,7 @@ import net.minecraftforge.common.config.Config;
 @Config(modid = OreVeins.MODID)
 public class GenConfig {
 
-    @Config.Comment("Stop all vanilla ore gen calls")
+    @Config.Comment("Stop all vanilla ore gen calls (OreGenEvent.GenerateMineable)")
     public static boolean NO_ORES = false;
 
     @Config.Comment({"Specific ore types to stop. Only used if NO_ORES is false. Allowed values:",

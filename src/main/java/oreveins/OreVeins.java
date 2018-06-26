@@ -15,11 +15,15 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 
-@Mod(modid = OreVeins.MODID, version = OreVeins.VERSION)
+@Mod(modid = OreVeins.MODID, version = OreVeins.VERSION, dependencies = OreVeins.DEPENDENCIES)
 public class OreVeins {
 
+    private static final String FORGE_VERSION = "GRADLE:FORGE_VERSION";
+    private static final String FORGE_VERSION_MAX = "15.0.0.0";
+
     static final String MODID = "oreveins";
-    static final String VERSION = "0.1";
+    static final String VERSION = "GRADLE:VERSION";
+    static final String DEPENDENCIES = "required-after:forge@["+FORGE_VERSION+","+FORGE_VERSION_MAX+");";
 
     public static Logger log;
 
