@@ -113,8 +113,9 @@ public class GenHandler {
         // If these entries are not present, the json will fail
         LinkedListMultimap<IBlockState, Integer> oreStates = getOres(config);
         List<IBlockState> stoneStates = getStones(config);
+        List<Integer> dims = getDims(config);
 
-        return new Ore(oreStates, stoneStates, rarity, minY, maxY, density, horizontalSize, verticalSize, biomes);
+        return new Ore(oreStates, stoneStates, rarity, minY, maxY, density, horizontalSize, verticalSize, biomes, dims);
     }
 
     @Nonnull
@@ -123,9 +124,7 @@ public class GenHandler {
         List<IBlockState> states = new ArrayList<>();
 
         if (config.getValue(key).valueType() == ConfigValueType.LIST) {
-            config.getConfigList(key).forEach(c -> {
-                states.add(getState(c));
-            });
+            config.getConfigList(key).forEach(c -> states.add(getState(c)));
         } else if (config.getValue(key).valueType() == ConfigValueType.OBJECT) {
             states.add(getState(config.getConfig(key)));
 
@@ -144,9 +143,7 @@ public class GenHandler {
         LinkedListMultimap<IBlockState, Integer> states = LinkedListMultimap.create();
 
         if (config.getValue(key).valueType() == ConfigValueType.LIST) {
-            config.getConfigList(key).forEach(c -> {
-                states.put(getState(c), getValue(c, "weight", 1));
-            });
+            config.getConfigList(key).forEach(c -> states.put(getState(c), getValue(c, "weight", 1)));
         } else if (config.getValue(key).valueType() == ConfigValueType.OBJECT) {
             states.put(getState(config.getConfig(key)), getValue(config.getConfig(key), "weight", 1));
 
@@ -205,6 +202,16 @@ public class GenHandler {
         }
     }
 
+    @Nullable
+    private static List<Integer> getDims(Config config) {
+        try {
+            List<Integer> dims = config.getIntList("dimensions");
+            return dims.isEmpty() ? null : dims;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static final class Ore {
 
         public final LinkedListMultimap<IBlockState, Integer> oreStates;
@@ -218,9 +225,10 @@ public class GenHandler {
         public final int verticalSize;
 
         public final List<String> biomes;
+        public final List<Integer> dims;
 
         public Ore(@Nonnull LinkedListMultimap<IBlockState, Integer> oreStates, @Nonnull List<IBlockState> stoneStates,
-                   int rarity, int minY, int maxY, int density, int horizontalSize, int verticalSize, @Nullable List<String> biomes) {
+                   int rarity, int minY, int maxY, int density, int horizontalSize, int verticalSize, @Nullable List<String> biomes, @Nullable List<Integer> dims) {
             this.oreStates = oreStates;
             this.stoneStates = stoneStates;
 
@@ -230,7 +238,9 @@ public class GenHandler {
             this.density = density;
             this.horizontalSize = horizontalSize;
             this.verticalSize = verticalSize;
+
             this.biomes = biomes;
+            this.dims = dims;
         }
     }
 }

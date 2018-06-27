@@ -9,7 +9,7 @@
     "rarity": 40,
     "min_y": 16,
     "max_y": 64,
-    "density": 120,
+    "density": 60,
     "vertical_size": 20,
     "horizontal_size": 10
   },
@@ -45,7 +45,7 @@
   "emerald_ore_example": {
     "ore": "minecraft:emerald_ore",
     "stone": "minecraft:stone",
-    "rarity": 10,
+    "rarity": 15,
     "min_y": 0,
     "max_y": 32,
     "density": 15,
