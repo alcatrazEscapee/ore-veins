@@ -101,7 +101,6 @@ public class GenHandler {
 
     @Nonnull
     private static Ore parseOreEntry(Config config) throws IllegalArgumentException {
-        log.info("Got a config: " + config);
 
         final int rarity = getValue(config, "rarity", 10);
         final int density = getValue(config, "density", 50);
@@ -120,7 +119,6 @@ public class GenHandler {
 
     @Nonnull
     private static List<IBlockState> getStones(Config config) throws IllegalArgumentException {
-        log.info("Parsing a block list of some sort");
         String key = "stone";
         List<IBlockState> states = new ArrayList<>();
 
@@ -142,7 +140,6 @@ public class GenHandler {
 
     @Nonnull
     private static LinkedListMultimap<IBlockState, Integer> getOres(Config config) throws IllegalArgumentException {
-        log.info("Parsing a block list of some sort");
         String key = "ore";
         LinkedListMultimap<IBlockState, Integer> states = LinkedListMultimap.create();
 
@@ -189,7 +186,6 @@ public class GenHandler {
     }
 
     private static int getValue(Config config, String key, int defaultValue) {
-        log.info("Reading a value: " + key);
         int result;
         try {
             result = config.getInt(key);
