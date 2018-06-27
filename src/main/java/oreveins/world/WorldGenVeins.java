@@ -46,12 +46,12 @@ public class WorldGenVeins implements IWorldGenerator {
         int xoff = chunkX * 16 + 8;
         int zoff = chunkZ * 16 + 8;
         for (VeinTypeCluster vein : veins) {
-            if (doesMatchDims(vein.ore.dims, world.provider.getDimension()))
+            if (doesMatchDims(vein.ore.dims, world.provider.getDimension(), vein.ore.dimensionIsWhitelist))
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
                         // Do checks here that are specific to the the horizontal position, not the vertical one
                         Biome biomeAt = world.getBiome(new BlockPos(xoff + x, 0, zoff + z));
-                        if (!vein.inRange(new BlockPos(xoff + x, 0, zoff + z)) || !doesMatchBiome(vein.ore.biomes, biomeAt))
+                        if (!vein.inRange(new BlockPos(xoff + x, 0, zoff + z)) || !doesMatchBiome(vein.ore.biomes, biomeAt, vein.ore.biomesIsWhitelist))
                             continue;
 
                         for (int y = vein.ore.minY; y <= vein.ore.maxY; y++) {
@@ -116,23 +116,23 @@ public class WorldGenVeins implements IWorldGenerator {
         throw new RuntimeException("Problem choosing IBlockState from weighted list");
     }
 
-    private boolean doesMatchBiome(@Nullable List<String> biomes, Biome biome) {
+    private boolean doesMatchBiome(@Nullable List<String> biomes, Biome biome, boolean isWhitelist) {
         if (biomes == null) return true;
         for (String s : biomes) {
             ResourceLocation loc = biome.getRegistryName();
             if (loc != null && (s.equals(loc.getResourcePath()) || s.equals(biome.getTempCategory().name())))
-                return true;
+                return isWhitelist;
         }
-        return false;
+        return !isWhitelist;
     }
 
-    private boolean doesMatchDims(@Nullable List<Integer> dims, int dim) {
+    private boolean doesMatchDims(@Nullable List<Integer> dims, int dim, boolean isWhitelist) {
         if (dims == null) return dim == 0;
         for (int i : dims) {
             if (dim == i)
-                return true;
+                return isWhitelist;
         }
-        return false;
+        return !isWhitelist;
     }
 
 }

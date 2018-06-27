@@ -108,14 +108,19 @@ public class GenHandler {
         final int maxY = getValue(config, "max_y", 64);
         final int verticalSize = getValue(config, "vertical_size", 15);
         final int horizontalSize = getValue(config, "horizontal_size", 8);
-        final List<String> biomes = getBiomes(config);
 
         // If these entries are not present, the json will fail
-        LinkedListMultimap<IBlockState, Integer> oreStates = getOres(config);
-        List<IBlockState> stoneStates = getStones(config);
-        List<Integer> dims = getDims(config);
+        final LinkedListMultimap<IBlockState, Integer> oreStates = getOres(config);
+        final List<IBlockState> stoneStates = getStones(config);
 
-        return new Ore(oreStates, stoneStates, rarity, minY, maxY, density, horizontalSize, verticalSize, biomes, dims);
+        // These entries are EXTRA optional entries
+        final List<String> biomes = getBiomes(config);
+        final List<Integer> dims = getDims(config);
+
+        boolean dimIsWhitelist = getBoolean(config, "dimensions_is_whitelist");
+        boolean biomesIsWhitelist = getBoolean(config, "biomes_is_whitelist");
+
+        return new Ore(oreStates, stoneStates, rarity, minY, maxY, density, horizontalSize, verticalSize, biomes, dims, dimIsWhitelist, biomesIsWhitelist);
     }
 
     @Nonnull
@@ -192,6 +197,16 @@ public class GenHandler {
         return result;
     }
 
+    private static boolean getBoolean(Config config, String key) {
+        boolean result;
+        try {
+            result = config.getBoolean(key);
+        } catch (Exception e) {
+            result = true;
+        }
+        return result;
+    }
+
     @Nullable
     private static List<String> getBiomes(Config config) {
         try {
@@ -227,8 +242,12 @@ public class GenHandler {
         public final List<String> biomes;
         public final List<Integer> dims;
 
+        public final boolean dimensionIsWhitelist;
+        public final boolean biomesIsWhitelist;
+
         public Ore(@Nonnull LinkedListMultimap<IBlockState, Integer> oreStates, @Nonnull List<IBlockState> stoneStates,
-                   int rarity, int minY, int maxY, int density, int horizontalSize, int verticalSize, @Nullable List<String> biomes, @Nullable List<Integer> dims) {
+                   int rarity, int minY, int maxY, int density, int horizontalSize, int verticalSize,
+                   @Nullable List<String> biomes, @Nullable List<Integer> dims, boolean dimensionIsWhitelist, boolean biomesIsWhitelist) {
             this.oreStates = oreStates;
             this.stoneStates = stoneStates;
 
@@ -241,6 +260,9 @@ public class GenHandler {
 
             this.biomes = biomes;
             this.dims = dims;
+
+            this.dimensionIsWhitelist = dimensionIsWhitelist;
+            this.biomesIsWhitelist = biomesIsWhitelist;
         }
     }
 }

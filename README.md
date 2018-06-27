@@ -19,7 +19,10 @@ Each ore entry can also have the following properties. If they are not present t
 * `max_y` (Default: 64) Maximum y value for veins to generate at.
 * `vertical_size` (Default: 15) Vertical size modifier. This is not an absolute number in blocks, but is close to. Experimentation is required.
 * `horizontal_size` (Default: 8) Horizontal size modifier. This is not an absolute number in blocks, but is close to. Experimentation is required.
-* `biomes` (Default: all) Allowed biome names or temperatures for a biome to spawn in. Must be a list of strings.
+* `biomes` (Default: all) Whitelist of biome names or temperatures for a biome to spawn in. Must be a list of strings.
+* `biomes_is_whitelist` (Default: true) When false, the biome list becomes a blacklist
+* `dimensions` (Default: 0) Whitelist of dimension ids that the ore can spawn in. Must be a list of intergers.
+* `dimensions_is_whitelist` (Default: true) When false, the dimension list becomes a blacklist
 
 A Block entry can be:
 
