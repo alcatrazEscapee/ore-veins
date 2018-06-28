@@ -89,14 +89,16 @@ public class WorldGenVeins implements IWorldGenerator {
         List<VeinTypeCluster> veins = new ArrayList<>();
 
         for (GenHandler.Ore ore : ORE_SPAWN_DATA) {
-            if (rand.nextInt(ore.rarity) == 0) {
-                BlockPos startPos = new BlockPos(
+            for (int i = 0; i < ore.count; i++) {
+                if (rand.nextInt(ore.rarity) == 0) {
+                    BlockPos startPos = new BlockPos(
                         chunkX * 16 + rand.nextInt(16),
                         ore.minY + rand.nextInt(ore.maxY - ore.minY),
                         chunkZ * 16 + rand.nextInt(16)
-                );
-                VeinTypeCluster vein = new VeinTypeCluster(ore, startPos, rand);
-                veins.add(vein);
+                    );
+                    VeinTypeCluster vein = new VeinTypeCluster(ore, startPos, rand);
+                    veins.add(vein);
+                }
             }
         }
         return veins;

@@ -13,6 +13,7 @@ Each entry must consist of at least two objects:
 
 Each ore entry can also have the following properties. If they are not present they will assume their default value.
 
+* `count` (Default: 1) Generate at most N veins per chunk. Rarity is applied to each attempt to generate a vein.
 * `rarity` (Default: 10) 1 / N chunks will spawn this ore vein.
 * `density` (Default: 50) Controls the density of ore veins. Higher values are more dense. Experimentation required for best results.
 * `min_y` (Default: 16) Minimum y value for veins to generate at.

@@ -102,6 +102,7 @@ public class GenHandler {
     @Nonnull
     private static Ore parseOreEntry(Config config) throws IllegalArgumentException {
 
+        final int count = getValue(config, "count", 1);
         final int rarity = getValue(config, "rarity", 10);
         final int density = getValue(config, "density", 50);
         final int minY = getValue(config, "min_y", 16);
@@ -120,7 +121,7 @@ public class GenHandler {
         boolean dimIsWhitelist = getBoolean(config, "dimensions_is_whitelist");
         boolean biomesIsWhitelist = getBoolean(config, "biomes_is_whitelist");
 
-        return new Ore(oreStates, stoneStates, rarity, minY, maxY, density, horizontalSize, verticalSize, biomes, dims, dimIsWhitelist, biomesIsWhitelist);
+        return new Ore(oreStates, stoneStates, count, rarity, minY, maxY, density, horizontalSize, verticalSize, biomes, dims, dimIsWhitelist, biomesIsWhitelist);
     }
 
     @Nonnull
@@ -232,6 +233,7 @@ public class GenHandler {
         public final LinkedListMultimap<IBlockState, Integer> oreStates;
         public final List<IBlockState> stoneStates;
 
+        public final int count;
         public final int rarity;
         public final int minY;
         public final int maxY;
@@ -246,11 +248,12 @@ public class GenHandler {
         public final boolean biomesIsWhitelist;
 
         public Ore(@Nonnull LinkedListMultimap<IBlockState, Integer> oreStates, @Nonnull List<IBlockState> stoneStates,
-                   int rarity, int minY, int maxY, int density, int horizontalSize, int verticalSize,
+                   int count, int rarity, int minY, int maxY, int density, int horizontalSize, int verticalSize,
                    @Nullable List<String> biomes, @Nullable List<Integer> dims, boolean dimensionIsWhitelist, boolean biomesIsWhitelist) {
             this.oreStates = oreStates;
             this.stoneStates = stoneStates;
 
+            this.count = count;
             this.rarity = rarity;
             this.minY = minY;
             this.maxY = maxY;
