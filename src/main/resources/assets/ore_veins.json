@@ -1,8 +1,7 @@
 {
   "iron_ore_example": {
     "ore": "minecraft:iron_ore",
-    "stone": "minecraft:stone",
-    "count": 3
+    "stone": "minecraft:stone"
   },
   "gold_ore_example": {
     "ore": "minecraft:gold_ore",
@@ -47,11 +46,12 @@
     "ore": "minecraft:emerald_ore",
     "stone": "minecraft:stone",
     "rarity": 15,
+    "count": 3,
     "min_y": 0,
     "max_y": 32,
-    "density": 15,
-    "vertical_size": 15,
-    "horizontal_size": 25,
+    "density": 150,
+    "vertical_size": 5,
+    "horizontal_size": 10,
     "biomes": [
       "extreme_hills",
       "extreme_hills_with_trees",
