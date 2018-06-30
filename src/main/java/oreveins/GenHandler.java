@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static oreveins.OreVeins.MODID;
@@ -36,66 +37,80 @@ import static oreveins.api.Helper.getValue;
 
 public class GenHandler {
 
-    private static File worldGenFile;
+    private static File worldGenFolder;
 
     public static void preInit(File modConfigDir) {
 
         log.info("Loading or creating ore generation config file");
 
-        File configFile = new File(modConfigDir, MODID);
+        worldGenFolder = new File(modConfigDir, MODID);
 
-        if (!configFile.exists() && !configFile.mkdir())
+        if (!worldGenFolder.exists() && !worldGenFolder.mkdir())
             throw new Error("Problem creating Ore Veins config directory.");
 
-        worldGenFile = new File(configFile, "ore_veins.json");
     }
 
     public static void postInit() {
-        // Read file into worldGenData
-        String worldGenData = null;
-        if (worldGenFile.exists()) {
-            try {
-                worldGenData = FileUtils.readFileToString(worldGenFile, Charset.defaultCharset());
-            } catch (IOException e) {
-                throw new Error("Error reading world gen file.", e);
-            }
-        }
-        if (Strings.isNullOrEmpty(worldGenData)) {
-            try {
-                FileUtils.copyInputStreamToFile(WorldGenVeins.class.getResourceAsStream("/assets/ore_veins.json"), worldGenFile);
-                worldGenData = FileUtils.readFileToString(worldGenFile, Charset.defaultCharset());
-            } catch (IOException e) {
-                throw new Error("Error copying data into world gen file", e);
-            }
-        }
+        File[] worldGenFiles = worldGenFolder.listFiles((file, name) -> name != null && name.toLowerCase(Locale.US).endsWith(".json"));
+        if (worldGenFiles == null) throw new Error("There are no valid files in the world gen directory");
 
-        if (Strings.isNullOrEmpty(worldGenData)) {
-            log.warn("There is no data in the world gen file: This mod will not do anything. Seek medical assistance");
-            return;
+        // Read files:
+        List<Config> configEntries = new ArrayList<>();
+        String worldGenData;
+        Config config;
+        for (File worldGenFile : worldGenFiles) {
+            worldGenData = null;
+            if (worldGenFile.exists()) {
+                try {
+                    worldGenData = FileUtils.readFileToString(worldGenFile, Charset.defaultCharset());
+                } catch (IOException e) {
+                    throw new Error("Error reading world gen file.", e);
+                }
+            }
+            if (Strings.isNullOrEmpty(worldGenData)) {
+                try {
+                    FileUtils.copyInputStreamToFile(WorldGenVeins.class.getResourceAsStream("/assets/ore_veins.json"), worldGenFile);
+                    worldGenData = FileUtils.readFileToString(worldGenFile, Charset.defaultCharset());
+                } catch (IOException e) {
+                    throw new Error("Error copying data into world gen file", e);
+                }
+            }
+
+            if (Strings.isNullOrEmpty(worldGenData)) {
+                log.warn("There is no data in the world gen file: This mod will not do anything. Seek medical assistance");
+                return;
+            }
+
+            try {
+                config = ConfigFactory.parseString(worldGenData);
+                configEntries.add(config);
+            } catch (Throwable e) {
+                throw new Error("Cannot Parse world gen file.", e);
+            }
         }
 
         ImmutableList.Builder<Ore> b = ImmutableList.builder();
         // Parse Ore gen entries
-        Config data;
-        try {
-            data = ConfigFactory.parseString(worldGenData);
-        } catch (Throwable e) {
-            throw new Error("Cannot Parse world gen file.", e);
-        }
+
+        if (configEntries.isEmpty()) throw new Error("There are no valid config entries!");
+
+        // Parse all config entries
         int maxRadius = 1;
-        for (Map.Entry<String, ConfigValue> entry : data.root().entrySet()) {
-            try {
-                if (entry.getValue().valueType() == ConfigValueType.OBJECT) {
-                    try {
-                        Ore ore = parseOreEntry(data.getConfig(entry.getKey()));
-                        b.add(ore);
-                        if (ore.horizontalSize >> 4 > maxRadius) maxRadius = ore.horizontalSize >> 4;
-                    } catch (Exception e) {
-                        log.warn("Generation entry '" + entry.getKey() + "' failed to parse correctly, skipping. Check that the json is valid.", e);
+        for (Config data : configEntries) {
+            for (Map.Entry<String, ConfigValue> entry : data.root().entrySet()) {
+                try {
+                    if (entry.getValue().valueType() == ConfigValueType.OBJECT) {
+                        try {
+                            Ore ore = parseOreEntry(data.getConfig(entry.getKey()));
+                            b.add(ore);
+                            if (ore.horizontalSize >> 4 > maxRadius) maxRadius = ore.horizontalSize >> 4;
+                        } catch (Exception e) {
+                            log.warn("Generation entry '" + entry.getKey() + "' failed to parse correctly, skipping. Check that the json is valid.", e);
+                        }
                     }
+                } catch (Throwable e) {
+                    log.warn("Generation entry '" + entry.getKey() + "' failed to parse correctly, skipping. Check that the json is valid.", e);
                 }
-            } catch (Throwable e) {
-                throw new Error("Cannot Parse world gen file.", e);
             }
         }
         WorldGenVeins.ORE_SPAWN_DATA = b.build();
