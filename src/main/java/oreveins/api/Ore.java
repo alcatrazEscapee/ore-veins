@@ -5,6 +5,23 @@ import net.minecraft.block.state.IBlockState;
 
 import java.util.List;
 
+/**
+ * This class represents an type of ore vein. One of these is created for each entry in the json file
+ * <p>
+ * oreStates: List of BlockStates for the ores, which are linked to a weight value.
+ * stoneStates: List of BlockStates for the stones in which the ore will spawn
+ * type: Registry name of the Vein type
+ * count: number of tries per chunk to spawn a vein
+ * rarity: 1 / N chunks will have a vein of this type, on average
+ * minY: minimum Y value to spawn ores
+ * maxY: max Y value to spawn ores
+ * horizontalSize: approximate maximum horizontal radius for the vein
+ * verticalSize: approximate maximum vertical radius for the vein
+ * biomes: list of biome names for the ore to spawn in
+ * dims: list of dimension ids for the ore to spawn in
+ * dimensionIsWhitelist: when false, dimension list becomes a blacklist
+ * biomesIsWhitelist: when false, biome list becomes a blacklist
+ */
 public abstract class Ore {
 
     public LinkedListMultimap<IBlockState, Integer> oreStates;

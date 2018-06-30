@@ -4,7 +4,7 @@
  See the project LICENSE.md for more information.
  */
 
-package oreveins.api;
+package oreveins;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -15,7 +15,8 @@ import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueType;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import oreveins.VeinRegistry;
+import oreveins.api.Ore;
+import oreveins.api.Vein;
 import oreveins.world.WorldGenVeins;
 import org.apache.commons.io.FileUtils;
 
@@ -30,6 +31,8 @@ import java.util.Map;
 
 import static oreveins.OreVeins.MODID;
 import static oreveins.OreVeins.log;
+import static oreveins.api.Helper.getBoolean;
+import static oreveins.api.Helper.getValue;
 
 public class GenHandler {
 
@@ -104,43 +107,24 @@ public class GenHandler {
     @Nonnull
     private static Ore parseOreEntry(Config config) throws IllegalArgumentException {
 
-        // These are required values for all vein types
-        //final String veinType = getGenType(config);
-        // todo: REMOVE THIS OR MAKE IT A DEFAULT
-        final String veinType = "oreveins:cluster";
+        final String veinType = getGenType(config); // Required
 
-        //final LinkedListMultimap<IBlockState, Integer> oreStates = getOres(config);
-        //final List<IBlockState> stoneStates = getStones(config);
-
-        // These are optional entries, that are required for all vein types
-        /*final int count = getValue(config, "count", 1);
-        final int rarity = getValue(config, "rarity", 10);
-        final int minY = getValue(config, "min_y", 16);
-        final int maxY = getValue(config, "max_y", 64);
-        final int verticalSize = getValue(config, "vertical_size", 15);
-        final int horizontalSize = getValue(config, "horizontal_size", 8);
-
-        final List<String> biomes = getBiomes(config);
-        final List<Integer> dims = getDims(config);
-
-        boolean dimIsWhitelist = getBoolean(config, "dimensions_is_whitelist");
-        boolean biomesIsWhitelist = getBoolean(config, "biomes_is_whitelist");*/
-
-        // TODO: This will pass to the VeinType and tell it to create an ore.
-        VeinType v = VeinRegistry.get(veinType);
+        Vein v = VeinRegistry.get(veinType);
         if (v == null) {
             throw new IllegalArgumentException("Vein Type is not allowed to be null");
         }
-        Ore ore;
+        Ore ore; // Gets the Ore from the Vein
         try {
             ore = v.createOre(config);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Unable to create ore from Vein Type + " + veinType, e);
         }
+        // Required values
         ore.oreStates = getOres(config);
         ore.stoneStates = getStones(config);
         ore.type = veinType;
 
+        // Values with defaults
         ore.count = getValue(config, "count", 1);
         ore.rarity = getValue(config, "rarity", 10);
         ore.minY = getValue(config, "min_y", 16);
@@ -153,47 +137,8 @@ public class GenHandler {
 
         ore.dimensionIsWhitelist = getBoolean(config, "dimensions_is_whitelist");
         ore.biomesIsWhitelist = getBoolean(config, "biomes_is_whitelist");
-        //Ore ore = new Ore(veinType, oreStates, stoneStates, count, rarity, minY, maxY, horizontalSize, verticalSize, biomes, dims, dimIsWhitelist, biomesIsWhitelist);
-
-        // These values are based on the config
-        //final int density = getValue(config, "density", 50);
 
         return ore;
-    }
-
-    /**
-     * Gets an int value from an ore config with default
-     *
-     * @param config       The ore config object
-     * @param key          The key to check
-     * @param defaultValue If not found, the default value
-     * @return the value
-     */
-    public static int getValue(Config config, String key, int defaultValue) {
-        int result;
-        try {
-            result = config.getInt(key);
-        } catch (Exception e) {
-            result = defaultValue;
-        }
-        return result;
-    }
-
-    /**
-     * Gets a boolean value from a ore config with default = true
-     *
-     * @param config the ore config object
-     * @param key    the key to check
-     * @return the value
-     */
-    public static boolean getBoolean(Config config, String key) {
-        boolean result;
-        try {
-            result = config.getBoolean(key);
-        } catch (Exception e) {
-            result = true;
-        }
-        return result;
     }
 
     @Nonnull

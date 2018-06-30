@@ -16,9 +16,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
+import oreveins.OreVeins;
 import oreveins.VeinRegistry;
 import oreveins.api.Ore;
-import oreveins.api.VeinType;
+import oreveins.api.Vein;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,18 +41,18 @@ public class WorldGenVeins implements IWorldGenerator {
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
 
-        List<VeinType> veins = getNearbyVeins(chunkX, chunkZ, world.getSeed());
+        List<Vein> veins = getNearbyVeins(chunkX, chunkZ, world.getSeed());
         if (veins.isEmpty()) return;
 
         int xoff = chunkX * 16 + 8;
         int zoff = chunkZ * 16 + 8;
-        for (VeinType vein : veins) {
+        for (Vein vein : veins) {
             if (doesMatchDims(vein.getOre().dims, world.provider.getDimension(), vein.getOre().dimensionIsWhitelist))
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
                         // Do checks here that are specific to the the horizontal position, not the vertical one
                         Biome biomeAt = world.getBiome(new BlockPos(xoff + x, 0, zoff + z));
-                        if (!vein.inRange(new BlockPos(xoff + x, 0, zoff + z)) || !doesMatchBiome(vein.getOre().biomes, biomeAt, vein.getOre().biomesIsWhitelist))
+                        if (!vein.inRange(xoff + x, zoff + z) || !doesMatchBiome(vein.getOre().biomes, biomeAt, vein.getOre().biomesIsWhitelist))
                             continue;
                         for (int y = vein.getOre().minY; y <= vein.getOre().maxY; y++) {
 
@@ -69,12 +70,12 @@ public class WorldGenVeins implements IWorldGenerator {
 
     // Used to generate chunk
     @Nonnull
-    private List<VeinType> getNearbyVeins(int chunkX, int chunkZ, long worldSeed) {
-        List<VeinType> veins = new ArrayList<>();
+    private List<Vein> getNearbyVeins(int chunkX, int chunkZ, long worldSeed) {
+        List<Vein> veins = new ArrayList<>();
 
         for (int x = -CHUNK_RADIUS; x <= CHUNK_RADIUS; x++) {
             for (int z = -CHUNK_RADIUS; z <= CHUNK_RADIUS; z++) {
-                List<VeinType> vein = getVeinsAtChunk(chunkX + x, chunkZ + z, worldSeed);
+                List<Vein> vein = getVeinsAtChunk(chunkX + x, chunkZ + z, worldSeed);
                 if (!vein.isEmpty()) veins.addAll(vein);
             }
         }
@@ -83,9 +84,9 @@ public class WorldGenVeins implements IWorldGenerator {
 
     // Gets veins at a single chunk. Deterministic for a specific chunk x/z and world seed
     @Nonnull
-    private List<VeinType> getVeinsAtChunk(int chunkX, int chunkZ, Long worldSeed) {
+    private List<Vein> getVeinsAtChunk(int chunkX, int chunkZ, Long worldSeed) {
         Random rand = new Random(worldSeed + chunkX * 341873128712L + chunkZ * 132897987541L);
-        List<VeinType> veins = new ArrayList<>();
+        List<Vein> veins = new ArrayList<>();
 
         for (Ore ore : ORE_SPAWN_DATA) {
             for (int i = 0; i < ore.count; i++) {
@@ -95,12 +96,12 @@ public class WorldGenVeins implements IWorldGenerator {
                         ore.minY + rand.nextInt(ore.maxY - ore.minY),
                         chunkZ * 16 + rand.nextInt(16)
                     );
-                    VeinType v = VeinRegistry.get(ore.type);
+                    Vein v = VeinRegistry.get(ore.type);
                     if (v != null) {
                         try {
                             veins.add(v.getClass().getDeclaredConstructor(Ore.class, BlockPos.class, Random.class).newInstance(ore, startPos, rand));
                         } catch (Exception e) {
-                            // Something happens?
+                            OreVeins.log.warn("A Vein does not have the correct constructor format. The required format is (Ore, BlockPos, Random)");
                         }
                     }
                 }

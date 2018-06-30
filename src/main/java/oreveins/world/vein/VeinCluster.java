@@ -10,7 +10,7 @@ import com.typesafe.config.Config;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.util.math.BlockPos;
 import oreveins.api.Ore;
-import oreveins.api.VeinType;
+import oreveins.api.Vein;
 import oreveins.world.ore.OreCluster;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -18,15 +18,15 @@ import java.util.Random;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class VeinTypeCluster extends VeinType {
+public class VeinCluster extends Vein {
 
     private Cluster[] spawnPoints;
     private BlockPos startPos;
 
-    public VeinTypeCluster() {
+    public VeinCluster() {
     }
 
-    public VeinTypeCluster(Ore ore, BlockPos pos, Random rand) throws IllegalArgumentException {
+    public VeinCluster(Ore ore, BlockPos pos, Random rand) throws IllegalArgumentException {
         super(ore, pos, rand);
         if (!(ore instanceof OreCluster)) throw new IllegalArgumentException("Incorrect ore type passed in");
         this.startPos = pos;
@@ -61,8 +61,8 @@ public class VeinTypeCluster extends VeinType {
     }
 
     @Override
-    public boolean inRange(BlockPos pos) {
-        return Math.pow(pos.getX() - startPos.getX(), 2) + Math.pow(pos.getZ() - startPos.getZ(), 2) <= ore.horizontalSize * ore.horizontalSize;
+    public boolean inRange(int xPos, int zPos) {
+        return Math.pow(xPos - startPos.getX(), 2) + Math.pow(zPos - startPos.getZ(), 2) <= ore.horizontalSize * ore.horizontalSize;
     }
 
     @Override

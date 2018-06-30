@@ -10,7 +10,7 @@ import java.util.Random;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType> {
+public abstract class Vein extends IForgeRegistryEntry.Impl<Vein> {
 
     protected Ore ore;
 
@@ -19,26 +19,27 @@ public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType> {
      * In your implementation of VeinType, the constructor taking three arguments is used to generate a random vein at a position
      * You should also call super() to set the ore, otherwise a NPE will occur
      */
-    public VeinType() {
+    public Vein() {
     }
 
-    public VeinType(Ore ore, BlockPos pos, Random rand) {
+    public Vein(Ore ore, BlockPos pos, Random rand) {
         this.ore = ore;
     }
 
     /**
      * Checks if the vein is in range from a horizontal position.
      *
-     * @param pos The horizontal (x and z) positions
+     * @param xPos the x position to check
+     * @param zPos the z position to check
      * @return is the x and z position in range to spawn a block
      */
-    public abstract boolean inRange(BlockPos pos);
+    public abstract boolean inRange(int xPos, int zPos);
 
     /**
      * Get the chance to generate an ore block at a specific position.
      *
      * @param pos The position to generate at
-     * @return the chance to generate. Range is >=1 will generate 100% chance to <=0 will generate 0% chance
+     * @return the chance to generate. Range is >=1 will generate with 100% chance to <=0 will generate with 0% chance
      */
     public abstract double getChanceToGenerate(BlockPos pos);
 
@@ -47,8 +48,10 @@ public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType> {
      * Creates an ore object to store in the list of all ores as added by json
      *
      * @param config The config object representing the json configuration of the ore
-     * @return An ore object that has any additional paramaters added in the json
-     * @link GenHandler has useful implementations of Config library for getting specific values
+     * @return An ore object that has any additional parameters added in the json
+     *
+     * @link Helper has useful implementations of Config library for getting specific values with defaults
+     *       See VeinCluster for an example
      */
     public abstract Ore createOre(Config config);
 
