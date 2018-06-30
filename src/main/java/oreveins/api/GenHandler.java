@@ -4,7 +4,7 @@
  See the project LICENSE.md for more information.
  */
 
-package oreveins;
+package oreveins.api;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -15,6 +15,7 @@ import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueType;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import oreveins.VeinRegistry;
 import oreveins.world.WorldGenVeins;
 import org.apache.commons.io.FileUtils;
 
@@ -97,31 +98,102 @@ public class GenHandler {
         WorldGenVeins.ORE_SPAWN_DATA = b.build();
         WorldGenVeins.CHUNK_RADIUS = maxRadius + 1;
         WorldGenVeins.MAX_RADIUS = 16 * (maxRadius + 1);
+        log.info("Max radius is 1 + " + maxRadius);
     }
 
     @Nonnull
     private static Ore parseOreEntry(Config config) throws IllegalArgumentException {
 
-        final int count = getValue(config, "count", 1);
+        // These are required values for all vein types
+        //final String veinType = getGenType(config);
+        // todo: REMOVE THIS OR MAKE IT A DEFAULT
+        final String veinType = "oreveins:cluster";
+
+        //final LinkedListMultimap<IBlockState, Integer> oreStates = getOres(config);
+        //final List<IBlockState> stoneStates = getStones(config);
+
+        // These are optional entries, that are required for all vein types
+        /*final int count = getValue(config, "count", 1);
         final int rarity = getValue(config, "rarity", 10);
-        final int density = getValue(config, "density", 50);
         final int minY = getValue(config, "min_y", 16);
         final int maxY = getValue(config, "max_y", 64);
         final int verticalSize = getValue(config, "vertical_size", 15);
         final int horizontalSize = getValue(config, "horizontal_size", 8);
 
-        // If these entries are not present, the json will fail
-        final LinkedListMultimap<IBlockState, Integer> oreStates = getOres(config);
-        final List<IBlockState> stoneStates = getStones(config);
-
-        // These entries are EXTRA optional entries
         final List<String> biomes = getBiomes(config);
         final List<Integer> dims = getDims(config);
 
         boolean dimIsWhitelist = getBoolean(config, "dimensions_is_whitelist");
-        boolean biomesIsWhitelist = getBoolean(config, "biomes_is_whitelist");
+        boolean biomesIsWhitelist = getBoolean(config, "biomes_is_whitelist");*/
 
-        return new Ore(oreStates, stoneStates, count, rarity, minY, maxY, density, horizontalSize, verticalSize, biomes, dims, dimIsWhitelist, biomesIsWhitelist);
+        // TODO: This will pass to the VeinType and tell it to create an ore.
+        VeinType v = VeinRegistry.get(veinType);
+        if (v == null) {
+            throw new IllegalArgumentException("Vein Type is not allowed to be null");
+        }
+        Ore ore;
+        try {
+            ore = v.createOre(config);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unable to create ore from Vein Type + " + veinType, e);
+        }
+        ore.oreStates = getOres(config);
+        ore.stoneStates = getStones(config);
+        ore.type = veinType;
+
+        ore.count = getValue(config, "count", 1);
+        ore.rarity = getValue(config, "rarity", 10);
+        ore.minY = getValue(config, "min_y", 16);
+        ore.maxY = getValue(config, "max_y", 64);
+        ore.verticalSize = getValue(config, "vertical_size", 15);
+        ore.horizontalSize = getValue(config, "horizontal_size", 8);
+
+        ore.biomes = getBiomes(config);
+        ore.dims = getDims(config);
+
+        ore.dimensionIsWhitelist = getBoolean(config, "dimensions_is_whitelist");
+        ore.biomesIsWhitelist = getBoolean(config, "biomes_is_whitelist");
+        //Ore ore = new Ore(veinType, oreStates, stoneStates, count, rarity, minY, maxY, horizontalSize, verticalSize, biomes, dims, dimIsWhitelist, biomesIsWhitelist);
+
+        // These values are based on the config
+        //final int density = getValue(config, "density", 50);
+
+        return ore;
+    }
+
+    /**
+     * Gets an int value from an ore config with default
+     *
+     * @param config       The ore config object
+     * @param key          The key to check
+     * @param defaultValue If not found, the default value
+     * @return the value
+     */
+    public static int getValue(Config config, String key, int defaultValue) {
+        int result;
+        try {
+            result = config.getInt(key);
+        } catch (Exception e) {
+            result = defaultValue;
+        }
+        return result;
+    }
+
+    /**
+     * Gets a boolean value from a ore config with default = true
+     *
+     * @param config the ore config object
+     * @param key    the key to check
+     * @return the value
+     */
+    public static boolean getBoolean(Config config, String key) {
+        boolean result;
+        try {
+            result = config.getBoolean(key);
+        } catch (Exception e) {
+            result = true;
+        }
+        return result;
     }
 
     @Nonnull
@@ -188,22 +260,15 @@ public class GenHandler {
         }
     }
 
-    private static int getValue(Config config, String key, int defaultValue) {
-        int result;
+    private static String getGenType(Config config) throws IllegalArgumentException {
+        String result;
         try {
-            result = config.getInt(key);
+            result = config.getString("type");
+            if (VeinRegistry.get(result) == null) {
+                throw new IllegalArgumentException("Vein Type " + result + " is not registered.");
+            }
         } catch (Exception e) {
-            result = defaultValue;
-        }
-        return result;
-    }
-
-    private static boolean getBoolean(Config config, String key) {
-        boolean result;
-        try {
-            result = config.getBoolean(key);
-        } catch (Exception e) {
-            result = true;
+            result = "clusters";
         }
         return result;
     }
@@ -228,44 +293,4 @@ public class GenHandler {
         }
     }
 
-    public static final class Ore {
-
-        public final LinkedListMultimap<IBlockState, Integer> oreStates;
-        public final List<IBlockState> stoneStates;
-
-        public final int count;
-        public final int rarity;
-        public final int minY;
-        public final int maxY;
-        public final int density;
-        public final int horizontalSize;
-        public final int verticalSize;
-
-        public final List<String> biomes;
-        public final List<Integer> dims;
-
-        public final boolean dimensionIsWhitelist;
-        public final boolean biomesIsWhitelist;
-
-        public Ore(@Nonnull LinkedListMultimap<IBlockState, Integer> oreStates, @Nonnull List<IBlockState> stoneStates,
-                   int count, int rarity, int minY, int maxY, int density, int horizontalSize, int verticalSize,
-                   @Nullable List<String> biomes, @Nullable List<Integer> dims, boolean dimensionIsWhitelist, boolean biomesIsWhitelist) {
-            this.oreStates = oreStates;
-            this.stoneStates = stoneStates;
-
-            this.count = count;
-            this.rarity = rarity;
-            this.minY = minY;
-            this.maxY = maxY;
-            this.density = density;
-            this.horizontalSize = horizontalSize;
-            this.verticalSize = verticalSize;
-
-            this.biomes = biomes;
-            this.dims = dims;
-
-            this.dimensionIsWhitelist = dimensionIsWhitelist;
-            this.biomesIsWhitelist = biomesIsWhitelist;
-        }
-    }
 }

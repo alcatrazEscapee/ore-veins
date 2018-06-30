@@ -6,21 +6,30 @@
 
 package oreveins.world.vein;
 
+import com.typesafe.config.Config;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.util.math.BlockPos;
-import oreveins.GenHandler;
+import oreveins.api.Ore;
+import oreveins.api.VeinType;
+import oreveins.world.ore.OreCluster;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Random;
 
-public class VeinTypeCluster {
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
+public class VeinTypeCluster extends VeinType {
 
-    public final GenHandler.Ore ore;
-    private final BlockPos pos;
-    private final Cluster[] spawnPoints;
+    private Cluster[] spawnPoints;
+    private BlockPos startPos;
 
-    public VeinTypeCluster(GenHandler.Ore ore, BlockPos startPos, Random rand) {
+    public VeinTypeCluster() {
+    }
 
-        this.ore = ore;
-        this.pos = startPos;
+    public VeinTypeCluster(Ore ore, BlockPos pos, Random rand) throws IllegalArgumentException {
+        super(ore, pos, rand);
+        if (!(ore instanceof OreCluster)) throw new IllegalArgumentException("Incorrect ore type passed in");
+        this.startPos = pos;
 
         int clusters = 2 + rand.nextInt(4);
         spawnPoints = new Cluster[clusters];
@@ -35,23 +44,30 @@ public class VeinTypeCluster {
         }
     }
 
-    public double getChanceToGenerate(BlockPos pos1) {
+    @Override
+    public double getChanceToGenerate(BlockPos pos) {
         double shortestRadius = -1;
 
         for (Cluster c : spawnPoints) {
-            final double dx = Math.pow(c.pos.getX() - pos1.getX(), 2);
-            final double dy = Math.pow(c.pos.getY() - pos1.getY(), 2);
-            final double dz = Math.pow(c.pos.getZ() - pos1.getZ(), 2);
+            final double dx = Math.pow(c.pos.getX() - pos.getX(), 2);
+            final double dy = Math.pow(c.pos.getY() - pos.getY(), 2);
+            final double dz = Math.pow(c.pos.getZ() - pos.getZ(), 2);
 
             final double radius = (dx + dz) / Math.pow(c.size * ore.horizontalSize, 2) + dy / Math.pow(c.size * ore.horizontalSize, 2);
 
             if (shortestRadius == -1 || radius < shortestRadius) shortestRadius = radius;
         }
-        return 0.002 * ore.density * (1.0 - shortestRadius);
+        return 0.002 * ((OreCluster) ore).density * (1.0 - shortestRadius);
     }
 
-    public final boolean inRange(BlockPos pos1) {
-        return Math.pow(pos1.getX() - this.pos.getX(), 2) + Math.pow(pos1.getZ() - this.pos.getZ(), 2) <= this.ore.horizontalSize * this.ore.horizontalSize;
+    @Override
+    public boolean inRange(BlockPos pos) {
+        return Math.pow(pos.getX() - startPos.getX(), 2) + Math.pow(pos.getZ() - startPos.getZ(), 2) <= ore.horizontalSize * ore.horizontalSize;
+    }
+
+    @Override
+    public Ore createOre(Config config) {
+        return new OreCluster(config);
     }
 
     final class Cluster {
