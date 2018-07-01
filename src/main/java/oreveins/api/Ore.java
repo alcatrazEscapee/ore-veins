@@ -1,6 +1,11 @@
+/*
+ Part of the Ore Veins Mod by alcatrazEscapee
+ Work under Copyright. Licensed under the GPL-3.0.
+ See the project LICENSE.md for more information.
+ */
+
 package oreveins.api;
 
-import com.google.common.collect.LinkedListMultimap;
 import net.minecraft.block.state.IBlockState;
 
 import java.util.List;
@@ -24,7 +29,6 @@ import java.util.List;
  */
 public abstract class Ore {
 
-    public LinkedListMultimap<IBlockState, Integer> oreStates;
     public List<IBlockState> stoneStates;
     public String type;
 

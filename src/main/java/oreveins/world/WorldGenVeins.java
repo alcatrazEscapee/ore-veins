@@ -7,7 +7,6 @@
 package oreveins.world;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.LinkedListMultimap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -25,7 +24,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class WorldGenVeins implements IWorldGenerator {
@@ -58,7 +56,7 @@ public class WorldGenVeins implements IWorldGenerator {
 
                             final BlockPos posAt = new BlockPos(xoff + x, y, z + zoff);
                             IBlockState stoneState = world.getBlockState(posAt);
-                            IBlockState oreState = getWeightedOre(vein.getOre().oreStates);
+                            IBlockState oreState = vein.getStateToGenerate(posAt);
 
                             if (random.nextDouble() < vein.getChanceToGenerate(posAt) && vein.getOre().stoneStates.contains(stoneState))
                                 world.setBlockState(posAt, oreState);
@@ -108,20 +106,6 @@ public class WorldGenVeins implements IWorldGenerator {
             }
         }
         return veins;
-    }
-
-    private IBlockState getWeightedOre(LinkedListMultimap<IBlockState, Integer> ores) {
-        double completeWeight = 0.0;
-        for (int i : ores.values())
-            completeWeight += (double) i;
-        double r = Math.random() * completeWeight;
-        double countWeight = 0.0;
-        for (Map.Entry<IBlockState, Integer> entry : ores.entries()) {
-            countWeight += (double) entry.getValue();
-            if (countWeight >= r)
-                return entry.getKey();
-        }
-        throw new RuntimeException("Problem choosing IBlockState from weighted list");
     }
 
     private boolean doesMatchBiome(@Nullable List<String> biomes, Biome biome, boolean isWhitelist) {

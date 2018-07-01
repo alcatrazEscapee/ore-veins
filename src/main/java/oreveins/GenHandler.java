@@ -8,14 +8,13 @@ package oreveins;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.LinkedListMultimap;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueType;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import oreveins.api.Ore;
+import oreveins.api.OreVeinsApi;
 import oreveins.api.Vein;
 import oreveins.world.WorldGenVeins;
 import org.apache.commons.io.FileUtils;
@@ -32,8 +31,8 @@ import java.util.Map;
 
 import static oreveins.OreVeins.MODID;
 import static oreveins.OreVeins.log;
-import static oreveins.api.Helper.getBoolean;
-import static oreveins.api.Helper.getValue;
+import static oreveins.api.OreVeinsApi.getBoolean;
+import static oreveins.api.OreVeinsApi.getValue;
 
 public class GenHandler {
 
@@ -135,7 +134,7 @@ public class GenHandler {
             throw new IllegalArgumentException("Unable to create ore from Vein Type + " + veinType, e);
         }
         // Required values
-        ore.oreStates = getOres(config);
+        //ore.oreStates = getOres(config); // TODO: move to VeinCluster
         ore.stoneStates = getStones(config);
         ore.type = veinType;
 
@@ -162,62 +161,17 @@ public class GenHandler {
         List<IBlockState> states = new ArrayList<>();
 
         if (config.getValue(key).valueType() == ConfigValueType.LIST) {
-            config.getConfigList(key).forEach(c -> states.add(getState(c)));
+            config.getConfigList(key).forEach(c -> states.add(OreVeinsApi.getBlockState(c)));
         } else if (config.getValue(key).valueType() == ConfigValueType.OBJECT) {
-            states.add(getState(config.getConfig(key)));
+            states.add(OreVeinsApi.getBlockState(config.getConfig(key)));
 
         } else if (config.getValue(key).valueType() == ConfigValueType.STRING) {
-            states.add(getState(config.getString(key)));
+            states.add(OreVeinsApi.getBlockState(config.getString(key)));
 
         } else {
             throw new IllegalArgumentException("Stone entry is not in the correct format");
         }
         return states;
-    }
-
-    @Nonnull
-    private static LinkedListMultimap<IBlockState, Integer> getOres(Config config) throws IllegalArgumentException {
-        String key = "ore";
-        LinkedListMultimap<IBlockState, Integer> states = LinkedListMultimap.create();
-
-        if (config.getValue(key).valueType() == ConfigValueType.LIST) {
-            config.getConfigList(key).forEach(c -> states.put(getState(c), getValue(c, "weight", 1)));
-        } else if (config.getValue(key).valueType() == ConfigValueType.OBJECT) {
-            states.put(getState(config.getConfig(key)), getValue(config.getConfig(key), "weight", 1));
-
-        } else if (config.getValue(key).valueType() == ConfigValueType.STRING) {
-            states.put(getState(config.getString(key)), 1);
-
-        } else {
-            throw new IllegalArgumentException("Ore entry is not in the correct format");
-        }
-        return states;
-    }
-
-    @Nonnull
-    private static IBlockState getState(String name) throws IllegalArgumentException {
-        try {
-            Block block = Block.getBlockFromName(name);
-            if (block == null) throw new IllegalArgumentException("Block is null when getting block from String");
-            return block.getDefaultState();
-        } catch (Exception e) {
-            log.warn("Problem parsing block entry; Skipping");
-            throw new IllegalArgumentException("Unable to parse IBlockState from String");
-        }
-    }
-
-    @Nonnull
-    @SuppressWarnings("deprecation")
-    private static IBlockState getState(Config config) throws IllegalArgumentException {
-        try {
-            String name = config.getString("block");
-            int meta = getValue(config, "meta", -1);
-            Block block = Block.getBlockFromName(name);
-            if (block == null) throw new IllegalArgumentException("Block is null when getting block from Config");
-            return (meta == -1) ? block.getDefaultState() : block.getStateFromMeta(meta);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Unable to parse IBlockState from Config");
-        }
     }
 
     private static String getGenType(Config config) throws IllegalArgumentException {

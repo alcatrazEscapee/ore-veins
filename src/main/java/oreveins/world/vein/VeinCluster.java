@@ -8,8 +8,10 @@ package oreveins.world.vein;
 
 import com.typesafe.config.Config;
 import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import oreveins.api.Ore;
+import oreveins.api.OreVeinsApi;
 import oreveins.api.Vein;
 import oreveins.world.ore.OreCluster;
 
@@ -26,6 +28,7 @@ public class VeinCluster extends Vein {
     public VeinCluster() {
     }
 
+    @SuppressWarnings("unused")
     public VeinCluster(Ore ore, BlockPos pos, Random rand) throws IllegalArgumentException {
         super(ore, pos, rand);
         if (!(ore instanceof OreCluster)) throw new IllegalArgumentException("Incorrect ore type passed in");
@@ -58,6 +61,11 @@ public class VeinCluster extends Vein {
             if (shortestRadius == -1 || radius < shortestRadius) shortestRadius = radius;
         }
         return 0.002 * ((OreCluster) ore).density * (1.0 - shortestRadius);
+    }
+
+    @Override
+    public IBlockState getStateToGenerate(BlockPos pos) {
+        return OreVeinsApi.getWeightedOre(((OreCluster) ore).oreStates);
     }
 
     @Override
