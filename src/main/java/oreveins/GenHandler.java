@@ -47,6 +47,22 @@ public class GenHandler {
         if (!worldGenFolder.exists() && !worldGenFolder.mkdir())
             throw new Error("Problem creating Ore Veins config directory.");
 
+        File defaultFile = new File(worldGenFolder, "ore_veins.json");
+        String defaultData = null;
+        if (defaultFile.exists()) {
+            try {
+                defaultData = FileUtils.readFileToString(defaultFile, Charset.defaultCharset());
+            } catch (IOException e) {
+                throw new Error("Error reading default file.", e);
+            }
+        }
+        if (Strings.isNullOrEmpty(defaultData)) {
+            try {
+                FileUtils.copyInputStreamToFile(WorldGenVeins.class.getResourceAsStream("/assets/ore_veins.json"), defaultFile);
+            } catch (IOException e) {
+                throw new Error("Error copying data into default world gen file", e);
+            }
+        }
     }
 
     public static void postInit() {
@@ -66,18 +82,10 @@ public class GenHandler {
                     throw new Error("Error reading world gen file.", e);
                 }
             }
-            if (Strings.isNullOrEmpty(worldGenData)) {
-                try {
-                    FileUtils.copyInputStreamToFile(WorldGenVeins.class.getResourceAsStream("/assets/ore_veins.json"), worldGenFile);
-                    worldGenData = FileUtils.readFileToString(worldGenFile, Charset.defaultCharset());
-                } catch (IOException e) {
-                    throw new Error("Error copying data into world gen file", e);
-                }
-            }
 
             if (Strings.isNullOrEmpty(worldGenData)) {
-                log.warn("There is no data in the world gen file: This mod will not do anything. Seek medical assistance");
-                return;
+                log.warn("There is no data in a world gen file.");
+                continue;
             }
 
             try {
@@ -115,7 +123,7 @@ public class GenHandler {
         WorldGenVeins.ORE_SPAWN_DATA = b.build();
         WorldGenVeins.CHUNK_RADIUS = maxRadius + 1 + GenConfig.EXTRA_CHUNK_SEARCH_RANGE;
         WorldGenVeins.MAX_RADIUS = 16 * (maxRadius + 1 + GenConfig.EXTRA_CHUNK_SEARCH_RANGE);
-        log.info("Max chunk search radius is " + WorldGenVeins.MAX_RADIUS);
+        log.info("Max chunk search radius is " + WorldGenVeins.CHUNK_RADIUS);
     }
 
     @Nonnull
