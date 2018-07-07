@@ -20,6 +20,7 @@ import oreveins.api.Vein;
 import oreveins.world.WorldGenReplacer;
 import oreveins.world.WorldGenVeins;
 import oreveins.world.vein.VeinCluster;
+import oreveins.world.vein.VeinSphere;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = OreVeins.MODID, version = OreVeins.VERSION, dependencies = OreVeins.DEPENDENCIES)
@@ -54,7 +55,6 @@ public class OreVeins {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         log = event.getModLog();
-        log.info("Pre-init started");
 
         GenHandler.preInit(event.getModConfigurationDirectory());
 
@@ -69,8 +69,10 @@ public class OreVeins {
 
     @SubscribeEvent
     public void addVeins(RegistryEvent.Register<Vein> event) {
-        log.info("Registering Ore Vein type cluster");
-        event.getRegistry().register(new VeinCluster().setRegistryName(MODID, "cluster"));
-        event.getRegistry().getKeys().forEach(x -> log.info("There is a registry with key " + x));
+        event.getRegistry().registerAll(
+                new VeinCluster().setRegistryName(MODID, "cluster"),
+                new VeinSphere().setRegistryName(MODID, "sphere")
+        );
+
     }
 }
