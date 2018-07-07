@@ -25,4 +25,8 @@ public class GenConfig {
             "LAPIS",
             "REDSTONE"
     };
+
+    @Config.Comment("If you notice that your veins (especially large ones) are being cut off at chunk boundaries, then try increacing this value. Warning: it will have an impact on world generation performance, so don't go overboard.")
+    @Config.RangeInt(min = 0, max = 10)
+    public static int EXTRA_CHUNK_SEARCH_RANGE = 0;
 }

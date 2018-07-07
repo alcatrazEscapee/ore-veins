@@ -34,16 +34,16 @@ public class VeinCluster extends Vein {
         if (!(ore instanceof OreCluster)) throw new IllegalArgumentException("Incorrect ore type passed in");
         this.startPos = pos;
 
-        int clusters = 2 + rand.nextInt(4);
+        int clusters = (int) (((OreCluster) ore).clusters * (0.5 + rand.nextDouble()));
         spawnPoints = new Cluster[clusters];
-        spawnPoints[0] = new Cluster(pos, 0.6 + 0.5 * rand.nextDouble());
+        spawnPoints[0] = new Cluster(pos, 0.6 + 0.2 * rand.nextDouble());
         for (int i = 1; i < clusters; i++) {
             final BlockPos clusterPos = pos.add(
-                    1.5 * ore.horizontalSize * (0.5 - rand.nextDouble()),
-                    1.5 * ore.verticalSize * (0.5 - rand.nextDouble()),
-                    1.5 * ore.horizontalSize * (0.5 - rand.nextDouble())
+                    ore.horizontalSize * (0.3 - 0.6 * rand.nextDouble()),
+                    ore.verticalSize * (0.3 - 0.6 * rand.nextDouble()),
+                    ore.horizontalSize * (0.3 - 0.6 * rand.nextDouble())
             );
-            spawnPoints[i] = new Cluster(clusterPos, 0.3 + 0.5 * rand.nextDouble());
+            spawnPoints[i] = new Cluster(clusterPos, 0.2 + 0.5 * rand.nextDouble());
         }
     }
 
@@ -60,7 +60,7 @@ public class VeinCluster extends Vein {
 
             if (shortestRadius == -1 || radius < shortestRadius) shortestRadius = radius;
         }
-        return 0.002 * ((OreCluster) ore).density * (1.0 - shortestRadius);
+        return 0.005 * ((OreCluster) ore).density * (1.0 - shortestRadius);
     }
 
     @Override

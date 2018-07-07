@@ -5,13 +5,13 @@
     "stone": "minecraft:stone"
   },
   "gold_ore_example": {
-    "type": "oreveins:cluster",
+    "type": "oreveins:sphere",
     "ore": "minecraft:gold_ore",
     "stone": "minecraft:stone",
     "rarity": 40,
-    "min_y": 16,
-    "max_y": 64,
-    "density": 60,
+    "min_y": 8,
+    "max_y": 50,
+    "density": 120,
     "vertical_size": 20,
     "horizontal_size": 10
   },
@@ -39,6 +39,7 @@
     "type": "oreveins:cluster",
     "ore": "minecraft:redstone_ore",
     "stone": "minecraft:stone",
+    "clusters": 8,
     "rarity": 40,
     "min_y": 0,
     "max_y": 40,

@@ -113,9 +113,9 @@ public class GenHandler {
             }
         }
         WorldGenVeins.ORE_SPAWN_DATA = b.build();
-        WorldGenVeins.CHUNK_RADIUS = maxRadius + 1;
-        WorldGenVeins.MAX_RADIUS = 16 * (maxRadius + 1);
-        log.info("Max radius is 1 + " + maxRadius);
+        WorldGenVeins.CHUNK_RADIUS = maxRadius + 1 + GenConfig.EXTRA_CHUNK_SEARCH_RANGE;
+        WorldGenVeins.MAX_RADIUS = 16 * (maxRadius + 1 + GenConfig.EXTRA_CHUNK_SEARCH_RANGE);
+        log.info("Max chunk search radius is " + WorldGenVeins.MAX_RADIUS);
     }
 
     @Nonnull
@@ -133,8 +133,8 @@ public class GenHandler {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Unable to create ore from Vein Type + " + veinType, e);
         }
+
         // Required values
-        //ore.oreStates = getOres(config); // TODO: move to VeinCluster
         ore.stoneStates = getStones(config);
         ore.type = veinType;
 
@@ -149,8 +149,8 @@ public class GenHandler {
         ore.biomes = getBiomes(config);
         ore.dims = getDims(config);
 
-        ore.dimensionIsWhitelist = getBoolean(config, "dimensions_is_whitelist");
-        ore.biomesIsWhitelist = getBoolean(config, "biomes_is_whitelist");
+        ore.dimensionIsWhitelist = getBoolean(config, "dimensions_is_whitelist", true);
+        ore.biomesIsWhitelist = getBoolean(config, "biomes_is_whitelist", true);
 
         return ore;
     }

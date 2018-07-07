@@ -6,6 +6,7 @@
 
 package oreveins.api;
 
+import com.typesafe.config.Config;
 import net.minecraft.block.state.IBlockState;
 
 import java.util.List;
@@ -46,7 +47,7 @@ public abstract class Ore {
     public boolean dimensionIsWhitelist;
     public boolean biomesIsWhitelist;
 
-    public Ore() {
+    public Ore(Config conig) {
     }
 
 }
