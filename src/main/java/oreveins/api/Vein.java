@@ -6,14 +6,15 @@
 
 package oreveins.api;
 
-import com.typesafe.config.Config;
-import mcp.MethodsReturnNonnullByDefault;
+import java.util.Random;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Random;
+import com.typesafe.config.Config;
+import mcp.MethodsReturnNonnullByDefault;
 
 /**
  * Your vein class must subclass this. It also must have the following same two constructors as this class
@@ -22,14 +23,17 @@ import java.util.Random;
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public abstract class Vein extends IForgeRegistryEntry.Impl<Vein> {
+public abstract class Vein extends IForgeRegistryEntry.Impl<Vein>
+{
 
     protected Ore ore;
 
-    public Vein() {
+    public Vein()
+    {
     }
 
-    public Vein(Ore ore, BlockPos pos, Random rand) {
+    public Vein(Ore ore, BlockPos pos, Random rand)
+    {
         this.ore = ore;
     }
 
@@ -64,9 +68,8 @@ public abstract class Vein extends IForgeRegistryEntry.Impl<Vein> {
      *
      * @param config The config object representing the json configuration of the ore
      * @return An ore object that has any additional parameters added in the json
-     *
      * @link Helper has useful implementations of Config library for getting specific values with defaults
-     *       See VeinCluster for an example
+     * See VeinCluster for an example
      */
     public abstract Ore createOre(Config config);
 
@@ -75,7 +78,8 @@ public abstract class Vein extends IForgeRegistryEntry.Impl<Vein> {
      *
      * @return The ore passed in
      */
-    public final Ore getOre() {
+    public final Ore getOre()
+    {
         return ore;
     }
 

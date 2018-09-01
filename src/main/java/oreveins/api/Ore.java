@@ -6,10 +6,11 @@
 
 package oreveins.api;
 
-import com.typesafe.config.Config;
+import java.util.List;
+
 import net.minecraft.block.state.IBlockState;
 
-import java.util.List;
+import com.typesafe.config.Config;
 
 /**
  * This class represents an type of ore vein. One of these is created for each entry in the json file
@@ -28,7 +29,8 @@ import java.util.List;
  * dimensionIsWhitelist: when false, dimension list becomes a blacklist
  * biomesIsWhitelist: when false, biome list becomes a blacklist
  */
-public abstract class Ore {
+public abstract class Ore
+{
 
     public List<IBlockState> stoneStates;
     public String type;
@@ -47,7 +49,8 @@ public abstract class Ore {
     public boolean dimensionIsWhitelist;
     public boolean biomesIsWhitelist;
 
-    public Ore(Config conig) {
+    public Ore(Config config)
+    {
     }
 
 }

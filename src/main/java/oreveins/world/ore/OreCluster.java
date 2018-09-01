@@ -7,18 +7,21 @@
 package oreveins.world.ore;
 
 import com.google.common.collect.LinkedListMultimap;
-import com.typesafe.config.Config;
 import net.minecraft.block.state.IBlockState;
+
+import com.typesafe.config.Config;
 import oreveins.api.Ore;
 import oreveins.api.OreVeinsApi;
 
-public class OreCluster extends Ore {
+public class OreCluster extends Ore
+{
 
     public LinkedListMultimap<IBlockState, Integer> oreStates;
     public int density;
     public int clusters;
 
-    public OreCluster(Config config) throws IllegalArgumentException {
+    public OreCluster(Config config) throws IllegalArgumentException
+    {
         super(config);
         this.density = OreVeinsApi.getValue(config, "density", 50);
         this.oreStates = OreVeinsApi.getWeightedBlockStateList(config, "ore");

@@ -6,30 +6,34 @@
 
 package oreveins.world.vein;
 
-import com.typesafe.config.Config;
-import mcp.MethodsReturnNonnullByDefault;
+import java.util.Random;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
+
+import com.typesafe.config.Config;
+import mcp.MethodsReturnNonnullByDefault;
 import oreveins.api.Ore;
 import oreveins.api.OreVeinsApi;
 import oreveins.api.Vein;
 import oreveins.world.ore.OreCluster;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Random;
-
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class VeinCluster extends Vein {
+public class VeinCluster extends Vein
+{
 
     private Cluster[] spawnPoints;
     private BlockPos startPos;
 
-    public VeinCluster() {
+    public VeinCluster()
+    {
     }
 
     @SuppressWarnings("unused")
-    public VeinCluster(Ore ore, BlockPos pos, Random rand) throws IllegalArgumentException {
+    public VeinCluster(Ore ore, BlockPos pos, Random rand) throws IllegalArgumentException
+    {
         super(ore, pos, rand);
         if (!(ore instanceof OreCluster)) throw new IllegalArgumentException("Incorrect ore type passed in");
         this.startPos = pos;
@@ -37,7 +41,8 @@ public class VeinCluster extends Vein {
         int clusters = (int) (((OreCluster) ore).clusters * (0.5 + rand.nextDouble()));
         spawnPoints = new Cluster[clusters];
         spawnPoints[0] = new Cluster(pos, 0.6 + 0.2 * rand.nextDouble());
-        for (int i = 1; i < clusters; i++) {
+        for (int i = 1; i < clusters; i++)
+        {
             final BlockPos clusterPos = pos.add(
                     ore.horizontalSize * (0.3 - 0.6 * rand.nextDouble()),
                     ore.verticalSize * (0.3 - 0.6 * rand.nextDouble()),
@@ -48,10 +53,18 @@ public class VeinCluster extends Vein {
     }
 
     @Override
-    public double getChanceToGenerate(BlockPos pos) {
+    public boolean inRange(int xPos, int zPos)
+    {
+        return Math.pow(xPos - startPos.getX(), 2) + Math.pow(zPos - startPos.getZ(), 2) <= ore.horizontalSize * ore.horizontalSize;
+    }
+
+    @Override
+    public double getChanceToGenerate(BlockPos pos)
+    {
         double shortestRadius = -1;
 
-        for (Cluster c : spawnPoints) {
+        for (Cluster c : spawnPoints)
+        {
             final double dx = Math.pow(c.pos.getX() - pos.getX(), 2);
             final double dy = Math.pow(c.pos.getY() - pos.getY(), 2);
             final double dz = Math.pow(c.pos.getZ() - pos.getZ(), 2);
@@ -64,25 +77,24 @@ public class VeinCluster extends Vein {
     }
 
     @Override
-    public IBlockState getStateToGenerate(BlockPos pos) {
+    public IBlockState getStateToGenerate(BlockPos pos)
+    {
         return OreVeinsApi.getWeightedOre(((OreCluster) ore).oreStates);
     }
 
     @Override
-    public boolean inRange(int xPos, int zPos) {
-        return Math.pow(xPos - startPos.getX(), 2) + Math.pow(zPos - startPos.getZ(), 2) <= ore.horizontalSize * ore.horizontalSize;
-    }
-
-    @Override
-    public Ore createOre(Config config) {
+    public Ore createOre(Config config)
+    {
         return new OreCluster(config);
     }
 
-    final class Cluster {
+    final class Cluster
+    {
         final BlockPos pos;
         final double size;
 
-        Cluster(BlockPos pos, double size) {
+        Cluster(BlockPos pos, double size)
+        {
             this.pos = pos;
             this.size = size;
         }

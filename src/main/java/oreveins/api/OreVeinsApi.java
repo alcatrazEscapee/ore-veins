@@ -6,20 +6,22 @@
 
 package oreveins.api;
 
+import java.util.Map;
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.google.common.collect.LinkedListMultimap;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigValueType;
 import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Map;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class OreVeinsApi {
+public class OreVeinsApi
+{
 
     /**
      * Gets an int value from an ore config with default value
@@ -29,11 +31,15 @@ public class OreVeinsApi {
      * @param defaultValue If not found, the default value
      * @return the value
      */
-    public static int getValue(Config config, String key, int defaultValue) {
+    public static int getValue(Config config, String key, int defaultValue)
+    {
         int result;
-        try {
+        try
+        {
             result = config.getInt(key);
-        } catch (ConfigException e) {
+        }
+        catch (ConfigException e)
+        {
             result = defaultValue;
         }
         return result;
@@ -46,11 +52,15 @@ public class OreVeinsApi {
      * @param key    the key to check
      * @return the value
      */
-    public static boolean getBoolean(Config config, String key, boolean defaultValue) {
+    public static boolean getBoolean(Config config, String key, boolean defaultValue)
+    {
         boolean result;
-        try {
+        try
+        {
             result = config.getBoolean(key);
-        } catch (ConfigException e) {
+        }
+        catch (ConfigException e)
+        {
             result = defaultValue;
         }
         return result;
@@ -65,18 +75,26 @@ public class OreVeinsApi {
      * @return a linked list of the blockstate(s)
      * @throws IllegalArgumentException if a problem was found trying to find the block states
      */
-    public static LinkedListMultimap<IBlockState, Integer> getWeightedBlockStateList(Config config, String key) throws IllegalArgumentException {
+    public static LinkedListMultimap<IBlockState, Integer> getWeightedBlockStateList(Config config, String key) throws IllegalArgumentException
+    {
         LinkedListMultimap<IBlockState, Integer> states = LinkedListMultimap.create();
 
-        if (config.getValue(key).valueType() == ConfigValueType.LIST) {
+        if (config.getValue(key).valueType() == ConfigValueType.LIST)
+        {
             config.getConfigList(key).forEach(c -> states.put(getBlockState(c), getValue(c, "weight", 1)));
-        } else if (config.getValue(key).valueType() == ConfigValueType.OBJECT) {
+        }
+        else if (config.getValue(key).valueType() == ConfigValueType.OBJECT)
+        {
             states.put(getBlockState(config.getConfig(key)), getValue(config.getConfig(key), "weight", 1));
 
-        } else if (config.getValue(key).valueType() == ConfigValueType.STRING) {
+        }
+        else if (config.getValue(key).valueType() == ConfigValueType.STRING)
+        {
             states.put(getBlockState(config.getString(key)), 1);
 
-        } else {
+        }
+        else
+        {
             throw new IllegalArgumentException("Ore entry is not in the correct format");
         }
         return states;
@@ -89,12 +107,16 @@ public class OreVeinsApi {
      * @return the block state
      * @throws IllegalArgumentException if the block state was not found
      */
-    public static IBlockState getBlockState(String name) throws IllegalArgumentException {
-        try {
+    public static IBlockState getBlockState(String name) throws IllegalArgumentException
+    {
+        try
+        {
             Block block = Block.getBlockFromName(name);
             if (block == null) throw new IllegalArgumentException("Block is null when getting block from String");
             return block.getDefaultState();
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             throw new IllegalArgumentException("Unable to parse IBlockState from String");
         }
     }
@@ -107,14 +129,18 @@ public class OreVeinsApi {
      * @throws IllegalArgumentException if the block state was not found
      */
     @SuppressWarnings("deprecation")
-    public static IBlockState getBlockState(Config config) throws IllegalArgumentException {
-        try {
+    public static IBlockState getBlockState(Config config) throws IllegalArgumentException
+    {
+        try
+        {
             String name = config.getString("block");
             int meta = getValue(config, "meta", -1);
             Block block = Block.getBlockFromName(name);
             if (block == null) throw new IllegalArgumentException("Block is null when getting block from Config");
             return (meta == -1) ? block.getDefaultState() : block.getStateFromMeta(meta);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             throw new IllegalArgumentException("Unable to parse IBlockState from Config");
         }
     }
@@ -125,13 +151,15 @@ public class OreVeinsApi {
      * @param ores the weighted list
      * @return the IBlockState
      */
-    public static IBlockState getWeightedOre(LinkedListMultimap<IBlockState, Integer> ores) {
+    public static IBlockState getWeightedOre(LinkedListMultimap<IBlockState, Integer> ores)
+    {
         double completeWeight = 0.0;
         for (int i : ores.values())
             completeWeight += (double) i;
         double r = Math.random() * completeWeight;
         double countWeight = 0.0;
-        for (Map.Entry<IBlockState, Integer> entry : ores.entries()) {
+        for (Map.Entry<IBlockState, Integer> entry : ores.entries())
+        {
             countWeight += (double) entry.getValue();
             if (countWeight >= r)
                 return entry.getKey();
