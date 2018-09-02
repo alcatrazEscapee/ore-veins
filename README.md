@@ -1,10 +1,10 @@
 # Ore Veins
 
-This is a minecraft mod to add realistically shaped veins of ore to your world. Useful for custom maps, modpacks, or just a different survival experience. Everything is fully configurable via json, meaning you can have ore veins of whatever type of shape or size you want.
+This is a minecraft mod to add realistically shaped veins of ore to your world. Useful for custom maps, mod packs, or just a different survival experience. Everything is fully configurable via json, meaning you can have ore veins of whatever type of shape or size you want.
 
 ## Configuration:
 
-Ore Veins will look for all files under config/oreveins/. When you first add ore veins, it will create a default file with some example configuration. Feel free to use or modify this. It is also found here on github at src/main/resources/assets/ore_veins.json.
+Ore Veins will look for all files under config/oreveins/. When you first add ore veins, it will create a default file with some example configuration. Feel free to use or modify this. It is also found here on github at [src/main/resources/assets/ore_veins.json](https://github.com/alcatrazEscapee/ore-veins/blob/master/src/main/resources/assets/ore_veins.json).
 
 Each json file in config/oreveins/ should consist of a set of objects, each one being a different type of vein. These represent a single ore type or configuration that will be generated in the world. Each entry must contain the following values:
 
@@ -23,7 +23,7 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `horizontal_size` (Default: 8) Horizontal radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
 * `biomes` (Default: all) Whitelist of biome names or temperatures for a biome to spawn in. Must be a list of strings.
 * `biomes_is_whitelist` (Default: true) When false, the biome list becomes a blacklist
-* `dimensions` (Default: 0) Whitelist of dimension ids that the ore can spawn in. Must be a list of intergers.
+* `dimensions` (Default: 0) Whitelist of dimension ids that the ore can spawn in. Must be a list of integers.
 * `dimensions_is_whitelist` (Default: true) When false, the dimension list becomes a blacklist
 
 ### Veins
@@ -31,26 +31,26 @@ Each entry can also contain any or all of the following values. If they don't ex
 Veins represent different types of shapes or structures that can be spawned. Each entry must define a vein type.
 
 *Spheres*: (`"type": "sphere"`)
-This represents a single sphere (or sphereoid, if vertical and horizontal size values are different). This vein type has no additional paramaters.
+This represents a single sphere (or spheroid, if vertical and horizontal size values are different). This vein type has no additional parameters.
 
 *Clusters* (`"type": "cluster"`)
-This vein represents a scattered group of spheriods.  This vein type has an optional paramater:
+This vein represents a scattered group of spheroids.  This vein type has an optional parameter:
 * `clusters` (Default: 3) This represents the average number of other clusters that will spawn as part of this vein.
 
 *Vertical Pipe* (`"type": "pipe"`)
-This vein represents a single vertical column / cylinder. This vein type has no additional paramaters.
+This vein represents a single vertical column / cylinder. This vein type has no additional parameters.
 
 *Cone* (`"type": "cone"`)
-This vein represents a vertical cone. The pointy end of the cone can point upwards or downwards. This vein type has two optional paramaters:
+This vein represents a vertical cone. The pointy end of the cone can point upwards or downwards. This vein type has two optional parameters:
 * `inverted` (Default: false) If true, the cone will have a pointy end facing down. If false, the pointy end will face up
-* `shape` (Default: 0.5) This value determines how pointy the cone will be. It should be between 0.0 and 1.0. Higher values mean less pointy (more cylinderical). Smaller values are more pointy
+* `shape` (Default: 0.5) This value determines how pointy the cone will be. It should be between 0.0 and 1.0. Higher values mean less pointy (more cylindrical). Smaller values are more pointy
 
 ### Block Entries
 A Block Entry can be any of the following:
 
 1. A single string representing a block's registry name: `"ore": "minecraft:iron_ore"`
 2. A single object representing a block with metadata: `"ore": { "block": "minecraft:wool", "meta": 3 }`
-3. A list of objects (as above). Note that these can be weighted (when used in `ore`) but are not nessecary. If weight is not found for a particular object, it will default to 1.
+3. A list of objects (as above). Note that these can be weighed (when used in `ore`) but are not necessary. If weight is not found for a particular object, it will default to 1.
 ```
 "ore": [
    {
