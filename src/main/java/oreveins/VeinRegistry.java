@@ -1,33 +1,180 @@
 package oreveins;
 
-import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.function.Function;
 
+import com.google.common.base.Strings;
+import org.apache.commons.io.FileUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 
-import oreveins.api.Vein;
+import com.typesafe.config.*;
+import oreveins.vein.VeinType;
+import oreveins.vein.VeinTypeCluster;
+import oreveins.vein.VeinTypeSphere;
+import oreveins.world.WorldGenVeins;
+
+import static oreveins.OreVeins.MOD_ID;
 
 public class VeinRegistry
 {
+    private static IForgeRegistry<VeinType> registry;
+    private static File worldGenFolder;
 
-    private static IForgeRegistry<Vein> registry;
-
-    public static void init()
+    public static Collection<VeinType> getVeins()
     {
-        registry = new RegistryBuilder<Vein>()
-                .setType(Vein.class)
-                .setName(new ResourceLocation(OreVeins.MODID, "veins"))
-                .create();
+        return registry.getValuesCollection();
     }
 
-    @Nullable
-    public static Vein get(String key)
+    static void preInit(File modConfigDir)
     {
-        if (!registry.containsKey(new ResourceLocation(key)))
+
+        OreVeins.getLog().info("Loading or creating ore generation config file");
+
+        worldGenFolder = new File(modConfigDir, MOD_ID);
+
+        if (!worldGenFolder.exists() && !worldGenFolder.mkdir())
+            throw new Error("Problem creating Ore Veins config directory.");
+
+        File defaultFile = new File(worldGenFolder, "ore_veins.json");
+        String defaultData = null;
+        if (defaultFile.exists())
         {
-            return null;
+            try
+            {
+                defaultData = FileUtils.readFileToString(defaultFile, Charset.defaultCharset());
+            }
+            catch (IOException e)
+            {
+                throw new Error("Error reading default file.", e);
+            }
         }
-        return registry.getValue(new ResourceLocation(key));
+        if (Strings.isNullOrEmpty(defaultData))
+        {
+            try
+            {
+                FileUtils.copyInputStreamToFile(WorldGenVeins.class.getResourceAsStream("/assets/ore_veins.json"), defaultFile);
+            }
+            catch (IOException e)
+            {
+                throw new Error("Error copying data into default world gen file", e);
+            }
+        }
+    }
+
+    static void createRegistry()
+    {
+        registry = new RegistryBuilder<VeinType>().setType(VeinType.class).setName(new ResourceLocation(OreVeins.MOD_ID, "veins")).create();
+    }
+
+    static void registerAll(IForgeRegistry<VeinType> r)
+    {
+        List<Config> entries = getAllOreEntries();
+
+        // Parse all config entries
+        int maxRadius = 1;
+        for (Config data : entries)
+        {
+            for (Map.Entry<String, ConfigValue> entry : data.root().entrySet())
+            {
+                try
+                {
+                    if (entry.getValue().valueType() == ConfigValueType.OBJECT)
+                    {
+                        Config cfg = data.getConfig(entry.getKey());
+                        Type type = getVeinSuperType(cfg);
+                        VeinType vein = type.supplier.apply(cfg); // This can throw an IllegalArgumentException, if the config was invalid for some reason
+                        r.register(vein.setRegistryName(entry.getKey()));
+                        if (vein.horizontalSize >> 4 > maxRadius) maxRadius = vein.horizontalSize >> 4;
+                        OreVeins.getLog().debug("Vein '" + entry.getKey() + "' parsed sucessfully and is now registered.");
+                    }
+                }
+                catch (Throwable e)
+                {
+                    OreVeins.getLog().warn("Generation entry '" + entry.getKey() + "' failed to parse correctly, skipping. Check that the json is valid.", e);
+                }
+            }
+        }
+        WorldGenVeins.resetSearchRadius(1 + maxRadius);
+    }
+
+    private static List<Config> getAllOreEntries()
+    {
+        File[] worldGenFiles = worldGenFolder.listFiles((file, name) -> name != null && name.toLowerCase(Locale.US).endsWith(".json"));
+        if (worldGenFiles == null) throw new Error("There are no valid files in the world gen directory");
+        List<Config> configEntries = new ArrayList<>();
+        String worldGenData;
+        Config config;
+        for (File worldGenFile : worldGenFiles)
+        {
+            worldGenData = null;
+            if (worldGenFile.exists())
+            {
+                try
+                {
+                    worldGenData = FileUtils.readFileToString(worldGenFile, Charset.defaultCharset());
+                }
+                catch (IOException e)
+                {
+                    throw new Error("Error reading world gen file.", e);
+                }
+            }
+
+            if (Strings.isNullOrEmpty(worldGenData))
+            {
+                OreVeins.getLog().warn("There is no data in a world gen file.");
+                continue;
+            }
+
+            try
+            {
+                config = ConfigFactory.parseString(worldGenData);
+                configEntries.add(config);
+            }
+            catch (Throwable e)
+            {
+                throw new Error("Cannot Parse world gen file.", e);
+            }
+        }
+
+        if (configEntries.isEmpty()) throw new Error("There are no valid config entries!");
+        return configEntries;
+    }
+
+    private static Type getVeinSuperType(Config config)
+    {
+        try
+        {
+            String s = config.getString("type");
+            return Type.valueOf(s.toUpperCase());
+        }
+        catch (ConfigException e)
+        {
+            OreVeins.getLog().warn("Vein does not have a type!!! This is bad: falling back to sphere type.");
+            return Type.SPHERE;
+        }
+        catch (IllegalArgumentException e)
+        {
+            OreVeins.getLog().warn("Vein type is not valid!!! This is bad. Falling back to sphere type.");
+            return Type.SPHERE;
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private enum Type
+    {
+        SPHERE(VeinTypeSphere::new),
+        CLUSTERS(VeinTypeCluster::new);
+
+        private Function<Config, VeinType> supplier;
+
+        Type(Function<Config, VeinType> supplier)
+        {
+            this.supplier = supplier;
+        }
     }
 }

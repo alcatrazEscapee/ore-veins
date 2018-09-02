@@ -4,9 +4,11 @@
  See the project LICENSE.md for more information.
  */
 
-package oreveins.api;
+package oreveins;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.common.collect.LinkedListMultimap;
@@ -20,7 +22,7 @@ import mcp.MethodsReturnNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class OreVeinsApi
+public class ConfigHelper
 {
 
     /**
@@ -64,6 +66,31 @@ public class OreVeinsApi
             result = defaultValue;
         }
         return result;
+    }
+
+    public static List<IBlockState> getBlockStateList(Config config, String key) throws IllegalArgumentException
+    {
+        List<IBlockState> states = new ArrayList<>();
+
+        if (config.getValue(key).valueType() == ConfigValueType.LIST)
+        {
+            config.getConfigList(key).forEach(c -> states.add(ConfigHelper.getBlockState(c)));
+        }
+        else if (config.getValue(key).valueType() == ConfigValueType.OBJECT)
+        {
+            states.add(ConfigHelper.getBlockState(config.getConfig(key)));
+
+        }
+        else if (config.getValue(key).valueType() == ConfigValueType.STRING)
+        {
+            states.add(ConfigHelper.getBlockState(config.getString(key)));
+
+        }
+        else
+        {
+            throw new IllegalArgumentException("Entry '" + key + "' is not in the correct format");
+        }
+        return states;
     }
 
     /**
@@ -145,25 +172,31 @@ public class OreVeinsApi
         }
     }
 
-    /**
-     * Gets a random IBlockState from a weighted list
-     *
-     * @param ores the weighted list
-     * @return the IBlockState
-     */
-    public static IBlockState getWeightedOre(LinkedListMultimap<IBlockState, Integer> ores)
+    @Nullable
+    public static List<String> getStringList(Config config, String key)
     {
-        double completeWeight = 0.0;
-        for (int i : ores.values())
-            completeWeight += (double) i;
-        double r = Math.random() * completeWeight;
-        double countWeight = 0.0;
-        for (Map.Entry<IBlockState, Integer> entry : ores.entries())
+        try
         {
-            countWeight += (double) entry.getValue();
-            if (countWeight >= r)
-                return entry.getKey();
+            List<String> biomes = config.getStringList(key);
+            return biomes.isEmpty() ? null : biomes;
         }
-        throw new RuntimeException("Problem choosing IBlockState from weighted list");
+        catch (ConfigException e)
+        {
+            return null;
+        }
+    }
+
+    @Nullable
+    public static List<Integer> getIntList(Config config, String key)
+    {
+        try
+        {
+            List<Integer> dims = config.getIntList(key);
+            return dims.isEmpty() ? null : dims;
+        }
+        catch (ConfigException e)
+        {
+            return null;
+        }
     }
 }

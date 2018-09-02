@@ -10,9 +10,8 @@ import net.minecraftforge.event.terraingen.OreGenEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import oreveins.GenConfig;
-
-import static oreveins.OreVeins.log;
+import oreveins.OreVeins;
+import oreveins.OreVeinsConfig;
 
 public class WorldGenReplacer
 {
@@ -22,14 +21,14 @@ public class WorldGenReplacer
     {
         if (event.getWorld().provider.getDimension() == 0)
         {
-            if (GenConfig.NO_ORES || isBlockedType(event.getType()))
+            if (OreVeinsConfig.NO_ORES || isBlockedType(event.getType()))
                 event.setResult(Event.Result.DENY);
         }
     }
 
     private boolean isBlockedType(OreGenEvent.GenerateMinable.EventType type)
     {
-        for (String s : GenConfig.STOPPED_ORES)
+        for (String s : OreVeinsConfig.STOPPED_ORES)
         {
             try
             {
@@ -37,7 +36,7 @@ public class WorldGenReplacer
             }
             catch (IllegalArgumentException e)
             {
-                log.warn("Illegal type is specified in Ore Veins Config at STOPPED_ORES. Spelling error?");
+                OreVeins.getLog().warn("Illegal type is specified in Ore Veins Config at STOPPED_ORES. Spelling error?");
                 // Just skip this
             }
         }
