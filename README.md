@@ -8,9 +8,9 @@ Ore Veins will look for all files under config/oreveins/. When you first add ore
 
 Each json file in config/oreveins/ should consist of a set of objects, each one being a different type of vein. These represent a single ore type or configuration that will be generated in the world. Each entry must contain the following values:
 
-* `type` is the registry name of the [Vein Type](#Veins) that this entry will spawn. Based on what vein this is, there might be other required or optional values as well.
-* `stone` is a [Block entry](#Block-Entries). This represents the blockstates that the ore can spawn in.
-* `ore` is a [Block entry](#Block-Entries), with optional weights. This represents the possible states that the vein will spawn.
+* `type` is the registry name of the [Vein Type](#veins) that this entry will spawn. Based on what vein this is, there might be other required or optional values as well.
+* `stone` is a [Block entry](#block-entries). This represents the blockstates that the ore can spawn in.
+* `ore` is a [Block entry](#block-entries), with optional weights. This represents the possible states that the vein will spawn.
 
 Each entry can also contain any or all of the following values. If they don't exist, they will assume a default value. These apply to all vein types:
 
