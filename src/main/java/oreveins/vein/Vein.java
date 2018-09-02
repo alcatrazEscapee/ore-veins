@@ -1,9 +1,12 @@
 package oreveins.vein;
 
 import java.util.Random;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.util.math.BlockPos;
 
+@ParametersAreNonnullByDefault
 public class Vein
 {
     private final VeinType type;
@@ -17,6 +20,7 @@ public class Vein
         this.size = 0.7f + random.nextFloat() * 0.3f;
     }
 
+    @Nonnull
     public VeinType getType()
     {
         return type;
@@ -32,6 +36,7 @@ public class Vein
         return type.getChanceToGenerate(this, pos);
     }
 
+    @Nonnull
     BlockPos getPos()
     {
         return pos;

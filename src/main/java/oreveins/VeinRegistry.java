@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.Function;
+import javax.annotation.Nonnull;
 
 import com.google.common.base.Strings;
 import org.apache.commons.io.FileUtils;
@@ -88,6 +89,8 @@ public class VeinRegistry
                         Config cfg = data.getConfig(entry.getKey());
                         Type type = getVeinSuperType(cfg);
                         VeinType vein = type.supplier.apply(cfg); // This can throw an IllegalArgumentException, if the config was invalid for some reason
+                        if (vein == null)
+                            throw new IllegalArgumentException("Vein is null after initalization: this is probably a coding error.");
                         r.register(vein.setRegistryName(entry.getKey()));
                         if (vein.horizontalSize >> 4 > maxRadius) maxRadius = vein.horizontalSize >> 4;
                         OreVeins.getLog().debug("Vein '" + entry.getKey() + "' parsed sucessfully and is now registered.");
@@ -168,11 +171,14 @@ public class VeinRegistry
     private enum Type
     {
         SPHERE(VeinTypeSphere::new),
-        CLUSTERS(VeinTypeCluster::new);
+        CLUSTER(VeinTypeCluster::new),
+        STRATA(x -> null), // todo: implement
+        PLANAR(x -> null), // todo: implement
+        PIPE(x -> null); // todo: implement
 
         private Function<Config, VeinType> supplier;
 
-        Type(Function<Config, VeinType> supplier)
+        Type(@Nonnull Function<Config, VeinType> supplier)
         {
             this.supplier = supplier;
         }

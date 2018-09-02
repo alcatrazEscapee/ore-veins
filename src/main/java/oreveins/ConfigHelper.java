@@ -18,9 +18,7 @@ import net.minecraft.block.state.IBlockState;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigValueType;
-import mcp.MethodsReturnNonnullByDefault;
 
-@MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public class ConfigHelper
 {
@@ -68,22 +66,30 @@ public class ConfigHelper
         return result;
     }
 
+    /**
+     * Gets a list of blockstates
+     *
+     * @param config The config object
+     * @param key    The key
+     * @return A list of blockstates
+     * @throws IllegalArgumentException if the config object is not in the correct format (either string, string list, or object list)
+     */
     public static List<IBlockState> getBlockStateList(Config config, String key) throws IllegalArgumentException
     {
         List<IBlockState> states = new ArrayList<>();
 
         if (config.getValue(key).valueType() == ConfigValueType.LIST)
         {
-            config.getConfigList(key).forEach(c -> states.add(ConfigHelper.getBlockState(c)));
+            config.getConfigList(key).forEach(c -> states.add(getBlockState(c)));
         }
         else if (config.getValue(key).valueType() == ConfigValueType.OBJECT)
         {
-            states.add(ConfigHelper.getBlockState(config.getConfig(key)));
+            states.add(getBlockState(config.getConfig(key)));
 
         }
         else if (config.getValue(key).valueType() == ConfigValueType.STRING)
         {
-            states.add(ConfigHelper.getBlockState(config.getString(key)));
+            states.add(getBlockState(config.getString(key)));
 
         }
         else
@@ -106,23 +112,29 @@ public class ConfigHelper
     {
         LinkedListMultimap<IBlockState, Integer> states = LinkedListMultimap.create();
 
-        if (config.getValue(key).valueType() == ConfigValueType.LIST)
+        try
         {
-            config.getConfigList(key).forEach(c -> states.put(getBlockState(c), getValue(c, "weight", 1)));
-        }
-        else if (config.getValue(key).valueType() == ConfigValueType.OBJECT)
-        {
-            states.put(getBlockState(config.getConfig(key)), getValue(config.getConfig(key), "weight", 1));
+            if (config.getValue(key).valueType() == ConfigValueType.LIST)
+            {
+                config.getConfigList(key).forEach(c -> states.put(getBlockState(c), getValue(c, "weight", 1)));
+            }
+            else if (config.getValue(key).valueType() == ConfigValueType.OBJECT)
+            {
+                states.put(getBlockState(config.getConfig(key)), getValue(config.getConfig(key), "weight", 1));
 
+            }
+            else if (config.getValue(key).valueType() == ConfigValueType.STRING)
+            {
+                states.put(getBlockState(config.getString(key)), 1);
+            }
+            else
+            {
+                throw new IllegalArgumentException("Weighted list entry is not of type LIST, OBJECT or STRING");
+            }
         }
-        else if (config.getValue(key).valueType() == ConfigValueType.STRING)
+        catch (ConfigException e)
         {
-            states.put(getBlockState(config.getString(key)), 1);
-
-        }
-        else
-        {
-            throw new IllegalArgumentException("Ore entry is not in the correct format");
+            throw new IllegalArgumentException("Weighted list entry is not found!");
         }
         return states;
     }
@@ -172,6 +184,12 @@ public class ConfigHelper
         }
     }
 
+    /**
+     * Gets a string list from a config object
+     * @param config The config object
+     * @param key the key to search
+     * @return The string list, or null if not found / empty
+     */
     @Nullable
     public static List<String> getStringList(Config config, String key)
     {
@@ -186,6 +204,12 @@ public class ConfigHelper
         }
     }
 
+    /**
+     * Gets an int list from a config object
+     * @param config The config object
+     * @param key The key
+     * @return The int list, or null if not found / empty
+     */
     @Nullable
     public static List<Integer> getIntList(Config config, String key)
     {

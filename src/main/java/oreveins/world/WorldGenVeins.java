@@ -92,20 +92,16 @@ public class WorldGenVeins implements IWorldGenerator
         {
             for (int z = -CHUNK_RADIUS; z <= CHUNK_RADIUS; z++)
             {
-                List<Vein> vein = getVeinsAtChunk(chunkX + x, chunkZ + z, worldSeed);
-                if (!vein.isEmpty()) veins.addAll(vein);
+                getVeinsAtChunk(veins, chunkX + x, chunkZ + z, worldSeed);
             }
         }
         return veins;
     }
 
     // Gets veins at a single chunk. Deterministic for a specific chunk x/z and world seed
-    @Nonnull
-    private List<Vein> getVeinsAtChunk(int chunkX, int chunkZ, Long worldSeed)
+    private void getVeinsAtChunk(List<Vein> veins, int chunkX, int chunkZ, long worldSeed)
     {
         Random rand = new Random(worldSeed + chunkX * 341873128712L + chunkZ * 132897987541L);
-        List<Vein> veins = new ArrayList<>();
-
         for (VeinType type : VeinRegistry.getVeins())
         {
             for (int i = 0; i < type.count; i++)
@@ -121,7 +117,6 @@ public class WorldGenVeins implements IWorldGenerator
                 }
             }
         }
-        return veins;
     }
 
     private boolean doesMatchBiome(@Nullable List<String> biomes, Biome biome, boolean isWhitelist)

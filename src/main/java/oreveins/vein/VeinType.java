@@ -24,12 +24,16 @@ public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType>
     public final int horizontalSize;
     public final int verticalSize;
     public final int density;
+
     public final List<String> biomes;
     public final List<Integer> dims;
+
     public final boolean dimensionIsWhitelist;
     public final boolean biomesIsWhitelist;
+
     protected final int horizontalSizeSquared;
     protected final int totalWeight;
+
     private final List<IBlockState> stoneStates;
     private final LinkedListMultimap<IBlockState, Integer> oreStates;
 

@@ -1,11 +1,11 @@
 {
   "iron_ore_example": {
-    "type": "oreveins:cluster",
+    "type": "cluster",
     "ore": "minecraft:iron_ore",
     "stone": "minecraft:stone"
   },
   "gold_ore_example": {
-    "type": "oreveins:sphere",
+    "type": "sphere",
     "ore": "minecraft:gold_ore",
     "stone": "minecraft:stone",
     "rarity": 40,
@@ -16,7 +16,7 @@
     "horizontal_size": 10
   },
   "coal_ore_example": {
-    "type": "oreveins:cluster",
+    "type": "cluster",
     "ore": [
       {
         "block": "minecraft:coal_ore",
@@ -36,7 +36,7 @@
     "horizontal_size": 30
   },
   "redstone_ore_example": {
-    "type": "oreveins:cluster",
+    "type": "cluster",
     "ore": "minecraft:redstone_ore",
     "stone": "minecraft:stone",
     "clusters": 8,
@@ -48,7 +48,7 @@
     "horizontal_size": 20
   },
   "emerald_ore_example": {
-    "type": "oreveins:cluster",
+    "type": "cluster",
     "ore": "minecraft:emerald_ore",
     "stone": "minecraft:stone",
     "rarity": 15,
