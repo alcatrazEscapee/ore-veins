@@ -1,3 +1,9 @@
+/*
+ *  Part of the Ore Veins Mod by alcatrazEscapee
+ *  Work under Copyright. Licensed under the GPL-3.0.
+ *  See the project LICENSE.md for more information.
+ */
+
 package oreveins.vein;
 
 import java.util.List;
@@ -12,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import com.typesafe.config.Config;
-import oreveins.ConfigHelper;
+import oreveins.util.ConfigHelper;
 
 @ParametersAreNonnullByDefault
 public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType>

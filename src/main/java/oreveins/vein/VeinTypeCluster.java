@@ -1,7 +1,7 @@
 /*
- Part of the Ore Veins Mod by alcatrazEscapee
- Work under Copyright. Licensed under the GPL-3.0.
- See the project LICENSE.md for more information.
+ *  Part of the Ore Veins Mod by alcatrazEscapee
+ *  Work under Copyright. Licensed under the GPL-3.0.
+ *  See the project LICENSE.md for more information.
  */
 
 package oreveins.vein;
@@ -13,12 +13,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.util.math.BlockPos;
 
 import com.typesafe.config.Config;
-import oreveins.ConfigHelper;
+import oreveins.util.ConfigHelper;
 
 @ParametersAreNonnullByDefault
 public class VeinTypeCluster extends VeinType
 {
-
     private final int clusters;
 
     public VeinTypeCluster(Config config)
@@ -44,12 +43,12 @@ public class VeinTypeCluster extends VeinType
             final double dy = Math.pow(c.pos.getY() - pos.getY(), 2);
             final double dz = Math.pow(c.pos.getZ() - pos.getZ(), 2);
 
-            final float radius = (float) ((dx + dz) / (vein.getType().horizontalSizeSquared * vein.getSize() * c.size) +
-                    dy / (vein.getType().verticalSize * vein.getType().verticalSize * vein.getSize() * c.size));
+            final float radius = (float) ((dx + dz) / (this.horizontalSizeSquared * vein.getSize() * c.size) +
+                    dy / (this.verticalSize * this.verticalSize * vein.getSize() * c.size));
 
             if (shortestRadius == -1 || radius < shortestRadius) shortestRadius = radius;
         }
-        return 0.005f * vein.getType().density * (1.0f - shortestRadius);
+        return 0.005f * this.density * (1.0f - shortestRadius);
     }
 
     private static class VeinCluster extends Vein

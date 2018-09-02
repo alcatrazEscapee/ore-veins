@@ -1,3 +1,9 @@
+/*
+ *  Part of the Ore Veins Mod by alcatrazEscapee
+ *  Work under Copyright. Licensed under the GPL-3.0.
+ *  See the project LICENSE.md for more information.
+ */
+
 package oreveins.vein;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -22,10 +28,10 @@ public class VeinTypeSphere extends VeinType
         final double dy = Math.pow(vein.getPos().getY() - pos.getY(), 2);
         final double dz = Math.pow(vein.getPos().getZ() - pos.getZ(), 2);
 
-        final float radius = (float) ((dx + dz) / (vein.getType().horizontalSizeSquared * vein.getSize()) +
-                dy / (vein.getType().verticalSize * vein.getType().verticalSize * vein.getSize()));
+        final float radius = (float) ((dx + dz) / (this.horizontalSizeSquared * vein.getSize()) +
+                dy / (this.verticalSize * this.verticalSize * vein.getSize()));
 
-        return 0.005f * vein.getType().density * (1.0f - radius);
+        return 0.005f * this.density * (1.0f - radius);
     }
 
 }

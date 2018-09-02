@@ -1,3 +1,9 @@
+/*
+ *  Part of the Ore Veins Mod by alcatrazEscapee
+ *  Work under Copyright. Licensed under the GPL-3.0.
+ *  See the project LICENSE.md for more information.
+ */
+
 package oreveins;
 
 import java.io.File;
@@ -14,9 +20,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 
 import com.typesafe.config.*;
-import oreveins.vein.VeinType;
-import oreveins.vein.VeinTypeCluster;
-import oreveins.vein.VeinTypeSphere;
+import oreveins.vein.*;
 import oreveins.world.WorldGenVeins;
 
 import static oreveins.OreVeins.MOD_ID;
@@ -90,10 +94,10 @@ public class VeinRegistry
                         Type type = getVeinSuperType(cfg);
                         VeinType vein = type.supplier.apply(cfg); // This can throw an IllegalArgumentException, if the config was invalid for some reason
                         if (vein == null)
-                            throw new IllegalArgumentException("Vein is null after initalization: this is probably a coding error.");
+                            throw new IllegalArgumentException("Vein is null after initialization: this is probably a coding error.");
                         r.register(vein.setRegistryName(entry.getKey()));
                         if (vein.horizontalSize >> 4 > maxRadius) maxRadius = vein.horizontalSize >> 4;
-                        OreVeins.getLog().debug("Vein '" + entry.getKey() + "' parsed sucessfully and is now registered.");
+                        OreVeins.getLog().debug("Vein '" + entry.getKey() + "' parsed successfully and is now registered.");
                     }
                 }
                 catch (Throwable e)
@@ -157,12 +161,12 @@ public class VeinRegistry
         }
         catch (ConfigException e)
         {
-            OreVeins.getLog().warn("Vein does not have a type!!! This is bad: falling back to sphere type.");
+            OreVeins.getLog().warn("Vein does not have a type entry!!! This is bad. Falling back to sphere type.");
             return Type.SPHERE;
         }
         catch (IllegalArgumentException e)
         {
-            OreVeins.getLog().warn("Vein type is not valid!!! This is bad. Falling back to sphere type.");
+            OreVeins.getLog().warn("Vein type is not a valid type!!! This is bad. Falling back to sphere type.");
             return Type.SPHERE;
         }
     }
@@ -172,9 +176,8 @@ public class VeinRegistry
     {
         SPHERE(VeinTypeSphere::new),
         CLUSTER(VeinTypeCluster::new),
-        STRATA(x -> null), // todo: implement
-        PLANAR(x -> null), // todo: implement
-        PIPE(x -> null); // todo: implement
+        CONE(VeinTypeCone::new),
+        PIPE(VeinTypePipe::new);
 
         private Function<Config, VeinType> supplier;
 

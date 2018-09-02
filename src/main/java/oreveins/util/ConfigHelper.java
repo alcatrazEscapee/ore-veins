@@ -1,13 +1,14 @@
 /*
- Part of the Ore Veins Mod by alcatrazEscapee
- Work under Copyright. Licensed under the GPL-3.0.
- See the project LICENSE.md for more information.
+ *  Part of the Ore Veins Mod by alcatrazEscapee
+ *  Work under Copyright. Licensed under the GPL-3.0.
+ *  See the project LICENSE.md for more information.
  */
 
-package oreveins;
+package oreveins.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -46,6 +47,28 @@ public class ConfigHelper
     }
 
     /**
+     * Gets a float value from an ore config with default value
+     *
+     * @param config       The ore config object
+     * @param key          The key to check
+     * @param defaultValue If not found, the default value
+     * @return the value
+     */
+    public static float getValue(Config config, String key, float defaultValue)
+    {
+        float result;
+        try
+        {
+            result = (float) config.getDouble(key);
+        }
+        catch (ConfigException e)
+        {
+            result = defaultValue;
+        }
+        return result;
+    }
+
+    /**
      * Gets a boolean value from a ore config with default value
      *
      * @param config the ore config object
@@ -74,6 +97,7 @@ public class ConfigHelper
      * @return A list of blockstates
      * @throws IllegalArgumentException if the config object is not in the correct format (either string, string list, or object list)
      */
+    @Nonnull
     public static List<IBlockState> getBlockStateList(Config config, String key) throws IllegalArgumentException
     {
         List<IBlockState> states = new ArrayList<>();
@@ -108,6 +132,7 @@ public class ConfigHelper
      * @return a linked list of the blockstate(s)
      * @throws IllegalArgumentException if a problem was found trying to find the block states
      */
+    @Nonnull
     public static LinkedListMultimap<IBlockState, Integer> getWeightedBlockStateList(Config config, String key) throws IllegalArgumentException
     {
         LinkedListMultimap<IBlockState, Integer> states = LinkedListMultimap.create();
@@ -146,6 +171,7 @@ public class ConfigHelper
      * @return the block state
      * @throws IllegalArgumentException if the block state was not found
      */
+    @Nonnull
     public static IBlockState getBlockState(String name) throws IllegalArgumentException
     {
         try
@@ -167,7 +193,7 @@ public class ConfigHelper
      * @return the block state
      * @throws IllegalArgumentException if the block state was not found
      */
-    @SuppressWarnings("deprecation")
+    @Nonnull
     public static IBlockState getBlockState(Config config) throws IllegalArgumentException
     {
         try
@@ -176,6 +202,7 @@ public class ConfigHelper
             int meta = getValue(config, "meta", -1);
             Block block = Block.getBlockFromName(name);
             if (block == null) throw new IllegalArgumentException("Block is null when getting block from Config");
+            //noinspection deprecation
             return (meta == -1) ? block.getDefaultState() : block.getStateFromMeta(meta);
         }
         catch (Exception e)
