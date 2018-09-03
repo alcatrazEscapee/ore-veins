@@ -9,7 +9,10 @@ package oreveins;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 
@@ -30,9 +33,9 @@ public class VeinRegistry
     private static IForgeRegistry<VeinType> registry;
     private static File worldGenFolder;
 
-    public static Collection<VeinType> getVeins()
+    public static IForgeRegistry<VeinType> getVeins()
     {
-        return registry.getValuesCollection();
+        return registry;
     }
 
     static void preInit(File modConfigDir)

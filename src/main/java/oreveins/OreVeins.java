@@ -14,24 +14,23 @@ import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import oreveins.cmd.CommandClearWorld;
+import oreveins.cmd.CommandFindVeins;
+import oreveins.cmd.CommandVeinInfo;
 import oreveins.vein.VeinType;
 import oreveins.world.WorldGenReplacer;
 import oreveins.world.WorldGenVeins;
 
-@Mod(modid = OreVeins.MOD_ID, version = OreVeins.VERSION, dependencies = OreVeins.DEPENDENCIES)
+@Mod(modid = OreVeins.MOD_ID, version = "GRADLE:VERSION", dependencies = "required-after:forge@[GRADLE:FORGE_VERSION,15.0.0.0);")
 public class OreVeins
 {
-
-    private static final String FORGE_VERSION = "GRADLE:FORGE_VERSION";
-    private static final String FORGE_VERSION_MAX = "15.0.0.0";
-
-    static final String MOD_ID = "oreveins";
-    static final String VERSION = "GRADLE:VERSION";
-    static final String DEPENDENCIES = "required-after:forge@[" + FORGE_VERSION + "," + FORGE_VERSION_MAX + ");";
+    public static final String MOD_ID = "oreveins";
 
     private static Logger log;
 
@@ -65,6 +64,23 @@ public class OreVeins
 
         GameRegistry.registerWorldGenerator(new WorldGenVeins(), 1);
         MinecraftForge.ORE_GEN_BUS.register(new WorldGenReplacer());
+    }
+
+    @Mod.EventHandler
+    public void postInit(FMLPostInitializationEvent event)
+    {
+        CommandClearWorld.resetVeinStates();
+    }
+
+    @Mod.EventHandler
+    public void serverStart(FMLServerStartingEvent event)
+    {
+        if (OreVeinsConfig.DEBUG_COMMANDS)
+        {
+            event.registerServerCommand(new CommandClearWorld());
+            event.registerServerCommand(new CommandVeinInfo());
+            event.registerServerCommand(new CommandFindVeins());
+        }
     }
 
     @SubscribeEvent

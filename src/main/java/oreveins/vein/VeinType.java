@@ -9,6 +9,7 @@ package oreveins.vein;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -112,4 +113,17 @@ public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType>
      * @return the chance to generate: 1.0 = 100%, 0.0 = 0% chance
      */
     abstract float getChanceToGenerate(Vein vein, BlockPos pos);
+
+    public Set<IBlockState> getOreStates()
+    {
+        return oreStates.keySet();
+    }
+
+    @Override
+    public String toString()
+    {
+        //noinspection ConstantConditions
+        return String.format("'%s':  rarity: %d, count: %d, y-range: %d - %d, size: %d / %d, density: %d",
+                getRegistryName().getResourcePath(), rarity, count, minY, maxY, horizontalSize, verticalSize, density);
+    }
 }

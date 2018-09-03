@@ -52,4 +52,12 @@ public class Vein
     {
         return size;
     }
+
+    @Override
+    public String toString()
+    {
+        //noinspection ConstantConditions
+        return String.format("type: %s: pos: (%d, %d, %d), size: %.2f",
+                type.getRegistryName().getResourcePath(), pos.getX(), pos.getY(), pos.getZ(), size);
+    }
 }
