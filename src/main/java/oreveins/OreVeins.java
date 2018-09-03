@@ -23,6 +23,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import oreveins.cmd.CommandClearWorld;
 import oreveins.cmd.CommandFindVeins;
 import oreveins.cmd.CommandVeinInfo;
+import oreveins.util.OreVeinsConfig;
+import oreveins.vein.VeinRegistry;
 import oreveins.vein.VeinType;
 import oreveins.world.WorldGenReplacer;
 import oreveins.world.WorldGenVeins;

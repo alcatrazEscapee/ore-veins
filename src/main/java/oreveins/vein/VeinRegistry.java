@@ -4,7 +4,13 @@
  *  See the project LICENSE.md for more information.
  */
 
-package oreveins;
+/*
+ *  Part of the Ore Veins Mod by alcatrazEscapee
+ *  Work under Copyright. Licensed under the GPL-3.0.
+ *  See the project LICENSE.md for more information.
+ */
+
+package oreveins.vein;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +29,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 
 import com.typesafe.config.*;
-import oreveins.vein.*;
+import oreveins.OreVeins;
 import oreveins.world.WorldGenVeins;
 
 import static oreveins.OreVeins.MOD_ID;
@@ -38,7 +44,7 @@ public class VeinRegistry
         return registry;
     }
 
-    static void preInit(File modConfigDir)
+    public static void preInit(File modConfigDir)
     {
 
         OreVeins.getLog().info("Loading or creating ore generation config file");
@@ -74,12 +80,12 @@ public class VeinRegistry
         }
     }
 
-    static void createRegistry()
+    public static void createRegistry()
     {
         registry = new RegistryBuilder<VeinType>().setType(VeinType.class).setName(new ResourceLocation(OreVeins.MOD_ID, "veins")).create();
     }
 
-    static void registerAll(IForgeRegistry<VeinType> r)
+    public static void registerAll(IForgeRegistry<VeinType> r)
     {
         List<Config> entries = getAllOreEntries();
 

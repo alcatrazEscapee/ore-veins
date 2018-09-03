@@ -29,7 +29,7 @@ public class VeinTypeSphere extends VeinType
         final double dz = Math.pow(vein.getPos().getZ() - pos.getZ(), 2);
 
         final float radius = (float) ((dx + dz) / (this.horizontalSizeSquared * vein.getSize()) +
-                dy / (this.verticalSize * this.verticalSize * vein.getSize()));
+                dy / (this.verticalSizeSquared * vein.getSize()));
 
         return 0.005f * this.density * (1.0f - radius);
     }

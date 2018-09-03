@@ -44,7 +44,7 @@ public class VeinTypeCluster extends VeinType
             final double dz = Math.pow(c.pos.getZ() - pos.getZ(), 2);
 
             final float radius = (float) ((dx + dz) / (this.horizontalSizeSquared * vein.getSize() * c.size) +
-                    dy / (this.verticalSize * this.verticalSize * vein.getSize() * c.size));
+                    dy / (this.verticalSizeSquared * vein.getSize() * c.size));
 
             if (shortestRadius == -1 || radius < shortestRadius) shortestRadius = radius;
         }
@@ -74,7 +74,7 @@ public class VeinTypeCluster extends VeinType
         }
     }
 
-    private static final class Cluster
+    private static class Cluster
     {
         private final BlockPos pos;
         private final float size;

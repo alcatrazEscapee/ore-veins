@@ -39,6 +39,7 @@ public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType>
     public final boolean biomesIsWhitelist;
 
     protected final int horizontalSizeSquared;
+    protected final int verticalSizeSquared;
     protected final int totalWeight;
 
     private final List<IBlockState> stoneStates;
@@ -62,6 +63,7 @@ public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType>
         this.biomesIsWhitelist = ConfigHelper.getBoolean(config, "biomes_is_whitelist", true);
 
         this.horizontalSizeSquared = horizontalSize * horizontalSize;
+        this.verticalSizeSquared = verticalSize * verticalSize;
         this.totalWeight = oreStates.values().stream().mapToInt(Integer::intValue).sum();
     }
 

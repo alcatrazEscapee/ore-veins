@@ -21,9 +21,9 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
-import oreveins.OreVeinsConfig;
-import oreveins.VeinRegistry;
+import oreveins.util.OreVeinsConfig;
 import oreveins.vein.Vein;
+import oreveins.vein.VeinRegistry;
 import oreveins.vein.VeinType;
 
 public class WorldGenVeins implements IWorldGenerator
