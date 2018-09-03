@@ -19,11 +19,8 @@ public class WorldGenReplacer
     @SubscribeEvent
     public void onGenerateMineable(OreGenEvent.GenerateMinable event)
     {
-        if (event.getWorld().provider.getDimension() == 0)
-        {
-            if (OreVeinsConfig.NO_ORES || isBlockedType(event.getType()))
-                event.setResult(Event.Result.DENY);
-        }
+        if (OreVeinsConfig.NO_ORES || isBlockedType(event.getType()))
+            event.setResult(Event.Result.DENY);
     }
 
     private boolean isBlockedType(OreGenEvent.GenerateMinable.EventType type)
