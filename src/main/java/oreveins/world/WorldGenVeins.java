@@ -21,9 +21,9 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
-import oreveins.util.OreVeinsConfig;
+import oreveins.OreVeinsConfig;
+import oreveins.RegistryManager;
 import oreveins.vein.Vein;
-import oreveins.vein.VeinRegistry;
 import oreveins.vein.VeinType;
 
 public class WorldGenVeins implements IWorldGenerator
@@ -66,7 +66,7 @@ public class WorldGenVeins implements IWorldGenerator
     private static void getVeinsAtChunk(List<Vein> veins, int chunkX, int chunkZ, long worldSeed)
     {
         Random rand = new Random(worldSeed + chunkX * 341873128712L + chunkZ * 132897987541L);
-        for (VeinType type : VeinRegistry.getVeins().getValuesCollection())
+        for (VeinType type : RegistryManager.getVeins().values())
         {
             for (int i = 0; i < type.count; i++)
             {

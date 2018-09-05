@@ -17,14 +17,11 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 
-import oreveins.vein.VeinRegistry;
+import oreveins.RegistryManager;
 import oreveins.vein.VeinType;
-
-import static oreveins.OreVeins.MOD_ID;
 
 @ParametersAreNonnullByDefault
 public class CommandVeinInfo extends CommandBase
@@ -62,12 +59,12 @@ public class CommandVeinInfo extends CommandBase
         if (args[0].equals("all"))
         {
             // Search for all veins
-            VeinRegistry.getVeins().getValuesCollection().forEach(x -> sender.sendMessage(new TextComponentString("> Vein Type: " + x.toString())));
+            RegistryManager.getVeins().keySet().forEach(x -> sender.sendMessage(new TextComponentString("> Vein Type: " + x)));
         }
         else
         {
             // Search for veins that match a type
-            VeinType type = VeinRegistry.getVeins().getValue(new ResourceLocation(MOD_ID, args[0]));
+            VeinType type = RegistryManager.getVeins().get(args[0]);
             if (type == null)
                 throw new WrongUsageException("Vein supplied does not match 'all' or any valid vein names. Use /veininfo to see valid vein names");
             sender.sendMessage(new TextComponentString("> Vein Type: " + type.toString()));

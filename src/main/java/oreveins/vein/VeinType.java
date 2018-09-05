@@ -16,13 +16,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import com.google.common.collect.LinkedListMultimap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import com.typesafe.config.Config;
 import oreveins.util.ConfigHelper;
 
 @ParametersAreNonnullByDefault
-public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType>
+public abstract class VeinType
 {
     public final int count;
     public final int rarity;
@@ -44,8 +43,9 @@ public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType>
 
     private final List<IBlockState> stoneStates;
     private final LinkedListMultimap<IBlockState, Integer> oreStates;
+    private final String name;
 
-    VeinType(Config config) throws IllegalArgumentException
+    VeinType(String name, Config config) throws IllegalArgumentException
     {
         this.stoneStates = ConfigHelper.getBlockStateList(config, "stone");
         this.oreStates = ConfigHelper.getWeightedBlockStateList(config, "ore");
@@ -65,6 +65,8 @@ public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType>
         this.horizontalSizeSquared = horizontalSize * horizontalSize;
         this.verticalSizeSquared = verticalSize * verticalSize;
         this.totalWeight = oreStates.values().stream().mapToInt(Integer::intValue).sum();
+
+        this.name = name;
     }
 
     /**
@@ -126,6 +128,12 @@ public abstract class VeinType extends IForgeRegistryEntry.Impl<VeinType>
     {
         //noinspection ConstantConditions
         return String.format("'%s':  rarity: %d, count: %d, y-range: %d - %d, size: %d / %d, density: %d",
-                getRegistryName().getResourcePath(), rarity, count, minY, maxY, horizontalSize, verticalSize, density);
+                name, rarity, count, minY, maxY, horizontalSize, verticalSize, density);
+    }
+
+    @Nonnull
+    public String getRegistryName()
+    {
+        return name;
     }
 }

@@ -58,6 +58,6 @@ public class Vein
     {
         //noinspection ConstantConditions
         return String.format("type: %s: pos: (%d, %d, %d), size: %.2f",
-                type.getRegistryName().getResourcePath(), pos.getX(), pos.getY(), pos.getZ(), size);
+                type.getRegistryName(), pos.getX(), pos.getY(), pos.getZ(), size);
     }
 }

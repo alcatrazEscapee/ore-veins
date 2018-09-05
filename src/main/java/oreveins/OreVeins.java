@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -23,13 +22,10 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import oreveins.cmd.CommandClearWorld;
 import oreveins.cmd.CommandFindVeins;
 import oreveins.cmd.CommandVeinInfo;
-import oreveins.util.OreVeinsConfig;
-import oreveins.vein.VeinRegistry;
-import oreveins.vein.VeinType;
 import oreveins.world.WorldGenReplacer;
 import oreveins.world.WorldGenVeins;
 
-@Mod(modid = OreVeins.MOD_ID, version = "GRADLE:VERSION", dependencies = "required-after:forge@[GRADLE:FORGE_VERSION,15.0.0.0);")
+@Mod(modid = OreVeins.MOD_ID, version = "GRADLE:VERSION", dependencies = "required-after:forge@[GRADLE:FORGE_VERSION,15.0.0.0);", acceptableRemoteVersions = "*")
 public class OreVeins
 {
     public static final String MOD_ID = "oreveins";
@@ -62,7 +58,7 @@ public class OreVeins
     {
         log = event.getModLog();
 
-        VeinRegistry.preInit(event.getModConfigurationDirectory());
+        RegistryManager.preInit(event.getModConfigurationDirectory());
 
         GameRegistry.registerWorldGenerator(new WorldGenVeins(), 1);
         MinecraftForge.ORE_GEN_BUS.register(new WorldGenReplacer());
@@ -71,7 +67,7 @@ public class OreVeins
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
-        CommandClearWorld.resetVeinStates();
+        RegistryManager.registerAllVeins();
     }
 
     @Mod.EventHandler
@@ -83,17 +79,5 @@ public class OreVeins
             event.registerServerCommand(new CommandVeinInfo());
             event.registerServerCommand(new CommandFindVeins());
         }
-    }
-
-    @SubscribeEvent
-    public void addRegistry(RegistryEvent.NewRegistry event)
-    {
-        VeinRegistry.createRegistry();
-    }
-
-    @SubscribeEvent
-    public void addVeins(RegistryEvent.Register<VeinType> event)
-    {
-        VeinRegistry.registerAll(event.getRegistry());
     }
 }

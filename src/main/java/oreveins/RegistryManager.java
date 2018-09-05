@@ -4,13 +4,8 @@
  *  See the project LICENSE.md for more information.
  */
 
-/*
- *  Part of the Ore Veins Mod by alcatrazEscapee
- *  Work under Copyright. Licensed under the GPL-3.0.
- *  See the project LICENSE.md for more information.
- */
 
-package oreveins.vein;
+package oreveins;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,34 +14,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import javax.annotation.Nonnull;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.apache.commons.io.FileUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
 
 import com.typesafe.config.*;
-import oreveins.OreVeins;
+import oreveins.cmd.CommandClearWorld;
+import oreveins.vein.*;
 import oreveins.world.WorldGenVeins;
 
 import static oreveins.OreVeins.MOD_ID;
 
-public class VeinRegistry
+public class RegistryManager
 {
-    private static IForgeRegistry<VeinType> registry;
+    private static BiMap<String, VeinType> registry = HashBiMap.create();
     private static File worldGenFolder;
 
-    public static IForgeRegistry<VeinType> getVeins()
+    public static BiMap<String, VeinType> getVeins()
     {
         return registry;
     }
 
-    public static void preInit(File modConfigDir)
+    static void preInit(File modConfigDir)
     {
-
         OreVeins.getLog().info("Loading or creating ore generation config file");
 
         worldGenFolder = new File(modConfigDir, MOD_ID);
@@ -80,12 +74,7 @@ public class VeinRegistry
         }
     }
 
-    public static void createRegistry()
-    {
-        registry = new RegistryBuilder<VeinType>().setType(VeinType.class).setName(new ResourceLocation(OreVeins.MOD_ID, "veins")).create();
-    }
-
-    public static void registerAll(IForgeRegistry<VeinType> r)
+    static void registerAllVeins()
     {
         List<Config> entries = getAllOreEntries();
 
@@ -101,21 +90,25 @@ public class VeinRegistry
                     {
                         Config cfg = data.getConfig(entry.getKey());
                         Type type = getVeinSuperType(cfg);
-                        VeinType vein = type.supplier.apply(cfg); // This can throw an IllegalArgumentException, if the config was invalid for some reason
+                        String name = entry.getKey();
+                        VeinType vein = type.supplier.apply(name, cfg); // This can throw an IllegalArgumentException, if the config was invalid for some reason
                         if (vein == null)
                             throw new IllegalArgumentException("Vein is null after initialization: this is probably a coding error.");
-                        r.register(vein.setRegistryName(entry.getKey()));
+                        if (registry.containsKey(name))
+                            throw new IllegalArgumentException("A vein by the key '" + name + "' already exists.");
+                        registry.put(name, vein);
                         if (vein.horizontalSize >> 4 > maxRadius) maxRadius = vein.horizontalSize >> 4;
                         OreVeins.getLog().debug("Vein '" + entry.getKey() + "' parsed successfully and is now registered.");
                     }
                 }
-                catch (Throwable e)
+                catch (Exception e)
                 {
                     OreVeins.getLog().warn("Generation entry '" + entry.getKey() + "' failed to parse correctly, skipping. Check that the json is valid.", e);
                 }
             }
         }
         WorldGenVeins.resetSearchRadius(1 + maxRadius);
+        CommandClearWorld.resetVeinStates();
     }
 
     private static List<Config> getAllOreEntries()
@@ -188,9 +181,9 @@ public class VeinRegistry
         CONE(VeinTypeCone::new),
         PIPE(VeinTypePipe::new);
 
-        private Function<Config, VeinType> supplier;
+        private BiFunction<String, Config, VeinType> supplier;
 
-        Type(@Nonnull Function<Config, VeinType> supplier)
+        Type(@Nonnull BiFunction<String, Config, VeinType> supplier)
         {
             this.supplier = supplier;
         }

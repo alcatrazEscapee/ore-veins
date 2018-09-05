@@ -15,9 +15,9 @@ import com.typesafe.config.Config;
 @ParametersAreNonnullByDefault
 public class VeinTypePipe extends VeinType
 {
-    public VeinTypePipe(Config config)
+    public VeinTypePipe(String name, Config config)
     {
-        super(config);
+        super(name, config);
     }
 
     @Override

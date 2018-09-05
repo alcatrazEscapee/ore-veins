@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import oreveins.OreVeins;
-import oreveins.util.OreVeinsConfig;
+import oreveins.OreVeinsConfig;
 
 public class WorldGenReplacer
 {

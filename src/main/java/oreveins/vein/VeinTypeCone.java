@@ -19,9 +19,9 @@ public class VeinTypeCone extends VeinType
     private final float coneFactor;
     private final boolean inverted;
 
-    public VeinTypeCone(Config config)
+    public VeinTypeCone(String name, Config config)
     {
-        super(config);
+        super(name, config);
         this.coneFactor = ConfigHelper.getValue(config, "shape", 0.5f);
         this.inverted = ConfigHelper.getBoolean(config, "inverted", false);
     }

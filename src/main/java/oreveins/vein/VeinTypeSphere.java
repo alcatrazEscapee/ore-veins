@@ -16,9 +16,9 @@ import com.typesafe.config.Config;
 public class VeinTypeSphere extends VeinType
 {
 
-    public VeinTypeSphere(Config config)
+    public VeinTypeSphere(String name, Config config)
     {
-        super(config);
+        super(name, config);
     }
 
     @Override

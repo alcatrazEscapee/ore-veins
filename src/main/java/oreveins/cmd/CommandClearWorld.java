@@ -8,7 +8,6 @@ package oreveins.cmd;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -19,13 +18,12 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-import oreveins.vein.VeinRegistry;
+import oreveins.RegistryManager;
 import oreveins.vein.VeinType;
 
 @ParametersAreNonnullByDefault
@@ -37,18 +35,14 @@ public class CommandClearWorld extends CommandBase
     public static void resetVeinStates()
     {
         veinStates = new HashSet<>();
-        VeinRegistry.getVeins()
-                .getValuesCollection()
+        RegistryManager.getVeins()
+                .values()
                 .stream()
                 .map(VeinType::getOreStates)
                 .forEach(x -> veinStates.addAll(x));
 
         veinNames = new HashSet<>();
-        veinNames.addAll(VeinRegistry.getVeins()
-                .getKeys()
-                .stream()
-                .map(ResourceLocation::getResourcePath)
-                .collect(Collectors.toList()));
+        veinNames.addAll(RegistryManager.getVeins().keySet());
         veinNames.add("all");
     }
 
@@ -87,7 +81,7 @@ public class CommandClearWorld extends CommandBase
                 {
                     final BlockPos pos = center.add(x, y, z);
                     if (!veinStates.contains(world.getBlockState(pos)))
-                        world.setBlockState(pos, AIR, 2);
+                        world.setBlockState(pos, AIR, 2 | 16);
                 }
             }
         }

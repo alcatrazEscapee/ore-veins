@@ -20,9 +20,9 @@ public class VeinTypeCluster extends VeinType
 {
     private final int clusters;
 
-    public VeinTypeCluster(Config config)
+    public VeinTypeCluster(String name, Config config)
     {
-        super(config);
+        super(name, config);
         this.clusters = ConfigHelper.getValue(config, "clusters", 3);
     }
 
