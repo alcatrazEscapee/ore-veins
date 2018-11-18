@@ -56,7 +56,7 @@ A Block Entry can be any of the following:
    {
       "block": "minecraft:wool",
       "weight": 4,
-      "meta: 3
+      "meta": 3
     },
     {
       "block": "minecraft:coal_ore",
