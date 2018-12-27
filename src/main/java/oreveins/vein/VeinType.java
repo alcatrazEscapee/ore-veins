@@ -6,6 +6,7 @@
 
 package oreveins.vein;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -15,6 +16,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.common.collect.LinkedListMultimap;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 
 import com.typesafe.config.Config;
@@ -40,14 +42,23 @@ public abstract class VeinType
     protected final int horizontalSizeSquared;
     protected final int verticalSizeSquared;
     protected final int totalWeight;
+    protected final float indicatorChance;
 
     private final List<IBlockState> stoneStates;
+    private final List<IBlockState> indicatorStates;
     private final LinkedListMultimap<IBlockState, Integer> oreStates;
     private final String name;
 
     VeinType(String name, Config config) throws IllegalArgumentException
     {
         this.stoneStates = ConfigHelper.getBlockStateList(config, "stone");
+        if (config.hasPath("indicator"))
+        {
+            this.indicatorStates = ConfigHelper.getBlockStateList(config, "indicator");
+        }
+        else {
+            this.indicatorStates = Collections.EMPTY_LIST;
+        }
         this.oreStates = ConfigHelper.getWeightedBlockStateList(config, "ore");
         this.biomes = ConfigHelper.getStringList(config, "biomes");
         this.dims = ConfigHelper.getIntList(config, "dimensions");
@@ -61,6 +72,7 @@ public abstract class VeinType
         this.density = ConfigHelper.getValue(config, "density", 50);
         this.dimensionIsWhitelist = ConfigHelper.getBoolean(config, "dimensions_is_whitelist", true);
         this.biomesIsWhitelist = ConfigHelper.getBoolean(config, "biomes_is_whitelist", true);
+        this.indicatorChance = ConfigHelper.getValue(config, "indicator_chance", 0) / 100F;
 
         this.horizontalSizeSquared = horizontalSize * horizontalSize;
         this.verticalSizeSquared = verticalSize * verticalSize;
@@ -85,6 +97,20 @@ public abstract class VeinType
                 return entry.getKey();
         }
         throw new RuntimeException("Problem choosing IBlockState from weighted list");
+    }
+
+    /**
+     * @param rand A random to use in generation
+     * @return the state to generate at that location
+     */
+    @Nonnull
+    public IBlockState getIndicatorStateToGenerate(Random random)
+    {
+        if (!indicatorStates.isEmpty())
+        {
+            return indicatorStates.get(random.nextInt(indicatorStates.size()));
+        }
+        return Blocks.AIR.getDefaultState();
     }
 
     public boolean canGenerateIn(IBlockState state)
@@ -117,6 +143,20 @@ public abstract class VeinType
      * @return the chance to generate: 1.0 = 100%, 0.0 = 0% chance
      */
     abstract float getChanceToGenerate(Vein vein, BlockPos pos);
+
+    /**
+     * @param vein The vein instance
+     * @param pos  The pos to generate at. Use vein.getPos() - pos to get the relative pos
+     * @return the chance to generate: 1.0 = 100%, 0.0 = 0% chance
+     */
+    public float getChanceToGenerateIndicator(Vein vein, BlockPos pos)
+    {
+        if (!indicatorStates.isEmpty())
+        {
+            return indicatorChance;
+        }
+        return 0;
+    }
 
     public Set<IBlockState> getOreStates()
     {

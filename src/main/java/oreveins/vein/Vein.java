@@ -42,6 +42,11 @@ public class Vein
         return type.getChanceToGenerate(this, pos);
     }
 
+    public float getChanceToGenerateIndicatorAt(BlockPos pos)
+    {
+        return type.getChanceToGenerateIndicator(this, pos);
+    }
+
     @Nonnull
     BlockPos getPos()
     {

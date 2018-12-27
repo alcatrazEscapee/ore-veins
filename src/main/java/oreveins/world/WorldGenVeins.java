@@ -127,6 +127,7 @@ public class WorldGenVeins implements IWorldGenerator
                         if (!vein.inRange(xoff + x, zoff + z) || !doesMatchBiome(vein.getType().biomes, biomeAt, vein.getType().biomesIsWhitelist))
                             continue;
 
+                        boolean generated = false;
                         for (int y = vein.getType().minY; y <= vein.getType().maxY; y++)
                         {
                             BlockPos posAt = new BlockPos(xoff + x, y, z + zoff);
@@ -134,7 +135,23 @@ public class WorldGenVeins implements IWorldGenerator
                             IBlockState oreState = vein.getType().getStateToGenerate(random);
 
                             if (random.nextFloat() < vein.getChanceToGenerateAt(posAt) && vein.getType().canGenerateIn(stoneState))
+                            {
                                 world.setBlockState(posAt, oreState);
+                                generated = true;
+                            }
+                        }
+
+                        if (generated)
+                        {
+                            BlockPos posAt = new BlockPos(xoff + x, world.getHeight(xoff + x, zoff + z), z + zoff);
+                            if (random.nextFloat() < vein.getChanceToGenerateIndicatorAt(posAt))
+                            {
+                                IBlockState indicatorState = vein.getType().getIndicatorStateToGenerate(random);
+                                if (indicatorState.getBlock().canPlaceBlockAt(world, posAt))
+                                {
+                                    world.setBlockState(posAt, indicatorState);
+                                }
+                            }
                         }
                     }
                 }
