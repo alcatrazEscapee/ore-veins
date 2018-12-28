@@ -120,6 +120,10 @@ public class ConfigHelper
         {
             throw new IllegalArgumentException("Entry '" + key + "' is not in the correct format");
         }
+        if (states.isEmpty())
+        {
+            throw new IllegalArgumentException("Entry '" + key + "' has no entries in its block state list");
+        }
         return states;
     }
 

@@ -28,10 +28,12 @@
       }
     ],
     "indicator": {
-      "block": "minecraft:red_flower",
-      "meta": 1
+      "blocks": {
+        "block": "minecraft:red_flower",
+        "meta": 1
+      },
+      "rarity": 2
     },
-    "indicator_chance": 5,
     "stone": "minecraft:stone",
     "rarity": 30,
     "min_y": 32,

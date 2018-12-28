@@ -23,6 +23,7 @@ import net.minecraftforge.fml.common.IWorldGenerator;
 
 import oreveins.OreVeinsConfig;
 import oreveins.RegistryManager;
+import oreveins.vein.Indicator;
 import oreveins.vein.Vein;
 import oreveins.vein.VeinType;
 
@@ -116,6 +117,7 @@ public class WorldGenVeins implements IWorldGenerator
         int zoff = chunkZ * 16 + 8;
         for (Vein vein : veins)
         {
+            Indicator veinIndicator = vein.getType().getIndicator();
             if (doesMatchDims(vein.getType().dims, world.provider.getDimension(), vein.getType().dimensionIsWhitelist))
             {
                 for (int x = 0; x < 16; x++)
@@ -127,7 +129,7 @@ public class WorldGenVeins implements IWorldGenerator
                         if (!vein.inRange(xoff + x, zoff + z) || !doesMatchBiome(vein.getType().biomes, biomeAt, vein.getType().biomesIsWhitelist))
                             continue;
 
-                        boolean generated = false;
+                        boolean canGenerateIndicator = false;
                         for (int y = vein.getType().minY; y <= vein.getType().maxY; y++)
                         {
                             BlockPos posAt = new BlockPos(xoff + x, y, z + zoff);
@@ -137,16 +139,21 @@ public class WorldGenVeins implements IWorldGenerator
                             if (random.nextFloat() < vein.getChanceToGenerateAt(posAt) && vein.getType().canGenerateIn(stoneState))
                             {
                                 world.setBlockState(posAt, oreState);
-                                generated = true;
+                                if (veinIndicator != null && !canGenerateIndicator)
+                                {
+                                    int depth = world.getHeight(xoff + x, zoff + z) - y;
+                                    if (depth < 0) depth = -depth;
+                                    canGenerateIndicator = depth < veinIndicator.maxDepth;
+                                }
                             }
                         }
 
-                        if (generated)
+                        if (veinIndicator != null && canGenerateIndicator)
                         {
                             BlockPos posAt = new BlockPos(xoff + x, world.getHeight(xoff + x, zoff + z), z + zoff);
-                            if (random.nextFloat() < vein.getChanceToGenerateIndicatorAt(posAt))
+                            if (random.nextFloat() < veinIndicator.chance)
                             {
-                                IBlockState indicatorState = vein.getType().getIndicatorStateToGenerate(random);
+                                IBlockState indicatorState = veinIndicator.getStateToGenerate(random);
                                 if (indicatorState.getBlock().canPlaceBlockAt(world, posAt))
                                 {
                                     world.setBlockState(posAt, indicatorState);

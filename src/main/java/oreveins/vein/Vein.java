@@ -32,6 +32,11 @@ public class Vein
         return type;
     }
 
+    public boolean hasIndicator()
+    {
+        return type.getIndicator() != null;
+    }
+
     public boolean inRange(int x, int z)
     {
         return type.inRange(this, pos.getX() - x, pos.getZ() - z);
@@ -40,11 +45,6 @@ public class Vein
     public float getChanceToGenerateAt(BlockPos pos)
     {
         return type.getChanceToGenerate(this, pos);
-    }
-
-    public float getChanceToGenerateIndicatorAt(BlockPos pos)
-    {
-        return type.getChanceToGenerateIndicator(this, pos);
     }
 
     @Nonnull
@@ -61,7 +61,6 @@ public class Vein
     @Override
     public String toString()
     {
-        //noinspection ConstantConditions
         return String.format("type: %s: pos: (%d, %d, %d), size: %.2f",
                 type.getRegistryName(), pos.getX(), pos.getY(), pos.getZ(), size);
     }

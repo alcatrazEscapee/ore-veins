@@ -9,6 +9,7 @@ package oreveins;
 
 import net.minecraftforge.common.config.Config;
 
+@SuppressWarnings("WeakerAccess")
 @Config(modid = OreVeins.MOD_ID)
 public class OreVeinsConfig
 {

@@ -9,8 +9,8 @@ Ore Veins will look for all files under config/oreveins/. When you first add ore
 Each json file in config/oreveins/ should consist of a set of objects, each one being a different type of vein. These represent a single ore type or configuration that will be generated in the world. Each entry must contain the following values:
 
 * `type` is the registry name of the [Vein Type](#veins) that this entry will spawn. Based on what vein this is, there might be other required or optional values as well.
-* `stone` is a [Block entry](#block-entries). This represents the blockstates that the ore can spawn in.
-* `ore` is a [Block entry](#block-entries), with optional weights. This represents the possible states that the vein will spawn.
+* `stone` is a [Block entry](#block-entries). This represents the block states that the ore can spawn in.
+* `ore` is a [Block entry](#block-entries), with optional weights. This represents the possible states that the vein will spawn. This **does** support weighted entries.
 
 Each entry can also contain any or all of the following values. If they don't exist, they will assume a default value. These apply to all vein types:
 
@@ -25,6 +25,7 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `biomes_is_whitelist` (Default: true) When false, the biome list becomes a blacklist
 * `dimensions` (Default: 0) Whitelist of dimension ids that the ore can spawn in. Must be a list of integers.
 * `dimensions_is_whitelist` (Default: true) When false, the dimension list becomes a blacklist
+* `indicator` (Default: empty) This is an [Indicator](#indicators) which will spawn on the surface underneath where the vein is found.
 
 ### Veins
 
@@ -45,14 +46,43 @@ This vein represents a vertical cone. The pointy end of the cone can point upwar
 * `inverted` (Default: false) If true, the cone will have a pointy end facing down. If false, the pointy end will face up
 * `shape` (Default: 0.5) This value determines how pointy the cone will be. It should be between 0.0 and 1.0. Higher values mean less pointy (more cylindrical). Smaller values are more pointy
 
+### Indicators
+
+Indicators are configurable objects that will spawn on the surface when a vein is detected underneath them. An indicator must contain the following entries:
+
+* `blocks` is a [Block entry](#block-entries). This represents the possible states that the indicator will spawn
+
+Indicators can also contain the following optional entries
+
+* `rarity` (Default: 10) 1 / N blocks will generate an indicator, provided there is a valid ore block directly underneath. This does **not** support weighted entries.
+* `max_depth` (Default: 32) This is the maximum depth for an ore block to generate which would attempt to spawn an indicator.
+
+An example indicator that spawns roses when ore blocks are less than twenty blocks under the surface would be added to the ore entry as such:
+
+```json
+{
+  "example_entry": {
+    "type": "cluster",
+    "stone": "minecraft:stone",
+    "ore": "minecraft:iron_ore",
+    "indicator": {
+      "blocks": "minecraft:red_flower",
+      "max_depth": 20
+    }
+  }
+}
+```
+
 ### Block Entries
+
 A Block Entry can be any of the following:
 
 1. A single string representing a block's registry name: `"ore": "minecraft:iron_ore"`
 2. A single object representing a block with metadata: `"ore": { "block": "minecraft:wool", "meta": 3 }`
 3. A list of objects (as above). Note that these can be weighed (when used in `ore`) but are not necessary. If weight is not found for a particular object, it will default to 1.
-```
-"ore": [
+```json
+{
+  "ore": [
    {
       "block": "minecraft:wool",
       "weight": 4,
@@ -66,4 +96,5 @@ A Block Entry can be any of the following:
       "block": "minecraft:diamond_ore"
     }
   ]
+}
 ```

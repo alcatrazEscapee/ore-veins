@@ -25,6 +25,7 @@ import oreveins.cmd.CommandVeinInfo;
 import oreveins.world.WorldGenReplacer;
 import oreveins.world.WorldGenVeins;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 @Mod(modid = OreVeins.MOD_ID, version = "GRADLE:VERSION", dependencies = "required-after:forge@[GRADLE:FORGE_VERSION,15.0.0.0);", acceptableRemoteVersions = "*")
 public class OreVeins
 {
