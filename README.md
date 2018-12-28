@@ -56,6 +56,7 @@ Indicators can also contain the following optional entries
 
 * `rarity` (Default: 10) 1 / N blocks will generate an indicator, provided there is a valid ore block directly underneath. This does **not** support weighted entries.
 * `max_depth` (Default: 32) This is the maximum depth for an ore block to generate which would attempt to spawn an indicator.
+* `ignore_vegetation` (Default: true) If the vein should ignore vegetation / liquids when trying to spawn indicators. (i.e. should the indicators spawn on top of trees + the ocean, or on top of the first solid block?)
 
 An example indicator that spawns roses when ore blocks are less than twenty blocks under the surface would be added to the ore entry as such:
 

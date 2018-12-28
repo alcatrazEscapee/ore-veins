@@ -114,7 +114,6 @@ public class ConfigHelper
         else if (config.getValue(key).valueType() == ConfigValueType.STRING)
         {
             states.add(getBlockState(config.getString(key)));
-
         }
         else
         {

@@ -2,7 +2,15 @@
   "iron_ore_example": {
     "type": "cluster",
     "ore": "minecraft:iron_ore",
-    "stone": "minecraft:stone"
+    "stone": "minecraft:stone",
+    "indicator": {
+      "blocks": {
+        "block": "minecraft:wool",
+        "meta": 3
+      },
+      "rarity": 2,
+      "ignore_vegetation": false
+    }
   },
   "gold_ore_example": {
     "type": "sphere",
@@ -29,7 +37,7 @@
     ],
     "indicator": {
       "blocks": {
-        "block": "minecraft:red_flower",
+        "block": "minecraft:wool",
         "meta": 1
       },
       "rarity": 2

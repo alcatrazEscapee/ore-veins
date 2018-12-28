@@ -150,10 +150,10 @@ public class WorldGenVeins implements IWorldGenerator
 
                         if (veinIndicator != null && canGenerateIndicator)
                         {
-                            BlockPos posAt = new BlockPos(xoff + x, world.getHeight(xoff + x, zoff + z), z + zoff);
                             if (random.nextFloat() < veinIndicator.chance)
                             {
                                 IBlockState indicatorState = veinIndicator.getStateToGenerate(random);
+                                BlockPos posAt = veinIndicator.ignoreVegetation ? world.getTopSolidOrLiquidBlock(new BlockPos(xoff + x, 0, zoff + z)) : new BlockPos(xoff + x, world.getHeight(xoff + x, zoff + z), zoff + z);
                                 if (indicatorState.getBlock().canPlaceBlockAt(world, posAt))
                                 {
                                     world.setBlockState(posAt, indicatorState);
