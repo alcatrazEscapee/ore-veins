@@ -1,0 +1,4 @@
+v2.0.3
+
+Changes:
+ - Added indicator capability. Ore veins can spawn indicators above them if they choose. Configurable to use any blocks or combination of blocks. See the wiki for more details.

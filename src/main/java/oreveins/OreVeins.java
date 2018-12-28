@@ -12,7 +12,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.ICrashCallable;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -26,12 +29,20 @@ import oreveins.world.WorldGenReplacer;
 import oreveins.world.WorldGenVeins;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-@Mod(modid = OreVeins.MOD_ID, version = "GRADLE:VERSION", dependencies = "required-after:forge@[GRADLE:FORGE_VERSION,15.0.0.0);", acceptableRemoteVersions = "*")
+@Mod(modid = OreVeins.MOD_ID, version = OreVeins.VERSION, dependencies = OreVeins.DEPENDENCIES, acceptableRemoteVersions = "*", certificateFingerprint = "3c2d6be715971d1ed58a028cdb3fae72987fc934")
 public class OreVeins
 {
     public static final String MOD_ID = "oreveins";
+    public static final String MOD_NAME = "Ore Veins";
+    public static final String VERSION = "GRADLE:VERSION";
+
+    private static final String FORGE_MIN = "14.23.2.2611";
+    private static final String FORGE_MAX = "15.0.0.0";
+
+    public static final String DEPENDENCIES = "required-after:forge@[" + FORGE_MIN + "," + FORGE_MAX + ");";
 
     private static Logger log;
+    private boolean isSignedBuild;
 
     public static Logger getLog()
     {
@@ -45,7 +56,7 @@ public class OreVeins
     }
 
     @SubscribeEvent
-    public static void configChanged(ConfigChangedEvent.OnConfigChangedEvent event)
+    public void configChanged(ConfigChangedEvent.OnConfigChangedEvent event)
     {
         if (event.getModID().equals(MOD_ID))
         {
@@ -58,6 +69,9 @@ public class OreVeins
     public void preInit(FMLPreInitializationEvent event)
     {
         log = event.getModLog();
+        log.debug("If you can see this, debug logging is working :)");
+        if (!isSignedBuild)
+            log.warn("You are not running an official build. This version will NOT be supported by the author.");
 
         RegistryManager.preInit(event.getModConfigurationDirectory());
 
@@ -68,6 +82,8 @@ public class OreVeins
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
+        if (!isSignedBuild)
+            log.warn("You are not running an official build. This version will NOT be supported by the author.");
         RegistryManager.registerAllVeins();
     }
 
@@ -80,5 +96,25 @@ public class OreVeins
             event.registerServerCommand(new CommandVeinInfo());
             event.registerServerCommand(new CommandFindVeins());
         }
+    }
+
+    @Mod.EventHandler
+    public void onFingerprintViolation(FMLFingerprintViolationEvent event)
+    {
+        isSignedBuild = false;
+        FMLCommonHandler.instance().registerCrashCallable(new ICrashCallable()
+        {
+            @Override
+            public String getLabel()
+            {
+                return MOD_NAME;
+            }
+
+            @Override
+            public String call()
+            {
+                return "You are not running an official build. This version will NOT be supported by the author.";
+            }
+        });
     }
 }
