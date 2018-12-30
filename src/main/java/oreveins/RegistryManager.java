@@ -146,7 +146,7 @@ public class RegistryManager
             }
             catch (Throwable e)
             {
-                throw new Error("Cannot Parse world gen file.", e);
+                throw new Error("Cannot Parse world gen file. Check the JSON is valid!", e);
             }
         }
 

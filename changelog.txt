@@ -1,4 +1,6 @@
-v2.0.3
+v2.0.4
 
 Changes:
- - Added indicator capability. Ore veins can spawn indicators above them if they choose. Configurable to use any blocks or combination of blocks. See the wiki for more details.
+ - Fixed indicators spawning on top of trees
+ - Added 'ignore_liquids' option to indicators to spawn them under oceans / lakes.
+ - Indicator generation should be generally smarter - no more replacing solid blocks when it shouldn't or spawning in places that would immediately pop off

@@ -1,6 +1,6 @@
 ![Ore Veins Banner Image](https://github.com/alcatrazEscapee/ore-veins/blob/master/img/banner.png?raw=true)
 
-This is a minecraft mod to add realistically shaped veins of ore to your world. Useful for custom maps, mod packs, or just a different survival experience. Everything is fully configurable via json, meaning you can have ore veins of whatever type of shape or size you want.
+This is a Minecraft mod to add realistically shaped veins of ore to your world. Useful for custom maps, mod packs, or just a different survival experience. Everything is fully configurable via json, meaning you can have ore veins of whatever type of shape or size you want.
 
 ## Configuration:
 
@@ -50,13 +50,14 @@ This vein represents a vertical cone. The pointy end of the cone can point upwar
 
 Indicators are configurable objects that will spawn on the surface when a vein is detected underneath them. An indicator must contain the following entries:
 
-* `blocks` is a [Block entry](#block-entries). This represents the possible states that the indicator will spawn
+* `blocks` is a [Block entry](#block-entries). This represents the possible states that the indicator will spawn. This does **not** support weighted entries.
 
 Indicators can also contain the following optional entries
 
-* `rarity` (Default: 10) 1 / N blocks will generate an indicator, provided there is a valid ore block directly underneath. This does **not** support weighted entries.
+* `rarity` (Default: 10) 1 / N blocks will generate an indicator, provided there is a valid ore block directly underneath.
 * `max_depth` (Default: 32) This is the maximum depth for an ore block to generate which would attempt to spawn an indicator.
-* `ignore_vegetation` (Default: true) If the vein should ignore vegetation / liquids when trying to spawn indicators. (i.e. should the indicators spawn on top of trees + the ocean, or on top of the first solid block?)
+* `ignore_vegetation` (Default: true) If the vein should ignore vegetation when trying to spawn indicators. (i.e. should the indicators spawn underneath trees, leaves or huge mushrooms?)
+* `ignore_liquids` (Default: false) If the vein should ignore liquids when trying to spawn indicators. (i.e. should the indicator spawn inside lakes or the ocean?)
 
 An example indicator that spawns roses when ore blocks are less than twenty blocks under the surface would be added to the ore entry as such:
 

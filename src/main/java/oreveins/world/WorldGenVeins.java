@@ -12,11 +12,14 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.block.BlockHugeMushroom;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
@@ -107,6 +110,22 @@ public class WorldGenVeins implements IWorldGenerator
         return !isWhitelist;
     }
 
+    private static BlockPos getTopBlockIgnoreVegetation(World world, BlockPos pos)
+    {
+        Chunk chunk = world.getChunkFromBlockCoords(pos);
+        BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos.getX(), chunk.getTopFilledSegment() + 16, pos.getZ());
+        while (mPos.getY() > 0)
+        {
+            mPos.move(EnumFacing.DOWN, 1);
+            IBlockState state = chunk.getBlockState(mPos);
+            if (state.getMaterial().blocksMovement() && !state.getBlock().isLeaves(state, world, mPos) && !state.getBlock().isFoliage(world, mPos) && !state.getMaterial().isLiquid() && !(state.getBlock() instanceof BlockHugeMushroom))
+            {
+                break;
+            }
+        }
+        return mPos.move(EnumFacing.UP).toImmutable();
+    }
+
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider)
     {
@@ -153,8 +172,11 @@ public class WorldGenVeins implements IWorldGenerator
                             if (random.nextFloat() < veinIndicator.chance)
                             {
                                 IBlockState indicatorState = veinIndicator.getStateToGenerate(random);
-                                BlockPos posAt = veinIndicator.ignoreVegetation ? world.getTopSolidOrLiquidBlock(new BlockPos(xoff + x, 0, zoff + z)) : new BlockPos(xoff + x, world.getHeight(xoff + x, zoff + z), zoff + z);
-                                if (indicatorState.getBlock().canPlaceBlockAt(world, posAt))
+                                BlockPos posAt = veinIndicator.ignoreVegetation ? getTopBlockIgnoreVegetation(world, new BlockPos(xoff + x, 0, zoff + z)) : new BlockPos(xoff + x, world.getHeight(xoff + x, zoff + z), zoff + z);
+                                IBlockState stateAt = world.getBlockState(posAt);
+
+                                // If the vein is ignoring liquids
+                                if (indicatorState.getBlock().canPlaceBlockAt(world, posAt) && stateAt.getBlock().isReplaceable(world, posAt) && (veinIndicator.ignoreLiquids || !stateAt.getMaterial().isLiquid()))
                                 {
                                     world.setBlockState(posAt, indicatorState);
                                 }

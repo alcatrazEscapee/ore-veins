@@ -77,9 +77,6 @@ curseforge {
         releaseType = "release"
 
         addGameVersion("${mc_version}")
-        relations {
-        }
-
         afterEvaluate {
             gameVersionStrings.remove('Java 9')
         }

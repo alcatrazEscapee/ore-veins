@@ -14,6 +14,7 @@ public class Indicator
     public final int maxDepth;
     public final float chance;
     public final boolean ignoreVegetation;
+    public final boolean ignoreLiquids;
 
     private final List<IBlockState> states;
 
@@ -23,6 +24,7 @@ public class Indicator
         this.maxDepth = ConfigHelper.getValue(config, "max_depth", 32);
         this.chance = 1f / (float) ConfigHelper.getValue(config, "rarity", 10);
         this.ignoreVegetation = ConfigHelper.getBoolean(config, "ignore_vegetation", true);
+        this.ignoreLiquids = ConfigHelper.getBoolean(config, "ignore_liquids", false);
     }
 
     @Nonnull
