@@ -59,6 +59,10 @@ public abstract class VeinType
         this.rarity = ConfigHelper.getValue(config, "rarity", 10);
         this.minY = ConfigHelper.getValue(config, "min_y", 16);
         this.maxY = ConfigHelper.getValue(config, "max_y", 64);
+
+        if (this.minY > this.maxY)
+            throw new IllegalArgumentException("min_y is not allowed to be greater than max_Y");
+
         this.horizontalSize = ConfigHelper.getValue(config, "horizontal_size", 15);
         this.verticalSize = ConfigHelper.getValue(config, "vertical_size", 8);
         this.density = ConfigHelper.getValue(config, "density", 50);
