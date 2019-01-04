@@ -1,6 +1,6 @@
-v2.0.4
+v2.0.5
 
 Changes:
- - Fixed indicators spawning on top of trees
- - Added 'ignore_liquids' option to indicators to spawn them under oceans / lakes.
- - Indicator generation should be generally smarter - no more replacing solid blocks when it shouldn't or spawning in places that would immediately pop off
+ - Added option to indicator to only spawn on specific blocks (for blocks that have conditions on their placement)
+ - Raised maximum limit of findveins command from 10 to 1000 chunks
+ - If you make min_y > max_y it will no longer crash, but just ignore that entry
