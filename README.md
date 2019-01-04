@@ -9,8 +9,8 @@ Ore Veins will look for all files under config/oreveins/. When you first add ore
 Each json file in config/oreveins/ should consist of a set of objects, each one being a different type of vein. These represent a single ore type or configuration that will be generated in the world. Each entry must contain the following values:
 
 * `type` is the registry name of the [Vein Type](#veins) that this entry will spawn. Based on what vein this is, there might be other required or optional values as well.
-* `stone` is a [Block entry](#block-entries). This represents the block states that the ore can spawn in.
-* `ore` is a [Block entry](#block-entries), with optional weights. This represents the possible states that the vein will spawn. This **does** support weighted entries.
+* `stone` is a [Block Entry](#block-entries). This represents the block states that the ore can spawn in.
+* `ore` is a [Block Entry](#block-entries), with optional weights. This represents the possible states that the vein will spawn. This **does** support weighted entries.
 
 Each entry can also contain any or all of the following values. If they don't exist, they will assume a default value. These apply to all vein types:
 
@@ -50,7 +50,7 @@ This vein represents a vertical cone. The pointy end of the cone can point upwar
 
 Indicators are configurable objects that will spawn on the surface when a vein is detected underneath them. An indicator must contain the following entries:
 
-* `blocks` is a [Block entry](#block-entries). This represents the possible states that the indicator will spawn. This does **not** support weighted entries.
+* `blocks` is a [Block Entry](#block-entries). This represents the possible states that the indicator will spawn. This does **not** support weighted entries.
 
 Indicators can also contain the following optional entries
 
@@ -58,6 +58,7 @@ Indicators can also contain the following optional entries
 * `max_depth` (Default: 32) This is the maximum depth for an ore block to generate which would attempt to spawn an indicator.
 * `ignore_vegetation` (Default: true) If the vein should ignore vegetation when trying to spawn indicators. (i.e. should the indicators spawn underneath trees, leaves or huge mushrooms?)
 * `ignore_liquids` (Default: false) If the vein should ignore liquids when trying to spawn indicators. (i.e. should the indicator spawn inside lakes or the ocean?)
+* `blocks_under` (Default: accepts all blocks) This is a [Block Entry](#block-entries). The list of blocks that this indicator is allowed to spawn on.
 
 An example indicator that spawns roses when ore blocks are less than twenty blocks under the surface would be added to the ore entry as such:
 

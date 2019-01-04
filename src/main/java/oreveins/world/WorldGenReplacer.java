@@ -15,7 +15,6 @@ import oreveins.OreVeinsConfig;
 
 public class WorldGenReplacer
 {
-
     @SubscribeEvent
     public void onGenerateMineable(OreGenEvent.GenerateMinable event)
     {

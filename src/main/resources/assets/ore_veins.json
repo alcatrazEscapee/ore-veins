@@ -35,6 +35,11 @@
         "weight": 1
       }
     ],
+    "indicator": {
+      "blocks": "minecraft:dead_bush",
+      "blocks_under": "minecraft:sand",
+      "rarity": 40
+    },
     "stone": "minecraft:stone",
     "rarity": 30,
     "min_y": 32,

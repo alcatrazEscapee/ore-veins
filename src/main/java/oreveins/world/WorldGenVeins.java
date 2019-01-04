@@ -171,12 +171,15 @@ public class WorldGenVeins implements IWorldGenerator
                         {
                             if (random.nextFloat() < veinIndicator.chance)
                             {
-                                IBlockState indicatorState = veinIndicator.getStateToGenerate(random);
                                 BlockPos posAt = veinIndicator.ignoreVegetation ? getTopBlockIgnoreVegetation(world, new BlockPos(xoff + x, 0, zoff + z)) : new BlockPos(xoff + x, world.getHeight(xoff + x, zoff + z), zoff + z);
+
+                                IBlockState indicatorState = veinIndicator.getStateToGenerate(random);
                                 IBlockState stateAt = world.getBlockState(posAt);
 
-                                // If the vein is ignoring liquids
-                                if (indicatorState.getBlock().canPlaceBlockAt(world, posAt) && stateAt.getBlock().isReplaceable(world, posAt) && (veinIndicator.ignoreLiquids || !stateAt.getMaterial().isLiquid()))
+                                // The indicator must pass canPlaceBlockAt
+                                // The previous state must be replaceable, non-liquid or the vein ignores liquids
+                                // The under state must pass validUnderState or have no under condition
+                                if (indicatorState.getBlock().canPlaceBlockAt(world, posAt) && stateAt.getBlock().isReplaceable(world, posAt) && (veinIndicator.ignoreLiquids || !stateAt.getMaterial().isLiquid()) && (!veinIndicator.hasUnderCondition || veinIndicator.validUnderState(world.getBlockState(posAt.down()))))
                                 {
                                     world.setBlockState(posAt, indicatorState);
                                 }

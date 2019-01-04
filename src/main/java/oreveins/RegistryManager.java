@@ -77,6 +77,7 @@ public class RegistryManager
     static void registerAllVeins()
     {
         List<Config> entries = getAllOreEntries();
+        registry.clear();
 
         // Parse all config entries
         int maxRadius = 1;

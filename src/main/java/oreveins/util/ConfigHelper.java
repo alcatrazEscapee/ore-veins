@@ -12,13 +12,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.google.common.collect.LinkedListMultimap;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigValueType;
+import gnu.trove.map.hash.TObjectIntHashMap;
 
 @ParametersAreNonnullByDefault
 public class ConfigHelper
@@ -136,10 +136,9 @@ public class ConfigHelper
      * @throws IllegalArgumentException if a problem was found trying to find the block states
      */
     @Nonnull
-    public static LinkedListMultimap<IBlockState, Integer> getWeightedBlockStateList(Config config, String key) throws IllegalArgumentException
+    public static TObjectIntHashMap<IBlockState> getWeightedBlockStateList(Config config, String key) throws IllegalArgumentException
     {
-        LinkedListMultimap<IBlockState, Integer> states = LinkedListMultimap.create();
-
+        TObjectIntHashMap<IBlockState> states = new TObjectIntHashMap<>();
         try
         {
             if (config.getValue(key).valueType() == ConfigValueType.LIST)

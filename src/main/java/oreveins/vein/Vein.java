@@ -61,7 +61,6 @@ public class Vein
     @Override
     public String toString()
     {
-        return String.format("type: %s: pos: (%d, %d, %d), size: %.2f",
-                type.getRegistryName(), pos.getX(), pos.getY(), pos.getZ(), size);
+        return String.format("type: %s: pos: (%d, %d, %d), size: %.2f", type.getRegistryName(), pos.getX(), pos.getY(), pos.getZ(), size);
     }
 }

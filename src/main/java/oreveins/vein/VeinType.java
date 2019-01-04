@@ -6,19 +6,19 @@
 
 package oreveins.vein;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.google.common.collect.LinkedListMultimap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 
 import com.typesafe.config.Config;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import oreveins.util.ConfigHelper;
 
 @ParametersAreNonnullByDefault
@@ -43,7 +43,7 @@ public abstract class VeinType
     protected final int totalWeight;
 
     private final List<IBlockState> stoneStates;
-    private final LinkedListMultimap<IBlockState, Integer> oreStates;
+    private TObjectIntHashMap<IBlockState> oreStates;
     private final Indicator indicator;
     private final String name;
 
@@ -61,7 +61,7 @@ public abstract class VeinType
         this.maxY = ConfigHelper.getValue(config, "max_y", 64);
 
         if (this.minY > this.maxY)
-            throw new IllegalArgumentException("min_y is not allowed to be greater than max_Y");
+            throw new IllegalArgumentException("min_y is not allowed to be greater than max_y");
 
         this.horizontalSize = ConfigHelper.getValue(config, "horizontal_size", 15);
         this.verticalSize = ConfigHelper.getValue(config, "vertical_size", 8);
@@ -71,7 +71,7 @@ public abstract class VeinType
 
         this.horizontalSizeSquared = horizontalSize * horizontalSize;
         this.verticalSizeSquared = verticalSize * verticalSize;
-        this.totalWeight = oreStates.values().stream().mapToInt(Integer::intValue).sum();
+        this.totalWeight = Arrays.stream(oreStates.values()).sum();
 
         this.name = name;
     }
@@ -85,11 +85,11 @@ public abstract class VeinType
     {
         float r = rand.nextFloat() * totalWeight;
         float countWeight = 0f;
-        for (Map.Entry<IBlockState, Integer> entry : oreStates.entries())
+        for (IBlockState state : oreStates.keySet())
         {
-            countWeight += entry.getValue().floatValue();
+            countWeight += (float) oreStates.get(state);
             if (countWeight >= r)
-                return entry.getKey();
+                return state;
         }
         throw new RuntimeException("Problem choosing IBlockState from weighted list");
     }
@@ -139,8 +139,7 @@ public abstract class VeinType
     @Override
     public String toString()
     {
-        return String.format("'%s':  rarity: %d, count: %d, y-range: %d - %d, size: %d / %d, density: %d",
-                name, rarity, count, minY, maxY, horizontalSize, verticalSize, density);
+        return String.format("'%s':  rarity: %d, count: %d, y-range: %d - %d, size: %d / %d, density: %d", name, rarity, count, minY, maxY, horizontalSize, verticalSize, density);
     }
 
     @Nonnull
