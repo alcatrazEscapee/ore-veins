@@ -36,7 +36,7 @@
       }
     ],
     "indicator": {
-      "blocks": "minecraft:dead_bush",
+      "blocks": "minecraft:deadbush",
       "blocks_under": "minecraft:sand",
       "rarity": 40
     },
