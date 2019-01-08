@@ -99,10 +99,18 @@ public abstract class VeinType
         return stoneStates.contains(state);
     }
 
-    @Nonnull
-    public Vein createVein(BlockPos pos, Random rand)
+    public Vein createVein(int chunkX, int chunkZ, Random rand)
     {
-        return new Vein(this, pos, rand);
+        return new Vein(this, defaultStartPos(chunkX, chunkZ, rand), rand);
+    }
+
+    final BlockPos defaultStartPos(int chunkX, int chunkZ, Random rand)
+    {
+        return new BlockPos(
+                chunkX * 16 + rand.nextInt(16),
+                this.minY + rand.nextInt(this.maxY - this.minY),
+                chunkZ * 16 + rand.nextInt(16)
+        );
     }
 
     /**

@@ -76,12 +76,7 @@ public class WorldGenVeins implements IWorldGenerator
             {
                 if (rand.nextInt(type.rarity) == 0)
                 {
-                    BlockPos startPos = new BlockPos(
-                            chunkX * 16 + rand.nextInt(16),
-                            type.minY + rand.nextInt(type.maxY - type.minY),
-                            chunkZ * 16 + rand.nextInt(16)
-                    );
-                    veins.add(type.createVein(startPos, rand));
+                    veins.add(type.createVein(chunkX, chunkZ, rand));
                 }
             }
         }
