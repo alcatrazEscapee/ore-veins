@@ -180,7 +180,8 @@ public class RegistryManager
         SPHERE(VeinTypeSphere::new),
         CLUSTER(VeinTypeCluster::new),
         CONE(VeinTypeCone::new),
-        PIPE(VeinTypePipe::new);
+        PIPE(VeinTypePipe::new),
+        CURVE(VeinTypeCurve::new);
 
         private BiFunction<String, Config, VeinType> supplier;
 
