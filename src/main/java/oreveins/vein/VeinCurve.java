@@ -21,14 +21,14 @@ public class VeinCurve extends Vein
     private final Random rand;
     private boolean isInitialized = false;
 
-    public class CurveSegment
+    class CurveSegment
     {
-        public final Vec3d begin;
-        public final double length;
-        public final double yaw;
-        public final double pitch;
+        final Vec3d begin;
+        final double length;
+        final double yaw;
+        final double pitch;
 
-        public CurveSegment(Vec3d begin, double length, double yaw, double pitch) {
+        CurveSegment(Vec3d begin, double length, double yaw, double pitch) {
             this.begin = begin;
             this.length = length;
             this.yaw = yaw;
@@ -59,7 +59,7 @@ public class VeinCurve extends Vein
                 getType().getRegistryName(), getPos().getX(), getPos().getY(), getPos().getZ(), size);
     }
 
-    public boolean isInitialized()
+    boolean isInitialized()
     {
         return isInitialized;
     }
@@ -73,13 +73,13 @@ public class VeinCurve extends Vein
         return new Vec3d(x, y, z);
     }
 
-    public void initialize(int hSize, int vSize, float angle)
+    void initialize(int hSize, int vSize, float angle)
     {
         double kxy = Math.tan(angle * (1.0f - 2.0f*rand.nextFloat()));
         double kyz = Math.tan(angle * (1.0f - 2.0f*rand.nextFloat()));
 
-        final float h2Size = (hSize * getSize()) / 2;
-        final float v2Size = vSize / 2;
+        final float h2Size = ((float)hSize * getSize()) / 2;
+        final float v2Size = (float)vSize / 2;
 
         // four points for cubic Bezier curve
         // p1 and p4 placed on (hSize; hSize; vSize) box with center in vein position
@@ -152,7 +152,7 @@ public class VeinCurve extends Vein
         isInitialized = true;
     }
 
-    public List<CurveSegment> getSegmentList() {
+    List<CurveSegment> getSegmentList() {
         return segmentList;
     }
 }
