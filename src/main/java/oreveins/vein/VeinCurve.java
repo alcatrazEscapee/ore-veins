@@ -117,7 +117,7 @@ public class VeinCurve extends Vein
         // curve segmentation
         while (t < 1.0)
         {
-            pb = (t == 0.0) ? pl : pe;
+            pb = (t == 0.0) ? p1 : pe;
 
             t += step;
             if (t > 1.0) t = 1.0;
