@@ -28,9 +28,9 @@ public class VeinTypeCluster extends VeinType
 
     @Override
     @Nonnull
-    public Vein createVein(BlockPos pos, Random rand)
+    public Vein createVein(int chunkX, int chunkZ, Random rand)
     {
-        return new VeinCluster(this, pos, rand);
+        return new VeinCluster(this, defaultStartPos(chunkX, chunkZ, rand), rand);
     }
 
     @Override
