@@ -30,8 +30,17 @@ public class VeinTypeCurve extends VeinType
     }
 
     @Override
-    public Vein createVein(BlockPos pos, Random rand)
+    public Vein createVein(int chunkX, int chunkZ, Random rand)
     {
+        int maxOffY = this.maxY - this.minY - this.verticalSize;
+        int posY = this.minY + this.verticalSize / 2 + ((maxOffY > 0) ? rand.nextInt(maxOffY) : 0);
+
+        BlockPos pos = new BlockPos(
+                chunkX * 16 + rand.nextInt(16),
+                posY,
+                chunkZ * 16 + rand.nextInt(16)
+        );
+
         return new VeinCurve(this, pos, rand);
     }
 
