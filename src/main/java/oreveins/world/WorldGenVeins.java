@@ -15,13 +15,13 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockHugeMushroom;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
 import oreveins.OreVeinsConfig;
@@ -87,9 +87,19 @@ public class WorldGenVeins implements IWorldGenerator
         if (biomes == null) return true;
         for (String s : biomes)
         {
-            ResourceLocation loc = biome.getRegistryName();
-            if (loc != null && (s.equals(loc.getResourcePath()) || s.toUpperCase().equals(biome.getTempCategory().name())))
+            //noinspection ConstantConditions
+            String biomeName = biome.getRegistryName().getResourcePath();
+            if (biomeName.equals(s))
+            {
                 return isWhitelist;
+            }
+            for (BiomeDictionary.Type type : BiomeDictionary.getTypes(biome))
+            {
+                if (s.toUpperCase().equals(type.getName()))
+                {
+                    return isWhitelist;
+                }
+            }
         }
         return !isWhitelist;
     }

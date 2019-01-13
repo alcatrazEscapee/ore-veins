@@ -1,4 +1,5 @@
-v2.0.6
+v2.0.7
 
 Changes:
-- Fixed coal example having invalid json - oops
+- Added "curve" type veins (thanks Assaders)
+- biome entry can now respect forge biome dictionary tags

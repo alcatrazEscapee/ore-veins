@@ -2,6 +2,8 @@
 
 This is a Minecraft mod to add realistically shaped veins of ore to your world. Useful for custom maps, mod packs, or just a different survival experience. Everything is fully configurable via json, meaning you can have ore veins of whatever type of shape or size you want.
 
+For example images of various types and configurations of veins see the curseforge images [here](https://minecraft.curseforge.com/projects/realistic-ore-veins/images).
+
 ## Configuration:
 
 Ore Veins will look for all files under config/oreveins/. When you first add ore veins, it will create a default file with some example configuration. Feel free to use or modify this. It is also found here on github at [src/main/resources/assets/ore_veins.json](https://github.com/alcatrazEscapee/ore-veins/blob/master/src/main/resources/assets/ore_veins.json).
@@ -21,7 +23,7 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `density` (Default: 50) Density of the ore vein. Higher values are more dense. (FYI: This number is not a percentage. For 100% density use values >1000)
 * `vertical_size` (Default: 15) Vertical radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
 * `horizontal_size` (Default: 8) Horizontal radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
-* `biomes` (Default: all) Whitelist of biome names or temperatures for a biome to spawn in. Must be a list of strings.
+* `biomes` (Default: all) Whitelist of biome names or biome tags for a biome to spawn in. Must be a list of strings. For info on possible tags see the Forge [Biome Dictionary](https://github.com/MinecraftForge/MinecraftForge/blob/1.12.x/src/main/java/net/minecraftforge/common/BiomeDictionary.java).
 * `biomes_is_whitelist` (Default: true) When false, the biome list becomes a blacklist
 * `dimensions` (Default: 0) Whitelist of dimension ids that the ore can spawn in. Must be a list of integers.
 * `dimensions_is_whitelist` (Default: true) When false, the dimension list becomes a blacklist
@@ -45,6 +47,12 @@ This vein represents a single vertical column / cylinder. This vein type has no 
 This vein represents a vertical cone. The pointy end of the cone can point upwards or downwards. This vein type has two optional parameters:
 * `inverted` (Default: false) If true, the cone will have a pointy end facing down. If false, the pointy end will face up
 * `shape` (Default: 0.5) This value determines how pointy the cone will be. It should be between 0.0 and 1.0. Higher values mean less pointy (more cylindrical). Smaller values are more pointy
+
+*Curve* (`"type": "curve"`)
+This vein represents a curve (created with a cubic Bezier curve.) It has two optional parameters:
+* `radius` (Default: 5) This is the approximate radius of the curve in blocks.
+* `angle` (Default: 45) This is the maximum angle for vertical vein rotation, in a range from 0 to 90. Zero be completely horizontal, and 90 will have the full range of vertical directions to curve in.
+
 
 ### Indicators
 
