@@ -42,7 +42,7 @@ public class OreVeins
     public static final String DEPENDENCIES = "required-after:forge@[" + FORGE_MIN + "," + FORGE_MAX + ");";
 
     private static Logger log;
-    private boolean isSignedBuild;
+    private boolean isSignedBuild = true;
 
     public static Logger getLog()
     {
