@@ -1,5 +1,4 @@
-v2.0.7
+v2.0.8
 
 Changes:
-- Added "curve" type veins (thanks Assaders)
-- biome entry can now respect forge biome dictionary tags
+- Fixed a log warning "This is an unsupported build...". If you encounter that warning prior to v2.0.8, it was most likely incorrect.
