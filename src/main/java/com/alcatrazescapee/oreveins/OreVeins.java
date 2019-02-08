@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package oreveins;
+package com.alcatrazescapee.oreveins;
 
 
 import org.apache.logging.log4j.Logger;
@@ -22,11 +22,11 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import oreveins.cmd.CommandClearWorld;
-import oreveins.cmd.CommandFindVeins;
-import oreveins.cmd.CommandVeinInfo;
-import oreveins.world.WorldGenReplacer;
-import oreveins.world.WorldGenVeins;
+import com.alcatrazescapee.oreveins.cmd.CommandClearWorld;
+import com.alcatrazescapee.oreveins.cmd.CommandFindVeins;
+import com.alcatrazescapee.oreveins.cmd.CommandVeinInfo;
+import com.alcatrazescapee.oreveins.world.WorldGenReplacer;
+import com.alcatrazescapee.oreveins.world.WorldGenVeins;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 @Mod(modid = OreVeins.MOD_ID, version = OreVeins.VERSION, dependencies = OreVeins.DEPENDENCIES, acceptableRemoteVersions = "*", certificateFingerprint = "3c2d6be715971d1ed58a028cdb3fae72987fc934")

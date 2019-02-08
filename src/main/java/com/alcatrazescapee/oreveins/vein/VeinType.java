@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package oreveins.vein;
+package com.alcatrazescapee.oreveins.vein;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,9 +17,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 
+import com.alcatrazescapee.oreveins.util.ConfigHelper;
 import com.typesafe.config.Config;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import oreveins.util.ConfigHelper;
 
 @ParametersAreNonnullByDefault
 public abstract class VeinType

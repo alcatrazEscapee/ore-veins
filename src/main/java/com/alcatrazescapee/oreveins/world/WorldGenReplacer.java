@@ -4,14 +4,14 @@
  * See the project LICENSE.md for more information.
  */
 
-package oreveins.world;
+package com.alcatrazescapee.oreveins.world;
 
 import net.minecraftforge.event.terraingen.OreGenEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import oreveins.OreVeins;
-import oreveins.OreVeinsConfig;
+import com.alcatrazescapee.oreveins.OreVeins;
+import com.alcatrazescapee.oreveins.OreVeinsConfig;
 
 public class WorldGenReplacer
 {

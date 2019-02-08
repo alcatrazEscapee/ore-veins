@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package oreveins.vein;
+package com.alcatrazescapee.oreveins.vein;
 
 import java.util.Random;
 import javax.annotation.Nonnull;

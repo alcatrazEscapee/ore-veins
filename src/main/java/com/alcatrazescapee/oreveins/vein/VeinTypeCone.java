@@ -4,14 +4,14 @@
  * See the project LICENSE.md for more information.
  */
 
-package oreveins.vein;
+package com.alcatrazescapee.oreveins.vein;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.util.math.BlockPos;
 
+import com.alcatrazescapee.oreveins.util.ConfigHelper;
 import com.typesafe.config.Config;
-import oreveins.util.ConfigHelper;
 
 @ParametersAreNonnullByDefault
 public class VeinTypeCone extends VeinType

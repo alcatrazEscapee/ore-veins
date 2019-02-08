@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package oreveins.cmd;
+package com.alcatrazescapee.oreveins.cmd;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,8 +23,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-import oreveins.RegistryManager;
-import oreveins.vein.VeinType;
+import com.alcatrazescapee.oreveins.RegistryManager;
+import com.alcatrazescapee.oreveins.vein.VeinType;
 
 @ParametersAreNonnullByDefault
 public class CommandClearWorld extends CommandBase

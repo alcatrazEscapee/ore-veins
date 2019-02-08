@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package oreveins.vein;
+package com.alcatrazescapee.oreveins.vein;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,8 +14,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
+import com.alcatrazescapee.oreveins.util.ConfigHelper;
 import com.typesafe.config.Config;
-import oreveins.util.ConfigHelper;
 
 @ParametersAreNonnullByDefault
 public class VeinTypeCurve extends VeinType

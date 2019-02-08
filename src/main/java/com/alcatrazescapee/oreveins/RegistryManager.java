@@ -5,7 +5,7 @@
  */
 
 
-package oreveins;
+package com.alcatrazescapee.oreveins;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,12 +22,12 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.apache.commons.io.FileUtils;
 
+import com.alcatrazescapee.oreveins.cmd.CommandClearWorld;
+import com.alcatrazescapee.oreveins.vein.*;
+import com.alcatrazescapee.oreveins.world.WorldGenVeins;
 import com.typesafe.config.*;
-import oreveins.cmd.CommandClearWorld;
-import oreveins.vein.*;
-import oreveins.world.WorldGenVeins;
 
-import static oreveins.OreVeins.MOD_ID;
+import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
 public class RegistryManager
 {

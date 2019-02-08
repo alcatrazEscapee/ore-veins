@@ -5,7 +5,7 @@
  */
 
 
-package oreveins;
+package com.alcatrazescapee.oreveins;
 
 import net.minecraftforge.common.config.Config;
 

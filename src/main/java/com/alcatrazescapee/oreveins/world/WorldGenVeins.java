@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package oreveins.world;
+package com.alcatrazescapee.oreveins.world;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +24,11 @@ import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
-import oreveins.OreVeinsConfig;
-import oreveins.RegistryManager;
-import oreveins.vein.Indicator;
-import oreveins.vein.Vein;
-import oreveins.vein.VeinType;
+import com.alcatrazescapee.oreveins.OreVeinsConfig;
+import com.alcatrazescapee.oreveins.RegistryManager;
+import com.alcatrazescapee.oreveins.vein.Indicator;
+import com.alcatrazescapee.oreveins.vein.Vein;
+import com.alcatrazescapee.oreveins.vein.VeinType;
 
 public class WorldGenVeins implements IWorldGenerator
 {

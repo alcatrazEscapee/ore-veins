@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package oreveins.vein;
+package com.alcatrazescapee.oreveins.vein;
 
 import java.util.List;
 import java.util.Random;
@@ -12,8 +12,8 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.block.state.IBlockState;
 
+import com.alcatrazescapee.oreveins.util.ConfigHelper;
 import com.typesafe.config.Config;
-import oreveins.util.ConfigHelper;
 
 public class Indicator
 {

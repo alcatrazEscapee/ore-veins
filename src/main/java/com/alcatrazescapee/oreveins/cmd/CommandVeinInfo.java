@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package oreveins.cmd;
+package com.alcatrazescapee.oreveins.cmd;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,26 +20,24 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 
-import oreveins.RegistryManager;
-import oreveins.vein.Vein;
-import oreveins.vein.VeinType;
-import oreveins.world.WorldGenVeins;
+import com.alcatrazescapee.oreveins.RegistryManager;
+import com.alcatrazescapee.oreveins.vein.VeinType;
 
 @ParametersAreNonnullByDefault
-public class CommandFindVeins extends CommandBase
+public class CommandVeinInfo extends CommandBase
 {
     @Override
     @Nonnull
     public String getName()
     {
-        return "findveins";
+        return "veininfo";
     }
 
     @Override
     @Nonnull
     public String getUsage(ICommandSender sender)
     {
-        return "/findveins [all|<vein name>] <radius> -> Finds all instances of a specific vein, or all veins within a certian chunk radius";
+        return "/veininfo [all|<vein name>] -> lists info about registered veins. Use 'all' to see all registered veins";
     }
 
     @Override
@@ -54,21 +52,22 @@ public class CommandFindVeins extends CommandBase
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
-        if (args.length != 2) throw new WrongUsageException("2 arguments required.");
+        if (args.length != 1) throw new WrongUsageException("1 argument required.");
         if (sender.getCommandSenderEntity() == null) throw new WrongUsageException("Can only be used by a player");
 
-        sender.sendMessage(new TextComponentString("Veins Found: "));
-
-        final int radius = parseInt(args[1], 1, 1000);
-        final List<Vein> veins = WorldGenVeins.getNearbyVeins(sender.getCommandSenderEntity().chunkCoordX, sender.getCommandSenderEntity().chunkCoordZ, sender.getEntityWorld().getSeed(), radius);
-        if (!args[0].equals("all"))
+        sender.sendMessage(new TextComponentString("Registered Veins: "));
+        if (args[0].equals("all"))
         {
-            final VeinType type = RegistryManager.getVeins().get(args[0]);
+            // Search for all veins
+            RegistryManager.getVeins().keySet().forEach(x -> sender.sendMessage(new TextComponentString("> Vein Type: " + x)));
+        }
+        else
+        {
+            // Search for veins that match a type
+            VeinType type = RegistryManager.getVeins().get(args[0]);
             if (type == null)
                 throw new WrongUsageException("Vein supplied does not match 'all' or any valid vein names. Use /veininfo to see valid vein names");
-            // Search for veins matching type
-            veins.removeIf(x -> x.getType() != type);
+            sender.sendMessage(new TextComponentString("> Vein Type: " + type.toString()));
         }
-        veins.forEach(x -> sender.sendMessage(new TextComponentString("> Vein: " + x.toString())));
     }
 }
