@@ -13,7 +13,6 @@ import net.minecraftforge.common.config.Config;
 @Config(modid = OreVeins.MOD_ID)
 public class OreVeinsConfig
 {
-
     @Config.Comment("Stop all vanilla ore gen calls (OreGenEvent.GenerateMineable)")
     public static boolean NO_ORES = false;
 
@@ -33,7 +32,7 @@ public class OreVeinsConfig
     @Config.RangeInt(min = 0, max = 10)
     public static int EXTRA_CHUNK_SEARCH_RANGE = 0;
 
-    @Config.Comment("Enables debug commands /clearworld, /veininfo and /findveins")
+    @Config.Comment("Enables debug commands /clearworld, /veininfo, /reloadveins and /findveins")
     @Config.RequiresMcRestart
     public static boolean DEBUG_COMMANDS = true;
 }

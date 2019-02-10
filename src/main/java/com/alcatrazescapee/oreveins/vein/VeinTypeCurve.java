@@ -1,40 +1,36 @@
-/*
- * Part of the Ore Veins Mod by alcatrazEscapee
- * Work under Copyright. Licensed under the GPL-3.0.
- * See the project LICENSE.md for more information.
- */
-
 package com.alcatrazescapee.oreveins.vein;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-import com.alcatrazescapee.oreveins.util.ConfigHelper;
-import com.typesafe.config.Config;
+import com.alcatrazescapee.oreveins.api.AbstractVein;
+import com.alcatrazescapee.oreveins.api.AbstractVeinType;
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 @ParametersAreNonnullByDefault
-public class VeinTypeCurve extends VeinType
+public class VeinTypeCurve extends AbstractVeinType<VeinTypeCurve.VeinCurve>
 {
-    private final float radius;
-    private final float angle;
-
-    public VeinTypeCurve(String name, Config config)
-    {
-        super(name, config);
-        this.radius = ConfigHelper.getValue(config, "radius", 5.0f);
-        this.angle = ConfigHelper.getValue(config, "angle", 45.0f);
-    }
+    float radius = 5;
+    float angle = 45;
 
     @Override
-    public Vein createVein(int chunkX, int chunkZ, Random rand)
+    public boolean inRange(VeinCurve vein, int xOffset, int zOffset)
     {
-        int maxOffY = this.maxY - this.minY - this.verticalSize;
-        int posY = this.minY + this.verticalSize / 2 + ((maxOffY > 0) ? rand.nextInt(maxOffY) : 0);
+        return (xOffset < horizontalSize * vein.getSize()) && (zOffset < horizontalSize * vein.getSize());
+    }
+
+    @Nonnull
+    @Override
+    protected VeinCurve createVein(int chunkX, int chunkZ, Random rand)
+    {
+        int maxOffY = getMaxY() - getMinY() - verticalSize;
+        int posY = getMinY() + verticalSize / 2 + ((maxOffY > 0) ? rand.nextInt(maxOffY) : 0);
 
         BlockPos pos = new BlockPos(
                 chunkX * 16 + rand.nextInt(16),
@@ -46,22 +42,9 @@ public class VeinTypeCurve extends VeinType
     }
 
     @Override
-    boolean inRange(Vein vein, int xOffset, int zOffset)
+    public double getChanceToGenerate(VeinCurve vein, BlockPos pos)
     {
-        return (xOffset < this.horizontalSize * vein.getSize()) && (zOffset < this.horizontalSize * vein.getSize());
-    }
-
-    @Override
-    float getChanceToGenerate(Vein vein, BlockPos pos)
-    {
-        VeinCurve veinCurve = (VeinCurve) vein;
-
-        if (!veinCurve.isInitialized())
-        {
-            veinCurve.initialize(this.horizontalSize, this.verticalSize, this.angle);
-        }
-
-        for (CurveSegment segment : veinCurve.getSegmentList())
+        for (CurveSegment segment : vein.getSegmentList())
         {
             Vec3d blockPos = new Vec3d(pos);
             Vec3d centeredPos = blockPos.subtract(segment.begin);
@@ -83,46 +66,40 @@ public class VeinTypeCurve extends VeinType
 
             if (((posY.y >= 0 && posY.y <= length) || (posY.y < 0 && posY.y >= length)) && rad < this.radius)
             {
-                return 0.005f * this.density * (1f - 0.9f * (float) rad / this.radius);
+                return 0.005f * density * (1f - 0.9f * (float) rad / this.radius);
             }
         }
 
         return 0.0f;
     }
 
-    @ParametersAreNonnullByDefault
-    private static class VeinCurve extends Vein
+    static class VeinCurve extends AbstractVein<VeinTypeCurve>
     {
-        private final float size;
         private final Random rand;
         private boolean isInitialized = false;
-
         private List<CurveSegment> segmentList;
 
-        VeinCurve(VeinType type, BlockPos pos, Random random)
+        VeinCurve(VeinTypeCurve type, BlockPos pos, Random random)
         {
-            super(type, pos, random);
-            this.size = 0.5f * (1.0f + random.nextFloat());
+            super(type, pos, 0.5 * (1.0 + random.nextDouble()));
             this.rand = new Random(random.nextLong());
-
-            this.segmentList = new LinkedList<>();
-        }
-
-        float getSize()
-        {
-            return size;
+            this.segmentList = new ArrayList<>();
         }
 
         @Override
-        public String toString()
+        public boolean inRange(int x, int z)
         {
-            return String.format("type: %s: pos: (%d, %d, %d), size: %.2f",
-                    getType().getRegistryName(), getPos().getX(), getPos().getY(), getPos().getZ(), size);
+            return getType().inRange(this, getPos().getX() - x, getPos().getZ() - z);
         }
 
-        boolean isInitialized()
+        @Override
+        public double getChanceToGenerate(@Nonnull BlockPos pos)
         {
-            return isInitialized;
+            if (!isInitialized)
+            {
+                initialize(getType().horizontalSize, getType().verticalSize, getType().angle);
+            }
+            return getType().getChanceToGenerate(this, pos);
         }
 
         List<CurveSegment> getSegmentList()
@@ -144,8 +121,8 @@ public class VeinTypeCurve extends VeinType
             double kxy = Math.tan(angle * (1.0f - 2.0f * rand.nextFloat()));
             double kyz = Math.tan(angle * (1.0f - 2.0f * rand.nextFloat()));
 
-            final float h2Size = ((float) hSize * getSize()) / 2;
-            final float v2Size = (float) vSize / 2;
+            final double h2Size = hSize * getSize() / 2d;
+            final double v2Size = vSize / 2d;
 
             // four points for cubic Bezier curve
             // p1 and p4 placed on (hSize; hSize; vSize) box with center in vein position

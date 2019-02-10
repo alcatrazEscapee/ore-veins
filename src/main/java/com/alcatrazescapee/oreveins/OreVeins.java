@@ -25,6 +25,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import com.alcatrazescapee.oreveins.cmd.CommandClearWorld;
 import com.alcatrazescapee.oreveins.cmd.CommandFindVeins;
 import com.alcatrazescapee.oreveins.cmd.CommandVeinInfo;
+import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 import com.alcatrazescapee.oreveins.world.WorldGenReplacer;
 import com.alcatrazescapee.oreveins.world.WorldGenVeins;
 
@@ -42,12 +43,13 @@ public class OreVeins
     public static final String DEPENDENCIES = "required-after:forge@[" + FORGE_MIN + "," + FORGE_MAX + ");";
 
     private static Logger log;
-    private boolean isSignedBuild = true;
 
     public static Logger getLog()
     {
         return log;
     }
+
+    private boolean isSignedBuild = true;
 
     // This is necessary in order to catch the NewRegistry Event
     public OreVeins()
@@ -73,7 +75,7 @@ public class OreVeins
         if (!isSignedBuild)
             log.warn("You are not running an official build. This version will NOT be supported by the author.");
 
-        RegistryManager.preInit(event.getModConfigurationDirectory());
+        VeinRegistry.preInit(event.getModConfigurationDirectory());
 
         GameRegistry.registerWorldGenerator(new WorldGenVeins(), 1);
         MinecraftForge.ORE_GEN_BUS.register(new WorldGenReplacer());
@@ -84,7 +86,7 @@ public class OreVeins
     {
         if (!isSignedBuild)
             log.warn("You are not running an official build. This version will NOT be supported by the author.");
-        RegistryManager.registerAllVeins();
+        VeinRegistry.reloadVeins();
     }
 
     @Mod.EventHandler

@@ -20,9 +20,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 
-import com.alcatrazescapee.oreveins.RegistryManager;
-import com.alcatrazescapee.oreveins.vein.Vein;
-import com.alcatrazescapee.oreveins.vein.VeinType;
+import com.alcatrazescapee.oreveins.api.IVein;
+import com.alcatrazescapee.oreveins.api.IVeinType;
+import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 import com.alcatrazescapee.oreveins.world.WorldGenVeins;
 
 @ParametersAreNonnullByDefault
@@ -43,15 +43,6 @@ public class CommandFindVeins extends CommandBase
     }
 
     @Override
-    @Nonnull
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
-    {
-        if (args.length == 1)
-            return getListOfStringsMatchingLastWord(args, CommandClearWorld.veinNames);
-        return Collections.emptyList();
-    }
-
-    @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length != 2) throw new WrongUsageException("2 arguments required.");
@@ -60,15 +51,28 @@ public class CommandFindVeins extends CommandBase
         sender.sendMessage(new TextComponentString("Veins Found: "));
 
         final int radius = parseInt(args[1], 1, 1000);
-        final List<Vein> veins = WorldGenVeins.getNearbyVeins(sender.getCommandSenderEntity().chunkCoordX, sender.getCommandSenderEntity().chunkCoordZ, sender.getEntityWorld().getSeed(), radius);
+        final List<IVein> veins = WorldGenVeins.getNearbyVeins(sender.getCommandSenderEntity().chunkCoordX, sender.getCommandSenderEntity().chunkCoordZ, sender.getEntityWorld().getSeed(), radius);
         if (!args[0].equals("all"))
         {
-            final VeinType type = RegistryManager.getVeins().get(args[0]);
+            final IVeinType type = VeinRegistry.getVein(args[0]);
             if (type == null)
+            {
                 throw new WrongUsageException("Vein supplied does not match 'all' or any valid vein names. Use /veininfo to see valid vein names");
+            }
             // Search for veins matching type
             veins.removeIf(x -> x.getType() != type);
         }
         veins.forEach(x -> sender.sendMessage(new TextComponentString("> Vein: " + x.toString())));
+    }
+
+    @Override
+    @Nonnull
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
+    {
+        if (args.length == 1)
+        {
+            return getListOfStringsMatchingLastWord(args, VeinRegistry.getNames());
+        }
+        return Collections.emptyList();
     }
 }

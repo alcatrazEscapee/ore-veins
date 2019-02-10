@@ -23,27 +23,20 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-import com.alcatrazescapee.oreveins.RegistryManager;
-import com.alcatrazescapee.oreveins.vein.VeinType;
+import com.alcatrazescapee.oreveins.api.IVeinType;
+import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 
 @ParametersAreNonnullByDefault
 public class CommandClearWorld extends CommandBase
 {
-    private static Set<IBlockState> veinStates;
-    static Set<String> veinNames;
+    private static final Set<IBlockState> VEIN_STATES = new HashSet<>();
 
     public static void resetVeinStates()
     {
-        veinStates = new HashSet<>();
-        RegistryManager.getVeins()
-                .values()
+        VeinRegistry.getVeins()
                 .stream()
-                .map(VeinType::getOreStates)
-                .forEach(x -> veinStates.addAll(x));
-
-        veinNames = new HashSet<>();
-        veinNames.addAll(RegistryManager.getVeins().keySet());
-        veinNames.add("all");
+                .map(IVeinType::getOreStates)
+                .forEach(VEIN_STATES::addAll);
     }
 
     @Override
@@ -80,8 +73,10 @@ public class CommandClearWorld extends CommandBase
                 for (int y = 255 - center.getY(); y >= -center.getY(); y--)
                 {
                     final BlockPos pos = center.add(x, y, z);
-                    if (!veinStates.contains(world.getBlockState(pos)))
+                    if (!VEIN_STATES.contains(world.getBlockState(pos)))
+                    {
                         world.setBlockState(pos, AIR, 2 | 16);
+                    }
                 }
             }
         }

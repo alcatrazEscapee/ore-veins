@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.minecraft.block.BlockHugeMushroom;
 import net.minecraft.block.state.IBlockState;
@@ -21,98 +20,45 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
-import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
 import com.alcatrazescapee.oreveins.OreVeinsConfig;
-import com.alcatrazescapee.oreveins.RegistryManager;
+import com.alcatrazescapee.oreveins.api.IVein;
+import com.alcatrazescapee.oreveins.api.IVeinType;
 import com.alcatrazescapee.oreveins.vein.Indicator;
-import com.alcatrazescapee.oreveins.vein.Vein;
-import com.alcatrazescapee.oreveins.vein.VeinType;
+import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 
 public class WorldGenVeins implements IWorldGenerator
 {
-
+    private static final Random RANDOM = new Random();
     // This is the max chunk radius that is searched when trying to gather new veins
     // The larger this is, the larger veins can be (as blocks from them will generate in chunks that are farther away)
     // Make sure that veins won't try and go beyond this, it can cause strange generation issues. (chunks missing, cut off, etc.)
     private static int CHUNK_RADIUS;
-    private static int CACHED_CHUNK_RADIUS;
-
-    public static void resetSearchRadius(int maxRadius)
-    {
-        CHUNK_RADIUS = maxRadius + OreVeinsConfig.EXTRA_CHUNK_SEARCH_RANGE;
-        CACHED_CHUNK_RADIUS = maxRadius;
-    }
 
     public static void resetSearchRadius()
     {
-        CHUNK_RADIUS = CACHED_CHUNK_RADIUS + OreVeinsConfig.EXTRA_CHUNK_SEARCH_RANGE;
+        int maxRadius = VeinRegistry.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0);
+        CHUNK_RADIUS = 1 + maxRadius + OreVeinsConfig.EXTRA_CHUNK_SEARCH_RANGE;
     }
 
-    // Used to generate chunk
     @Nonnull
-    public static List<Vein> getNearbyVeins(int chunkX, int chunkZ, long worldSeed, int radius)
+    public static List<IVein> getNearbyVeins(int chunkX, int chunkZ, long worldSeed, int radius)
     {
-        List<Vein> veins = new ArrayList<>();
+        List<IVein> veins = new ArrayList<>();
 
-        for (int x = -radius; x <= radius; x++)
+        for (IVeinType type : VeinRegistry.getVeins())
         {
-            for (int z = -radius; z <= radius; z++)
+            for (int x = chunkX - radius; x <= chunkX + radius; x++)
             {
-                getVeinsAtChunk(veins, chunkX + x, chunkZ + z, worldSeed);
+                for (int z = chunkZ - radius; z <= chunkX + radius; z++)
+                {
+                    RANDOM.setSeed(worldSeed + x * 341873128712L + z * 132897987541L);
+                    type.addVeins(veins, x, z, RANDOM);
+                }
             }
         }
         return veins;
-    }
-
-    // Gets veins at a single chunk. Deterministic for a specific chunk x/z and world seed
-    private static void getVeinsAtChunk(List<Vein> veins, int chunkX, int chunkZ, long worldSeed)
-    {
-        Random rand = new Random(worldSeed + chunkX * 341873128712L + chunkZ * 132897987541L);
-        for (VeinType type : RegistryManager.getVeins().values())
-        {
-            for (int i = 0; i < type.count; i++)
-            {
-                if (rand.nextInt(type.rarity) == 0)
-                {
-                    veins.add(type.createVein(chunkX, chunkZ, rand));
-                }
-            }
-        }
-    }
-
-    private static boolean doesMatchBiome(@Nullable List<String> biomes, Biome biome, boolean isWhitelist)
-    {
-        if (biomes == null) return true;
-        for (String s : biomes)
-        {
-            //noinspection ConstantConditions
-            String biomeName = biome.getRegistryName().getResourcePath();
-            if (biomeName.equals(s))
-            {
-                return isWhitelist;
-            }
-            for (BiomeDictionary.Type type : BiomeDictionary.getTypes(biome))
-            {
-                if (s.toUpperCase().equals(type.getName()))
-                {
-                    return isWhitelist;
-                }
-            }
-        }
-        return !isWhitelist;
-    }
-
-    private static boolean doesMatchDims(@Nullable List<Integer> dims, int dim, boolean isWhitelist)
-    {
-        if (dims == null) return dim == 0;
-        for (int i : dims)
-        {
-            if (dim == i)
-                return isWhitelist;
-        }
-        return !isWhitelist;
     }
 
     private static BlockPos getTopBlockIgnoreVegetation(World world, BlockPos pos)
@@ -134,60 +80,70 @@ public class WorldGenVeins implements IWorldGenerator
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider)
     {
-        List<Vein> veins = getNearbyVeins(chunkX, chunkZ, world.getSeed(), CHUNK_RADIUS);
+        List<IVein> veins = getNearbyVeins(chunkX, chunkZ, world.getSeed(), CHUNK_RADIUS);
         if (veins.isEmpty()) return;
 
         int xoff = chunkX * 16 + 8;
         int zoff = chunkZ * 16 + 8;
-        for (Vein vein : veins)
+        for (IVein vein : veins)
         {
-            Indicator veinIndicator = vein.getType().getIndicator();
-            if (doesMatchDims(vein.getType().dims, world.provider.getDimension(), vein.getType().dimensionIsWhitelist))
+            if (vein.getType().matchesDimension(world.provider.getDimension()))
             {
-                for (int x = 0; x < 16; x++)
+                generate(world, random, xoff, zoff, vein);
+            }
+        }
+    }
+
+    private void generate(World world, Random random, int xOff, int zOff, IVein vein)
+    {
+        for (int x = xOff; x < 16 + xOff; x++)
+        {
+            for (int z = zOff; z < 16 + zOff; z++)
+            {
+                // Do checks here that are specific to the the horizontal position, not the vertical one
+                Biome biomeAt = world.getBiome(new BlockPos(x, 0, z));
+                if (vein.getType().matchesBiome(biomeAt) && vein.inRange(x, z))
                 {
-                    for (int z = 0; z < 16; z++)
+                    Indicator veinIndicator = vein.getType().getIndicator();
+                    boolean canGenerateIndicator = false;
+
+                    for (int y = vein.getType().getMinY(); y <= vein.getType().getMaxY(); y++)
                     {
-                        // Do checks here that are specific to the the horizontal position, not the vertical one
-                        Biome biomeAt = world.getBiome(new BlockPos(xoff + x, 0, zoff + z));
-                        if (!vein.inRange(xoff + x, zoff + z) || !doesMatchBiome(vein.getType().biomes, biomeAt, vein.getType().biomesIsWhitelist))
-                            continue;
-
-                        boolean canGenerateIndicator = false;
-                        for (int y = vein.getType().minY; y <= vein.getType().maxY; y++)
+                        BlockPos posAt = new BlockPos(x, y, z);
+                        if (random.nextFloat() < vein.getChanceToGenerate(posAt))
                         {
-                            BlockPos posAt = new BlockPos(xoff + x, y, z + zoff);
                             IBlockState stoneState = world.getBlockState(posAt);
-                            IBlockState oreState = vein.getType().getStateToGenerate(random);
-
-                            if (random.nextFloat() < vein.getChanceToGenerateAt(posAt) && vein.getType().canGenerateIn(stoneState))
+                            if (vein.getType().canGenerateIn(stoneState))
                             {
+                                IBlockState oreState = vein.getType().getStateToGenerate(random);
                                 world.setBlockState(posAt, oreState);
                                 if (veinIndicator != null && !canGenerateIndicator)
                                 {
-                                    int depth = world.getHeight(xoff + x, zoff + z) - y;
+                                    int depth = world.getHeight(x, z) - y;
                                     if (depth < 0) depth = -depth;
-                                    canGenerateIndicator = depth < veinIndicator.maxDepth;
+                                    canGenerateIndicator = depth < veinIndicator.getMaxDepth();
                                 }
                             }
                         }
+                    }
 
-                        if (veinIndicator != null && canGenerateIndicator)
+                    if (veinIndicator != null && canGenerateIndicator)
+                    {
+                        if (random.nextInt(veinIndicator.getRarity()) == 0)
                         {
-                            if (random.nextFloat() < veinIndicator.chance)
+                            BlockPos posAt = veinIndicator.shouldIgnoreVegetation() ? getTopBlockIgnoreVegetation(world, new BlockPos(x, 0, z)) : new BlockPos(x, world.getHeight(x, z), z);
+
+                            IBlockState indicatorState = veinIndicator.getStateToGenerate(random);
+                            IBlockState stateAt = world.getBlockState(posAt);
+
+                            // The indicator must pass canPlaceBlockAt
+                            // The previous state must be replaceable, non-liquid or the vein ignores liquids
+                            // The under state must pass validUnderState
+                            if (indicatorState.getBlock().canPlaceBlockAt(world, posAt) && stateAt.getBlock().isReplaceable(world, posAt) &&
+                                    (veinIndicator.shouldIgnoreLiquids() || !stateAt.getMaterial().isLiquid()) &&
+                                    veinIndicator.validUnderState(world.getBlockState(posAt.down())))
                             {
-                                BlockPos posAt = veinIndicator.ignoreVegetation ? getTopBlockIgnoreVegetation(world, new BlockPos(xoff + x, 0, zoff + z)) : new BlockPos(xoff + x, world.getHeight(xoff + x, zoff + z), zoff + z);
-
-                                IBlockState indicatorState = veinIndicator.getStateToGenerate(random);
-                                IBlockState stateAt = world.getBlockState(posAt);
-
-                                // The indicator must pass canPlaceBlockAt
-                                // The previous state must be replaceable, non-liquid or the vein ignores liquids
-                                // The under state must pass validUnderState or have no under condition
-                                if (indicatorState.getBlock().canPlaceBlockAt(world, posAt) && stateAt.getBlock().isReplaceable(world, posAt) && (veinIndicator.ignoreLiquids || !stateAt.getMaterial().isLiquid()) && (!veinIndicator.hasUnderCondition || veinIndicator.validUnderState(world.getBlockState(posAt.down()))))
-                                {
-                                    world.setBlockState(posAt, indicatorState);
-                                }
+                                world.setBlockState(posAt, indicatorState);
                             }
                         }
                     }
