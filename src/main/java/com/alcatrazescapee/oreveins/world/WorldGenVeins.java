@@ -31,34 +31,43 @@ import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 public class WorldGenVeins implements IWorldGenerator
 {
     private static final Random RANDOM = new Random();
-    // This is the max chunk radius that is searched when trying to gather new veins
-    // The larger this is, the larger veins can be (as blocks from them will generate in chunks that are farther away)
-    // Make sure that veins won't try and go beyond this, it can cause strange generation issues. (chunks missing, cut off, etc.)
-    private static int CHUNK_RADIUS;
+    private static int CHUNK_RADIUS = 0;
 
-    public static void resetSearchRadius()
+    public static void resetChunkRadius()
     {
-        int maxRadius = VeinRegistry.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0);
-        CHUNK_RADIUS = 1 + maxRadius + OreVeinsConfig.EXTRA_CHUNK_SEARCH_RANGE;
+        CHUNK_RADIUS = 4 + VeinRegistry.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0) + OreVeinsConfig.EXTRA_CHUNK_SEARCH_RANGE;
     }
 
     @Nonnull
     public static List<IVein> getNearbyVeins(int chunkX, int chunkZ, long worldSeed, int radius)
     {
         List<IVein> veins = new ArrayList<>();
-
-        for (IVeinType type : VeinRegistry.getVeins())
+        for (int x = chunkX - radius; x <= chunkX + radius; x++)
         {
-            for (int x = chunkX - radius; x <= chunkX + radius; x++)
+            for (int z = chunkZ - radius; z <= chunkZ + radius; z++)
             {
-                for (int z = chunkZ - radius; z <= chunkX + radius; z++)
-                {
-                    RANDOM.setSeed(worldSeed + x * 341873128712L + z * 132897987541L);
-                    type.addVeins(veins, x, z, RANDOM);
-                }
+                RANDOM.setSeed(worldSeed + x * 341873128712L + z * 132897987541L);
+                getVeinsAtChunk(veins, x, z, worldSeed);
             }
         }
         return veins;
+    }
+
+    private static void getVeinsAtChunk(List<IVein> veins, int chunkX, int chunkZ, long worldSeed)
+    {
+        Random random = new Random(worldSeed + chunkX * 341873128712L + chunkZ * 132897987541L);
+        for (IVeinType type : VeinRegistry.getVeins())
+        {
+            for (int i = 0; i < type.getCount(); i++)
+            {
+                if (random.nextInt(type.getRarity()) == 0)
+                {
+                    IVein vein = type.createVein(chunkX, chunkZ, random);
+                    //veins.add(type.createVein(chunkX, chunkZ, random));
+                    veins.add(vein);
+                }
+            }
+        }
     }
 
     private static BlockPos getTopBlockIgnoreVegetation(World world, BlockPos pos)
@@ -94,7 +103,7 @@ public class WorldGenVeins implements IWorldGenerator
         }
     }
 
-    private void generate(World world, Random random, int xOff, int zOff, IVein vein)
+    private void generate(World world, Random random, int xOff, int zOff, IVein<?> vein)
     {
         for (int x = xOff; x < 16 + xOff; x++)
         {

@@ -146,20 +146,24 @@ public final class VeinRegistry
                     }
                     catch (Throwable e)
                     {
-                        OreVeins.getLog().info("Vein {} failed to parse. This is most likely caused by incorrectly specified JSON. Error: {}", entry.getKey(), e);
+                        OreVeins.getLog().warn("Vein {} failed to parse. This is most likely caused by incorrectly specified JSON.", entry.getKey());
+                        OreVeins.getLog().warn("Error: ", e);
                     }
                 }
             }
             catch (Throwable e)
             {
                 OreVeins.getLog().warn("File {} failed to parse. This is most likely caused by invalid JSON. Error: {}", worldGenFile, e);
+                OreVeins.getLog().warn("Error: ", e);
             }
         }
 
         // Post Reloading
         CommandClearWorld.resetVeinStates();
-        WorldGenVeins.resetSearchRadius();
+        WorldGenVeins.resetChunkRadius();
 
-        VEINS.values().forEach(OreVeins.getLog()::info);
+        OreVeins.getLog().info("Registered {} Veins Successfully.", VeinRegistry.getVeins().size());
     }
+
+    private VeinRegistry() {}
 }

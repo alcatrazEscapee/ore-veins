@@ -58,7 +58,7 @@ public class CommandVeinInfo extends CommandBase
             final IVeinType type = VeinRegistry.getVein(args[0]);
             if (type == null)
             {
-                throw new WrongUsageException("Vein supplied does not match 'all' or any valid vein names. Use /veininfo to see valid vein names");
+                throw new WrongUsageException("Vein supplied does not match any valid vein names. Use /veininfo all to see valid vein names");
             }
             sender.sendMessage(new TextComponentString("> Vein Type: " + type.toString()));
         }

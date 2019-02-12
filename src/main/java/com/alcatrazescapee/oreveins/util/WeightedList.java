@@ -6,10 +6,8 @@
 
 package com.alcatrazescapee.oreveins.util;
 
-import java.util.Collection;
-import java.util.NavigableMap;
-import java.util.Random;
-import java.util.TreeMap;
+import java.util.*;
+import javax.annotation.Nonnull;
 
 public class WeightedList<E> implements IWeightedList<E>
 {
@@ -53,5 +51,12 @@ public class WeightedList<E> implements IWeightedList<E>
     public String toString()
     {
         return map.toString();
+    }
+
+    @Override
+    @Nonnull
+    public Iterator<E> iterator()
+    {
+        return map.values().iterator();
     }
 }

@@ -21,13 +21,13 @@ public class BlockStateListDeserializer implements JsonDeserializer<List<IBlockS
     {
         if (json.isJsonPrimitive() || json.isJsonObject())
         {
-            IBlockState state = context.deserialize(json, IBlockState.class);
+            final IBlockState state = context.deserialize(json, IBlockState.class);
             return Collections.singletonList(state);
         }
         else if (json.isJsonArray())
         {
-            JsonArray array = json.getAsJsonArray();
-            List<IBlockState> states = new ArrayList<>();
+            final JsonArray array = json.getAsJsonArray();
+            final List<IBlockState> states = new ArrayList<>();
             for (JsonElement element : array)
             {
                 states.add(context.deserialize(element, IBlockState.class));

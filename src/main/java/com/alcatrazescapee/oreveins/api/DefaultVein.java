@@ -17,7 +17,7 @@ public class DefaultVein extends AbstractVein<DefaultVeinType>
     @Override
     public boolean inRange(int x, int z)
     {
-        return getType().inRange(this, getPos().getX() - x, getPos().getZ() - z);
+        return getType().inRange(this, pos.getX() - x, pos.getZ() - z);
     }
 
     @Override

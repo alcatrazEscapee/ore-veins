@@ -12,9 +12,9 @@ import com.alcatrazescapee.oreveins.api.DefaultVeinType;
 public class VeinTypePipe extends DefaultVeinType
 {
     @Override
-    public double getChanceToGenerate(DefaultVein vein, BlockPos pos)
+    public float getChanceToGenerate(DefaultVein vein, BlockPos pos)
     {
-        double sizeMod = verticalSize * vein.getSize();
+        float sizeMod = verticalSize * vein.getSize();
         if (Math.abs(vein.getPos().getY() - pos.getY()) < sizeMod * 0.7f)
         {
             return 0.005f * density;

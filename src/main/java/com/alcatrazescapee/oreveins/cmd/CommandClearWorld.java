@@ -64,7 +64,7 @@ public class CommandClearWorld extends CommandBase
         final int radius = parseInt(args[0], 1, 250);
         final World world = sender.getEntityWorld();
         final BlockPos center = new BlockPos(sender.getCommandSenderEntity());
-        final IBlockState AIR = Blocks.AIR.getDefaultState();
+        final IBlockState air = Blocks.AIR.getDefaultState();
 
         for (int x = -radius; x <= radius; x++)
         {
@@ -73,9 +73,9 @@ public class CommandClearWorld extends CommandBase
                 for (int y = 255 - center.getY(); y >= -center.getY(); y--)
                 {
                     final BlockPos pos = center.add(x, y, z);
-                    if (!VEIN_STATES.contains(world.getBlockState(pos)))
+                    if (!VEIN_STATES.contains(world.getBlockState(pos)) && world.getBlockState(pos) != air)
                     {
-                        world.setBlockState(pos, AIR, 2 | 16);
+                        world.setBlockState(pos, air, 2 | 16);
                     }
                 }
             }

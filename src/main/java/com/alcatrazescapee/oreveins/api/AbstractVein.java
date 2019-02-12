@@ -9,11 +9,11 @@ import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 
 public abstract class AbstractVein<T extends IVeinType<?>> implements IVein<T>
 {
-    private final T type;
-    private final BlockPos pos;
-    private final double size;
+    protected final T type;
+    protected final BlockPos pos;
+    protected final float size;
 
-    public AbstractVein(T type, BlockPos pos, double size)
+    public AbstractVein(T type, BlockPos pos, float size)
     {
         this.pos = pos;
         this.type = type;
@@ -38,7 +38,7 @@ public abstract class AbstractVein<T extends IVeinType<?>> implements IVein<T>
         return type;
     }
 
-    public double getSize()
+    public float getSize()
     {
         return size;
     }

@@ -8,9 +8,11 @@ package com.alcatrazescapee.oreveins.util;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Random;
+import javax.annotation.Nonnull;
 
-public interface IWeightedList<E>
+public interface IWeightedList<E> extends Iterable<E>
 {
     static <E> IWeightedList<E> singleton(E element)
     {
@@ -19,9 +21,7 @@ public interface IWeightedList<E>
             private Collection<E> elementSet = Collections.singleton(element);
 
             @Override
-            public void add(double weight, E element)
-            {
-            }
+            public void add(double weight, E element) {}
 
             @Override
             public E get(Random random)
@@ -39,6 +39,13 @@ public interface IWeightedList<E>
             public boolean isEmpty()
             {
                 return false;
+            }
+
+            @Override
+            @Nonnull
+            public Iterator<E> iterator()
+            {
+                return elementSet.iterator();
             }
 
             @Override

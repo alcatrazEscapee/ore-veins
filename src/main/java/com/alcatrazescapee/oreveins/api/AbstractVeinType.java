@@ -19,7 +19,7 @@ import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 @ParametersAreNonnullByDefault
-public abstract class AbstractVeinType<V extends IVein<?>> implements IVeinType<V>
+public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVeinType<V>
 {
     protected int count = 1;
     protected int rarity = 10;
@@ -31,7 +31,7 @@ public abstract class AbstractVeinType<V extends IVein<?>> implements IVeinType<
     protected int verticalSize = 8;
     @SerializedName("horizontal_size")
     protected int horizontalSize = 15;
-    protected double density = 20;
+    protected float density = 20;
 
     @SerializedName("dimensions_is_whitelist")
     protected boolean dimensionIsWhitelist = true;
@@ -77,7 +77,7 @@ public abstract class AbstractVeinType<V extends IVein<?>> implements IVeinType<
     @Override
     public boolean inRange(V vein, int xOffset, int zOffset)
     {
-        return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize;
+        return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize * vein.getSize();
     }
 
     @Override
@@ -146,21 +146,9 @@ public abstract class AbstractVeinType<V extends IVein<?>> implements IVeinType<
     }
 
     @Override
-    public int getChunkRadius()
+    public int getCount()
     {
-        return horizontalSize >> 4;
-    }
-
-    @Override
-    public void addVeins(List<IVein> veins, int chunkX, int chunkZ, Random rand)
-    {
-        for (int i = 0; i < count; i++)
-        {
-            if (rand.nextInt(rarity) == 0)
-            {
-                veins.add(createVein(chunkX, chunkZ, rand));
-            }
-        }
+        return count;
     }
 
     @Override
@@ -178,6 +166,15 @@ public abstract class AbstractVeinType<V extends IVein<?>> implements IVeinType<
         );
     }
 
-    @Nonnull
-    protected abstract V createVein(int chunkX, int chunkZ, Random rand);
+    @Override
+    public int getRarity()
+    {
+        return rarity;
+    }
+
+    @Override
+    public int getChunkRadius()
+    {
+        return 1 + (horizontalSize >> 4);
+    }
 }

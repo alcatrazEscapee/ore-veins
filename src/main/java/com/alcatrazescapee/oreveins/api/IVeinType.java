@@ -7,7 +7,6 @@
 package com.alcatrazescapee.oreveins.api;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -82,7 +81,7 @@ public interface IVeinType<V extends IVein<?>>
      * @param pos  the position
      * @return a chance: 0 = 0% chance, 1 = 100% chance
      */
-    double getChanceToGenerate(V vein, BlockPos pos);
+    float getChanceToGenerate(V vein, BlockPos pos);
 
     /**
      * Check if the dimension is valid for this vein
@@ -122,6 +121,20 @@ public interface IVeinType<V extends IVein<?>>
     int getMaxY();
 
     /**
+     * Gets the number of rolls for a chunk
+     *
+     * @return a number in [1...]
+     */
+    int getCount();
+
+    /**
+     * Gets the rarity of this vein in a chunk
+     *
+     * @return a number in [1...]
+     */
+    int getRarity();
+
+    /**
      * Gets the max chunk radius that this vein needs to check
      *
      * @return a radius in chunks
@@ -129,13 +142,13 @@ public interface IVeinType<V extends IVein<?>>
     int getChunkRadius();
 
     /**
-     * Adds all veins from a specific chunk to the list
-     *
-     * @param veins  the list of all veins
-     * @param chunkX the chunkX
-     * @param chunkZ the chunkZ
-     * @param rand   a random to use in generation
+     * Creates an instance of a vein
+     * @param chunkX The chunkX
+     * @param chunkZ The chunkZ
+     * @param rand a random to use in generation
+     * @return a new vein instance
      */
-    void addVeins(List<IVein> veins, int chunkX, int chunkZ, Random rand);
+    @Nonnull
+    V createVein(int chunkX, int chunkZ, Random rand);
 
 }

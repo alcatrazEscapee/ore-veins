@@ -25,24 +25,8 @@ public class VeinTypeCurve extends AbstractVeinType<VeinTypeCurve.VeinCurve>
         return (xOffset < horizontalSize * vein.getSize()) && (zOffset < horizontalSize * vein.getSize());
     }
 
-    @Nonnull
     @Override
-    protected VeinCurve createVein(int chunkX, int chunkZ, Random rand)
-    {
-        int maxOffY = getMaxY() - getMinY() - verticalSize;
-        int posY = getMinY() + verticalSize / 2 + ((maxOffY > 0) ? rand.nextInt(maxOffY) : 0);
-
-        BlockPos pos = new BlockPos(
-                chunkX * 16 + rand.nextInt(16),
-                posY,
-                chunkZ * 16 + rand.nextInt(16)
-        );
-
-        return new VeinCurve(this, pos, rand);
-    }
-
-    @Override
-    public double getChanceToGenerate(VeinCurve vein, BlockPos pos)
+    public float getChanceToGenerate(VeinCurve vein, BlockPos pos)
     {
         for (CurveSegment segment : vein.getSegmentList())
         {
@@ -73,6 +57,22 @@ public class VeinTypeCurve extends AbstractVeinType<VeinTypeCurve.VeinCurve>
         return 0.0f;
     }
 
+    @Nonnull
+    @Override
+    public VeinCurve createVein(int chunkX, int chunkZ, Random rand)
+    {
+        int maxOffY = getMaxY() - getMinY() - verticalSize;
+        int posY = getMinY() + verticalSize / 2 + ((maxOffY > 0) ? rand.nextInt(maxOffY) : 0);
+
+        BlockPos pos = new BlockPos(
+                chunkX * 16 + rand.nextInt(16),
+                posY,
+                chunkZ * 16 + rand.nextInt(16)
+        );
+
+        return new VeinCurve(this, pos, rand);
+    }
+
     static class VeinCurve extends AbstractVein<VeinTypeCurve>
     {
         private final Random rand;
@@ -81,7 +81,7 @@ public class VeinTypeCurve extends AbstractVeinType<VeinTypeCurve.VeinCurve>
 
         VeinCurve(VeinTypeCurve type, BlockPos pos, Random random)
         {
-            super(type, pos, 0.5 * (1.0 + random.nextDouble()));
+            super(type, pos, 0.5f * (1.0f + random.nextFloat()));
             this.rand = new Random(random.nextLong());
             this.segmentList = new ArrayList<>();
         }
@@ -121,7 +121,7 @@ public class VeinTypeCurve extends AbstractVeinType<VeinTypeCurve.VeinCurve>
             double kxy = Math.tan(angle * (1.0f - 2.0f * rand.nextFloat()));
             double kyz = Math.tan(angle * (1.0f - 2.0f * rand.nextFloat()));
 
-            final double h2Size = hSize * getSize() / 2d;
+            final double h2Size = hSize * size / 2d;
             final double v2Size = vSize / 2d;
 
             // four points for cubic Bezier curve

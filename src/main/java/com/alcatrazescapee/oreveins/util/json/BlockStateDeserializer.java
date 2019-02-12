@@ -41,7 +41,7 @@ public class BlockStateDeserializer implements JsonDeserializer<IBlockState>
         Block block = Block.getBlockFromName(name);
         if (block == null)
         {
-            throw new JsonParseException("Unrecognized block name!");
+            throw new JsonParseException("Unrecognized Block: " + name);
         }
         return meta == -1 ? block.getDefaultState() : block.getStateFromMeta(meta);
     }

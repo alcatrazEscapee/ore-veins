@@ -15,17 +15,17 @@ public class VeinTypeCone extends DefaultVeinType
     boolean inverted = false;
 
     @Override
-    public double getChanceToGenerate(DefaultVein vein, BlockPos pos)
+    public float getChanceToGenerate(DefaultVein vein, BlockPos pos)
     {
         final double dx = Math.pow(vein.getPos().getX() - pos.getX(), 2);
         final double dz = Math.pow(vein.getPos().getZ() - pos.getZ(), 2);
 
-        double dy = 0.5f + (pos.getY() - vein.getPos().getY()) / (verticalSize * vein.getSize() * 2f); // 0 at bottom, 1.0 at top
+        float dy = 0.5f + (pos.getY() - vein.getPos().getY()) / (verticalSize * vein.getSize() * 2f); // 0 at bottom, 1.0 at top
         if (inverted) dy = 1f - dy;
         if (dy > 1f || dy < 0f)
             return 0;
 
-        final double maxR = (1f - shape * dy) * horizontalSize * vein.getSize();
+        final float maxR = (1f - shape * dy) * horizontalSize * vein.getSize();
         return 0.005f * density * (1.0f - (float) (dx + dz) / (maxR * maxR)); // Otherwise calculate from radius
     }
 }

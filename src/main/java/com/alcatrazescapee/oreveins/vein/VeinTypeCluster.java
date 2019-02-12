@@ -22,7 +22,7 @@ public class VeinTypeCluster extends AbstractVeinType<VeinTypeCluster.VeinCluste
     int clusters = 3;
 
     @Override
-    public double getChanceToGenerate(VeinCluster vein, BlockPos pos)
+    public float getChanceToGenerate(VeinCluster vein, BlockPos pos)
     {
         float shortestRadius = -1;
         for (Cluster c : vein.spawnPoints)
@@ -47,7 +47,7 @@ public class VeinTypeCluster extends AbstractVeinType<VeinTypeCluster.VeinCluste
 
     @Nonnull
     @Override
-    protected VeinCluster createVein(int chunkX, int chunkZ, Random rand)
+    public VeinCluster createVein(int chunkX, int chunkZ, Random rand)
     {
         return new VeinCluster(this, defaultStartPos(chunkX, chunkZ, rand), rand);
     }

@@ -63,7 +63,7 @@ public class OreVeins
         if (event.getModID().equals(MOD_ID))
         {
             ConfigManager.sync(MOD_ID, Config.Type.INSTANCE);
-            WorldGenVeins.resetSearchRadius();
+            WorldGenVeins.resetChunkRadius();
         }
     }
 

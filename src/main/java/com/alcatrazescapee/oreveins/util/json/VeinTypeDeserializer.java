@@ -15,7 +15,7 @@ import com.google.gson.*;
 import com.alcatrazescapee.oreveins.api.IVeinType;
 import com.alcatrazescapee.oreveins.vein.*;
 
-public class VeinTypeDeserializer implements JsonDeserializer<IVeinType>
+public class VeinTypeDeserializer implements JsonDeserializer<IVeinType<?>>
 {
     private static final Map<String, Class<? extends IVeinType>> TYPES = new HashMap<>();
 
@@ -29,7 +29,7 @@ public class VeinTypeDeserializer implements JsonDeserializer<IVeinType>
     }
 
     @Override
-    public IVeinType deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException
+    public IVeinType<?> deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException
     {
         JsonObject obj = json.getAsJsonObject();
         String veinType = obj.get("type").getAsString();
