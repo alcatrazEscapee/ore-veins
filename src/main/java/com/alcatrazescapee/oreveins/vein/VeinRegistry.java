@@ -16,6 +16,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
 import net.minecraft.block.state.IBlockState;
@@ -127,23 +129,30 @@ public final class VeinRegistry
 
             try
             {
-                Map<String, IVeinType> map = GSON.fromJson(worldGenData, new TypeToken<Map<String, IVeinType>>() {}.getType());
-                VEINS.putAll(map);
-                for (Map.Entry<String, IVeinType> entry : map.entrySet())
+                Set<Map.Entry<String, JsonElement>> allVeinsJson = new JsonParser().parse(worldGenData).getAsJsonObject().entrySet();
+                for (Map.Entry<String, JsonElement> entry : allVeinsJson)
                 {
-                    if (entry.getValue().isValid())
+                    try
                     {
-                        VEINS.put(entry.getKey(), entry.getValue());
+                        IVeinType<?> vein = GSON.fromJson(entry.getValue(), IVeinType.class);
+                        if (vein.isValid())
+                        {
+                            VEINS.put(entry.getKey(), vein);
+                        }
+                        else
+                        {
+                            OreVeins.getLog().warn("Vein {} is invalid. This is likely caused by one or more required parameters being left out.", entry.getKey());
+                        }
                     }
-                    else
+                    catch (Throwable e)
                     {
-                        OreVeins.getLog().warn("Invalid vein {}, skipping.", entry.getKey());
+                        OreVeins.getLog().info("Vein {} failed to parse. This is most likely caused by incorrectly specified JSON. Error: {}", entry.getKey(), e);
                     }
                 }
             }
             catch (Throwable e)
             {
-                OreVeins.getLog().warn("Cannot parse a world gen file. Check the JSON is valid!", e);
+                OreVeins.getLog().warn("File {} failed to parse. This is most likely caused by invalid JSON. Error: {}", worldGenFile, e);
             }
         }
 

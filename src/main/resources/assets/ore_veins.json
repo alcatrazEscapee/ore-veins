@@ -77,10 +77,5 @@
       "mutated_extreme_hills",
       "mutated_extreme_hills_with_trees"
     ]
-  },
-  "test_reload": {
-    "type": "cluster",
-    "ore": "minecraft:wool",
-    "stone": "minecraft:grass"
   }
 }
