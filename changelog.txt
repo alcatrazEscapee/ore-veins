@@ -1,4 +1,4 @@
 v2.0.8
 
 Changes:
-- Fixed a log warning "This is an unsupported build...". If you encounter that warning prior to v2.0.8, it was most likely incorrect.
+- No new features (and hopefully no new bugs :) ), but lots of under-the-hood rewrites in prep for 1.13

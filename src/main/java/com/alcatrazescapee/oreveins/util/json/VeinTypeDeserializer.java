@@ -21,6 +21,7 @@ public class VeinTypeDeserializer implements JsonDeserializer<IVeinType<?>>
 
     static
     {
+        // If you add more vein types, remember to add a map entry here
         TYPES.put("sphere", VeinTypeSphere.class);
         TYPES.put("cluster", VeinTypeCluster.class);
         TYPES.put("cone", VeinTypeCone.class);

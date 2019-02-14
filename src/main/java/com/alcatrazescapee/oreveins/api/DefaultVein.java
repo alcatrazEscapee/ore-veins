@@ -5,6 +5,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * A default vein implementation. Used for veins that don't require any additional instance parameters
+ *
+ * @author AlcatrazEscapee
+ */
 @SuppressWarnings("WeakerAccess")
 @ParametersAreNonnullByDefault
 public class DefaultVein extends AbstractVein<DefaultVeinType>

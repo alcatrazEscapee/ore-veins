@@ -63,7 +63,6 @@ public class WorldGenVeins implements IWorldGenerator
                 if (random.nextInt(type.getRarity()) == 0)
                 {
                     IVein vein = type.createVein(chunkX, chunkZ, random);
-                    //veins.add(type.createVein(chunkX, chunkZ, random));
                     veins.add(vein);
                 }
             }

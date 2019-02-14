@@ -24,6 +24,8 @@ import com.alcatrazescapee.oreveins.vein.Indicator;
  * Register vein types via the static initializer in {@link com.alcatrazescapee.oreveins.vein.VeinRegistry}
  *
  * @param <V> the vein implementation
+ *
+ * @author AlcatrazEscapee
  */
 @ParametersAreNonnullByDefault
 public interface IVeinType<V extends IVein<?>>
