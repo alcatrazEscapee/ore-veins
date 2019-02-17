@@ -1,4 +1,2 @@
-v2.0.8
-
-Changes:
-- No new features (and hopefully no new bugs :) ), but lots of under-the-hood rewrites in prep for 1.13
+v3.0.0-alpha.1
+Well whadayaknow its a 1.13 alpha release

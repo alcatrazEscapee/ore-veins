@@ -10,17 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-import net.minecraft.block.BlockHugeMushroom;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.IChunkGenSettings;
 import net.minecraft.world.gen.IChunkGenerator;
-import net.minecraftforge.fml.common.IWorldGenerator;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
 
 import com.alcatrazescapee.oreveins.OreVeinsConfig;
 import com.alcatrazescapee.oreveins.api.IVein;
@@ -28,14 +28,17 @@ import com.alcatrazescapee.oreveins.api.IVeinType;
 import com.alcatrazescapee.oreveins.vein.Indicator;
 import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 
-public class WorldGenVeins implements IWorldGenerator
+import static net.minecraft.world.gen.Heightmap.Type.WORLD_SURFACE_WG;
+
+@ParametersAreNonnullByDefault
+public class FeatureVeins extends Feature<NoFeatureConfig>
 {
     private static final Random RANDOM = new Random();
     private static int CHUNK_RADIUS = 0;
 
     public static void resetChunkRadius()
     {
-        CHUNK_RADIUS = 4 + VeinRegistry.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0) + OreVeinsConfig.EXTRA_CHUNK_SEARCH_RANGE;
+        CHUNK_RADIUS = 1 + VeinRegistry.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0) + OreVeinsConfig.INSTANCE.extraChunkRange;
     }
 
     @Nonnull
@@ -69,40 +72,24 @@ public class WorldGenVeins implements IWorldGenerator
         }
     }
 
-    private static BlockPos getTopBlockIgnoreVegetation(World world, BlockPos pos)
-    {
-        Chunk chunk = world.getChunkFromBlockCoords(pos);
-        BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos.getX(), chunk.getTopFilledSegment() + 16, pos.getZ());
-        while (mPos.getY() > 0)
-        {
-            mPos.move(EnumFacing.DOWN, 1);
-            IBlockState state = chunk.getBlockState(mPos);
-            if (state.getMaterial().blocksMovement() && !state.getBlock().isLeaves(state, world, mPos) && !state.getBlock().isFoliage(world, mPos) && !state.getMaterial().isLiquid() && !(state.getBlock() instanceof BlockHugeMushroom))
-            {
-                break;
-            }
-        }
-        return mPos.move(EnumFacing.UP).toImmutable();
-    }
-
     @Override
-    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider)
+    public boolean func_212245_a(IWorld world, IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, Random random, BlockPos pos, NoFeatureConfig config)
     {
-        List<IVein> veins = getNearbyVeins(chunkX, chunkZ, world.getSeed(), CHUNK_RADIUS);
-        if (veins.isEmpty()) return;
+        List<IVein> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, world.getSeed(), CHUNK_RADIUS);
+        if (veins.isEmpty()) return false;
 
-        int xoff = chunkX * 16 + 8;
-        int zoff = chunkZ * 16 + 8;
         for (IVein vein : veins)
         {
-            if (vein.getType().matchesDimension(world.provider.getDimension()))
+            // todo: dimension checks
+            //if (vein.getType().matchesDimension(world.getDimension().get))
             {
-                generate(world, random, xoff, zoff, vein);
+                generate(world, random, pos.getX(), pos.getZ(), vein);
             }
         }
+        return true;
     }
 
-    private void generate(World world, Random random, int xOff, int zOff, IVein<?> vein)
+    private void generate(IWorld world, Random random, int xOff, int zOff, IVein<?> vein)
     {
         for (int x = xOff; x < 16 + xOff; x++)
         {
@@ -124,10 +111,10 @@ public class WorldGenVeins implements IWorldGenerator
                             if (vein.getType().canGenerateIn(stoneState))
                             {
                                 IBlockState oreState = vein.getType().getStateToGenerate(random);
-                                world.setBlockState(posAt, oreState);
+                                setBlockState(world, posAt, oreState);
                                 if (veinIndicator != null && !canGenerateIndicator)
                                 {
-                                    int depth = world.getHeight(x, z) - y;
+                                    int depth = world.getHeight(WORLD_SURFACE_WG, x, z) - y;
                                     if (depth < 0) depth = -depth;
                                     canGenerateIndicator = depth < veinIndicator.getMaxDepth();
                                 }
@@ -139,7 +126,8 @@ public class WorldGenVeins implements IWorldGenerator
                     {
                         if (random.nextInt(veinIndicator.getRarity()) == 0)
                         {
-                            BlockPos posAt = veinIndicator.shouldIgnoreVegetation() ? getTopBlockIgnoreVegetation(world, new BlockPos(x, 0, z)) : new BlockPos(x, world.getHeight(x, z), z);
+                            // todo: checks for vegetation?
+                            BlockPos posAt = world.getHeight(Heightmap.Type.WORLD_SURFACE_WG, new BlockPos(x, 0, z));
 
                             IBlockState indicatorState = veinIndicator.getStateToGenerate(random);
                             IBlockState stateAt = world.getBlockState(posAt);
@@ -147,11 +135,11 @@ public class WorldGenVeins implements IWorldGenerator
                             // The indicator must pass canPlaceBlockAt
                             // The previous state must be replaceable, non-liquid or the vein ignores liquids
                             // The under state must pass validUnderState
-                            if (indicatorState.getBlock().canPlaceBlockAt(world, posAt) && stateAt.getBlock().isReplaceable(world, posAt) &&
+                            if (indicatorState.isValidPosition(world, posAt) &&
                                     (veinIndicator.shouldIgnoreLiquids() || !stateAt.getMaterial().isLiquid()) &&
                                     veinIndicator.validUnderState(world.getBlockState(posAt.down())))
                             {
-                                world.setBlockState(posAt, indicatorState);
+                                setBlockState(world, posAt, indicatorState);
                             }
                         }
                     }

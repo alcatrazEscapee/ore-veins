@@ -20,7 +20,6 @@ import net.minecraft.util.math.BlockPos;
  * {@code class NewVeinType extends DefaultVeinType}
  *
  * @param <T> The implementing vein type
- *
  * @author AlcatrazEscapee
  */
 @ParametersAreNonnullByDefault

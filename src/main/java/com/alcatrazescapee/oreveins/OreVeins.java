@@ -6,117 +6,96 @@
 
 package com.alcatrazescapee.oreveins;
 
-
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import net.minecraft.command.CommandSource;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.feature.CompositeFeature;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
+import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.ICrashCallable;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import com.alcatrazescapee.oreveins.cmd.CommandClearWorld;
 import com.alcatrazescapee.oreveins.cmd.CommandFindVeins;
 import com.alcatrazescapee.oreveins.cmd.CommandVeinInfo;
 import com.alcatrazescapee.oreveins.vein.VeinRegistry;
-import com.alcatrazescapee.oreveins.world.WorldGenReplacer;
-import com.alcatrazescapee.oreveins.world.WorldGenVeins;
+import com.alcatrazescapee.oreveins.world.AtChunk;
+import com.alcatrazescapee.oreveins.world.FeatureVeins;
+import com.mojang.brigadier.CommandDispatcher;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
-@Mod(modid = OreVeins.MOD_ID, version = OreVeins.VERSION, dependencies = OreVeins.DEPENDENCIES, acceptableRemoteVersions = "*", certificateFingerprint = "3c2d6be715971d1ed58a028cdb3fae72987fc934")
+@Mod(OreVeins.MOD_ID)
 public class OreVeins
 {
     public static final String MOD_ID = "oreveins";
-    public static final String MOD_NAME = "Ore Veins";
-    public static final String VERSION = "GRADLE:VERSION";
 
-    private static final String FORGE_MIN = "14.23.2.2611";
-    private static final String FORGE_MAX = "15.0.0.0";
-
-    public static final String DEPENDENCIES = "required-after:forge@[" + FORGE_MIN + "," + FORGE_MAX + ");";
-
-    private static Logger log;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static Logger getLog()
     {
-        return log;
+        return LOGGER;
     }
 
-    private boolean isSignedBuild = true;
-
-    // This is necessary in order to catch the NewRegistry Event
     public OreVeins()
     {
-        MinecraftForge.EVENT_BUS.register(this);
+        // Config
+        OreVeinsConfig.INSTANCE.setup();
+
+        // Mod Event Bus (for @SubscribeEvent annotations on the mod bus)
+        FMLJavaModLoadingContext.get().getModEventBus().register(this);
+
+        // Forge Event Bus (for the single method that is on the forge bus)
+        MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
     }
 
     @SubscribeEvent
-    public void configChanged(ConfigChangedEvent.OnConfigChangedEvent event)
+    public void onLoadConfig(final ModConfig.Loading event)
     {
-        if (event.getModID().equals(MOD_ID))
+        if (event.getConfig().getType() == ModConfig.Type.SERVER)
         {
-            ConfigManager.sync(MOD_ID, Config.Type.INSTANCE);
-            WorldGenVeins.resetChunkRadius();
+            OreVeinsConfig.INSTANCE.load();
+            // remove all other ore veins
+            if (OreVeinsConfig.INSTANCE.noOres)
+            {
+                ForgeRegistries.BIOMES.forEach(biome -> biome.getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).removeIf(x -> x.getFeature() == Feature.MINABLE));
+            }
         }
     }
 
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event)
+    @SubscribeEvent
+    public void setup(final FMLCommonSetupEvent event)
     {
-        log = event.getModLog();
-        log.debug("If you can see this, debug logging is working :)");
-        if (!isSignedBuild)
-            log.warn("You are not running an official build. This version will NOT be supported by the author.");
+        // Setup Vein Config Folder
+        VeinRegistry.preInit();
 
-        VeinRegistry.preInit(event.getModConfigurationDirectory());
-
-        GameRegistry.registerWorldGenerator(new WorldGenVeins(), 1);
-        MinecraftForge.ORE_GEN_BUS.register(new WorldGenReplacer());
-    }
-
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
-        if (!isSignedBuild)
-            log.warn("You are not running an official build. This version will NOT be supported by the author.");
-        VeinRegistry.reloadVeins();
-    }
-
-    @Mod.EventHandler
-    public void serverStart(FMLServerStartingEvent event)
-    {
-        if (OreVeinsConfig.DEBUG_COMMANDS)
-        {
-            event.registerServerCommand(new CommandClearWorld());
-            event.registerServerCommand(new CommandVeinInfo());
-            event.registerServerCommand(new CommandFindVeins());
-        }
-    }
-
-    @Mod.EventHandler
-    public void onFingerprintViolation(FMLFingerprintViolationEvent event)
-    {
-        isSignedBuild = false;
-        FMLCommonHandler.instance().registerCrashCallable(new ICrashCallable()
-        {
-            @Override
-            public String getLabel()
-            {
-                return MOD_NAME;
-            }
-
-            @Override
-            public String call()
-            {
-                return "You are not running an official build. This version will NOT be supported by the author.";
-            }
+        // World Gen
+        ForgeRegistries.BIOMES.forEach(biome -> {
+            CompositeFeature<?, ?> feature = Biome.createCompositeFeature(new FeatureVeins(), new NoFeatureConfig(), new AtChunk(), IPlacementConfig.NO_PLACEMENT_CONFIG);
+            biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, feature);
         });
+
+        // After Veins have Reloaded
+        CommandClearWorld.resetVeinStates();
+        FeatureVeins.resetChunkRadius();
+    }
+
+    private void onServerStarting(final FMLServerStartingEvent event)
+    {
+        if (OreVeinsConfig.INSTANCE.debugCommands)
+        {
+            CommandDispatcher<CommandSource> dispatcher = event.getCommandDispatcher();
+
+            CommandClearWorld.register(dispatcher);
+            CommandFindVeins.register(dispatcher);
+            CommandVeinInfo.register(dispatcher);
+        }
     }
 }

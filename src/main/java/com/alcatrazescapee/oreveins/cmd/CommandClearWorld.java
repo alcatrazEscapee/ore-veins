@@ -8,62 +8,43 @@ package com.alcatrazescapee.oreveins.cmd;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.command.WrongUsageException;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
 import net.minecraft.init.Blocks;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import com.alcatrazescapee.oreveins.api.IVeinType;
 import com.alcatrazescapee.oreveins.vein.VeinRegistry;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 @ParametersAreNonnullByDefault
-public class CommandClearWorld extends CommandBase
+public final class CommandClearWorld
 {
     private static final Set<IBlockState> VEIN_STATES = new HashSet<>();
 
     public static void resetVeinStates()
     {
-        VeinRegistry.getVeins()
-                .stream()
-                .map(IVeinType::getOreStates)
-                .forEach(VEIN_STATES::addAll);
+        VeinRegistry.getVeins().stream().map(IVeinType::getOreStates).forEach(VEIN_STATES::addAll);
     }
 
-    @Override
-    @Nonnull
-    public String getName()
+    public static void register(CommandDispatcher<CommandSource> dispatcher)
     {
-        return "clearworld";
+        dispatcher.register(
+                Commands.literal("clearworld").requires(source -> source.hasPermissionLevel(2))
+                        .then(Commands.argument("radius", IntegerArgumentType.integer(1, 250))
+                                .executes(cmd -> clearWorld(cmd.getSource(), IntegerArgumentType.getInteger(cmd, "radius")))));
     }
 
-    @Override
-    @Nonnull
-    public String getUsage(ICommandSender sender)
+    private static int clearWorld(CommandSource source, int radius)
     {
-        return "/clearworld <radius> -> Removes all blocks that are NOT part of an ore vein";
-    }
-
-    @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
-    {
-        if (args.length != 1) throw new WrongUsageException("1 argument required.");
-        if (sender.getCommandSenderEntity() == null) throw new WrongUsageException("Can only be used by a player");
-
-        sender.sendMessage(new TextComponentString("Clearing world... " + TextFormatting.RED + "Lag incoming"));
-
-        final int radius = parseInt(args[0], 1, 250);
-        final World world = sender.getEntityWorld();
-        final BlockPos center = new BlockPos(sender.getCommandSenderEntity());
+        final World world = source.getWorld();
+        final BlockPos center = new BlockPos(source.getPos());
         final IBlockState air = Blocks.AIR.getDefaultState();
 
         for (int x = -radius; x <= radius; x++)
@@ -80,6 +61,7 @@ public class CommandClearWorld extends CommandBase
                 }
             }
         }
-        sender.sendMessage(new TextComponentString("Done."));
+        source.sendFeedback(new TextComponentString("Done."), true);
+        return 1;
     }
 }

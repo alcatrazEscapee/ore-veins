@@ -8,41 +8,40 @@ package com.alcatrazescapee.oreveins.util.json;
 
 import java.lang.reflect.Type;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class BlockStateDeserializer implements JsonDeserializer<IBlockState>
 {
     @Override
     public IBlockState deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
-        if (json.isJsonObject())
+        String name;
+        if (json.isJsonPrimitive())
         {
-            JsonObject obj = json.getAsJsonObject();
-            String name = obj.get("block").getAsString();
-            if (obj.has("meta"))
-            {
-                return getBlockState(name, obj.get("meta").getAsInt());
-            }
-            return getBlockState(name, -1);
+            name = json.getAsString();
         }
-        else if (json.isJsonPrimitive())
+        else if (json.isJsonObject())
         {
-            String name = json.getAsString();
-            return getBlockState(name, -1);
-        }
-        throw new JsonParseException("Unable to parse IBlockState");
-    }
+            name = json.getAsJsonObject().get("block").getAsString();
 
-    @SuppressWarnings("deprecation")
-    private IBlockState getBlockState(String name, int meta) throws JsonParseException
-    {
-        Block block = Block.getBlockFromName(name);
+        }
+        else
+        {
+            throw new JsonParseException("IBlockState must be JsonPrimitive or JsonObject");
+        }
+        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(name));
         if (block == null)
         {
             throw new JsonParseException("Unrecognized Block: " + name);
         }
-        return meta == -1 ? block.getDefaultState() : block.getStateFromMeta(meta);
+        // todo: figure out metadata / state properties handling
+        return block.getDefaultState();
     }
 }

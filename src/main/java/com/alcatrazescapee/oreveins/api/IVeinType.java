@@ -24,7 +24,6 @@ import com.alcatrazescapee.oreveins.vein.Indicator;
  * Register vein types via the static initializer in {@link com.alcatrazescapee.oreveins.vein.VeinRegistry}
  *
  * @param <V> the vein implementation
- *
  * @author AlcatrazEscapee
  */
 @ParametersAreNonnullByDefault
@@ -145,9 +144,10 @@ public interface IVeinType<V extends IVein<?>>
 
     /**
      * Creates an instance of a vein
+     *
      * @param chunkX The chunkX
      * @param chunkZ The chunkZ
-     * @param rand a random to use in generation
+     * @param rand   a random to use in generation
      * @return a new vein instance
      */
     @Nonnull

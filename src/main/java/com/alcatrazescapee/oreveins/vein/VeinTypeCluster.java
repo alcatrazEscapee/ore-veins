@@ -39,17 +39,17 @@ public class VeinTypeCluster extends AbstractVeinType<VeinTypeCluster.VeinCluste
         return 0.005f * density * (1.0f - shortestRadius);
     }
 
-    @Override
-    public boolean inRange(VeinCluster vein, int xOffset, int zOffset)
-    {
-        return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize * vein.getSize();
-    }
-
     @Nonnull
     @Override
     public VeinCluster createVein(int chunkX, int chunkZ, Random rand)
     {
         return new VeinCluster(this, defaultStartPos(chunkX, chunkZ, rand), rand);
+    }
+
+    @Override
+    public boolean inRange(VeinCluster vein, int xOffset, int zOffset)
+    {
+        return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize * vein.getSize();
     }
 
     static class VeinCluster extends AbstractVein<VeinTypeCluster>

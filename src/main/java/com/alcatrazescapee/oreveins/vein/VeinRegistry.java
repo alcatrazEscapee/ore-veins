@@ -6,9 +6,11 @@
 
 package com.alcatrazescapee.oreveins.vein;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.*;
 
 import com.google.common.base.Strings;
@@ -24,13 +26,11 @@ import net.minecraft.block.state.IBlockState;
 
 import com.alcatrazescapee.oreveins.OreVeins;
 import com.alcatrazescapee.oreveins.api.IVeinType;
-import com.alcatrazescapee.oreveins.cmd.CommandClearWorld;
 import com.alcatrazescapee.oreveins.util.IWeightedList;
 import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
 import com.alcatrazescapee.oreveins.util.json.BlockStateListDeserializer;
 import com.alcatrazescapee.oreveins.util.json.VeinTypeDeserializer;
 import com.alcatrazescapee.oreveins.util.json.WeightedListDeserializer;
-import com.alcatrazescapee.oreveins.world.WorldGenVeins;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
@@ -43,16 +43,10 @@ public final class VeinRegistry
             .registerTypeAdapter(IWeightedList.class, new WeightedListDeserializer())
             .registerTypeAdapter(IBlockState.class, new BlockStateDeserializer())
             .create();
-    private static File worldGenFolder;
 
     public static Collection<IVeinType> getVeins()
     {
         return VEINS.values();
-    }
-
-    public static Set<String> getNames()
-    {
-        return VEINS.keySet();
     }
 
     public static IVeinType getVein(String key)
@@ -65,16 +59,17 @@ public final class VeinRegistry
         return VEINS.inverse().get(key);
     }
 
-    public static void preInit(File modConfigDir)
+    public static void preInit()
     {
         OreVeins.getLog().info("Loading or creating ore generation config file");
 
-        worldGenFolder = new File(modConfigDir, MOD_ID);
-
-        if (!worldGenFolder.exists() && !worldGenFolder.mkdir())
+        final File configFolder = new File(System.getProperty("user.dir") + "/config", MOD_ID);
+        if (!configFolder.exists() && !configFolder.mkdir())
+        {
             throw new Error("Problem creating Ore Veins config directory.");
+        }
 
-        File defaultFile = new File(worldGenFolder, "ore_veins.json");
+        final File defaultFile = new File(configFolder, "ore_veins.json");
         String defaultData = null;
         if (defaultFile.exists())
         {
@@ -89,20 +84,18 @@ public final class VeinRegistry
         }
         if (Strings.isNullOrEmpty(defaultData))
         {
-            try
+            // todo: write default generation
+            try (BufferedWriter writer = Files.newBufferedWriter(defaultFile.toPath()))
             {
-                FileUtils.copyInputStreamToFile(WorldGenVeins.class.getResourceAsStream("/assets/ore_veins.json"), defaultFile);
+                writer.write("{}");
             }
             catch (IOException e)
             {
-                throw new Error("Error copying data into default world gen file", e);
+                throw new Error("Failed to copy default world gen data to file");
             }
         }
-    }
 
-    public static void reloadVeins()
-    {
-        File[] worldGenFiles = worldGenFolder.listFiles((file, name) -> name != null && name.toLowerCase(Locale.US).endsWith(".json"));
+        File[] worldGenFiles = configFolder.listFiles((file, name) -> name != null && name.toLowerCase(Locale.US).endsWith(".json"));
         if (worldGenFiles == null) throw new Error("There are no valid files in the world gen directory");
         String worldGenData;
         for (File worldGenFile : worldGenFiles)
@@ -157,10 +150,6 @@ public final class VeinRegistry
                 OreVeins.getLog().warn("Error: ", e);
             }
         }
-
-        // Post Reloading
-        CommandClearWorld.resetVeinStates();
-        WorldGenVeins.resetChunkRadius();
 
         OreVeins.getLog().info("Registered {} Veins Successfully.", VeinRegistry.getVeins().size());
     }

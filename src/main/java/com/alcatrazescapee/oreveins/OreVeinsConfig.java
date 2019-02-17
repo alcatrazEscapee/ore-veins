@@ -7,32 +7,64 @@
 
 package com.alcatrazescapee.oreveins;
 
-import net.minecraftforge.common.config.Config;
+import org.apache.commons.lang3.tuple.Pair;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
 
-@SuppressWarnings("WeakerAccess")
-@Config(modid = OreVeins.MOD_ID)
-public class OreVeinsConfig
+public enum OreVeinsConfig
 {
-    @Config.Comment("Stop all vanilla ore gen calls (OreGenEvent.GenerateMineable)")
-    public static boolean NO_ORES = false;
+    INSTANCE;
 
-    @Config.Comment({"Specific ore types to stop. Only used if NO_ORES is false. Allowed values:",
-            "ANDESITE, DIORITE, COAL, CUSTOM, DIAMOND, DIRT, EMERALD, GOLD, GRANITE, GRAVEL, IRON, LAPIS, QUARTZ, REDSTONE, SILVERFISH"})
-    public static String[] STOPPED_ORES = {
-            "COAL",
-            "DIAMOND",
-            "EMERALD",
-            "GOLD",
-            "IRON",
-            "LAPIS",
-            "REDSTONE"
-    };
+    private static final ServerConfig SERVER;
+    private static final ForgeConfigSpec SERVER_SPEC;
 
-    @Config.Comment("If you notice that your veins (especially large ones) are being cut off at chunk boundaries, then try increasing this value. Warning: it will have an impact on world generation performance, so don't go overboard.")
-    @Config.RangeInt(min = 0, max = 10)
-    public static int EXTRA_CHUNK_SEARCH_RANGE = 0;
+    static
+    {
+        final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
+        SERVER_SPEC = specPair.getRight();
+        SERVER = specPair.getLeft();
+    }
 
-    @Config.Comment("Enables debug commands /clearworld, /veininfo, /reloadveins and /findveins")
-    @Config.RequiresMcRestart
-    public static boolean DEBUG_COMMANDS = true;
+    public boolean noOres;
+    public boolean debugCommands;
+    public int extraChunkRange;
+
+    public void setup()
+    {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_SPEC);
+    }
+
+    public void load()
+    {
+        noOres = SERVER.noOres.get();
+        debugCommands = SERVER.debugCommands.get();
+        extraChunkRange = SERVER.extraChunkRange.get();
+    }
+
+    public static class ServerConfig
+    {
+        private ForgeConfigSpec.BooleanValue noOres;
+        private ForgeConfigSpec.BooleanValue debugCommands;
+        private ForgeConfigSpec.IntValue extraChunkRange;
+
+        ServerConfig(ForgeConfigSpec.Builder builder)
+        {
+            builder.push("general");
+
+            noOres = builder
+                    .comment("Stop all vanilla ore gen calls?")
+                    .define("no_ores", true);
+
+            debugCommands = builder
+                    .comment("Enable debug commands such as /veininfo, /clearworld, /findveins")
+                    .define("debug_commands", true);
+
+            extraChunkRange = builder
+                    .comment("Extra chunk search range when generating veins", "Use if your veins are getting cut off at chunk boundaries")
+                    .defineInRange("extra_chunk_range", 0, 0, 20);
+
+            builder.pop();
+        }
+    }
 }

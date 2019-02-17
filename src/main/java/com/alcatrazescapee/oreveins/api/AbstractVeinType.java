@@ -1,3 +1,9 @@
+/*
+ * Part of the Ore Veins Mod by alcatrazEscapee
+ * Work under Copyright. Licensed under the GPL-3.0.
+ * See the project LICENSE.md for more information.
+ */
+
 package com.alcatrazescapee.oreveins.api;
 
 import java.util.Collection;
@@ -104,7 +110,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
         for (String s : biomes)
         {
             //noinspection ConstantConditions
-            String biomeName = biome.getRegistryName().getResourcePath();
+            String biomeName = biome.getRegistryName().getPath();
             if (biomeName.equals(s))
             {
                 return biomesIsWhitelist;
@@ -152,6 +158,18 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     }
 
     @Override
+    public int getRarity()
+    {
+        return rarity;
+    }
+
+    @Override
+    public int getChunkRadius()
+    {
+        return 1 + (horizontalSize >> 4);
+    }
+
+    @Override
     public String toString()
     {
         return String.format("[%s: Count: %d, Rarity: %d, Y: %d - %d, Size: %d / %d, Density: %2.2f, Ores: %s, Stones: %s]", VeinRegistry.getName(this), count, rarity, minY, maxY, horizontalSize, verticalSize, density, oreStates, stoneStates);
@@ -164,17 +182,5 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
                 minY + rand.nextInt(maxY - minY),
                 chunkZ * 16 + rand.nextInt(16)
         );
-    }
-
-    @Override
-    public int getRarity()
-    {
-        return rarity;
-    }
-
-    @Override
-    public int getChunkRadius()
-    {
-        return 1 + (horizontalSize >> 4);
     }
 }
