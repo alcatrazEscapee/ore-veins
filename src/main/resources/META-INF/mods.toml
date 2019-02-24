@@ -22,7 +22,7 @@ authors="AlcatrazEscapee" #optional
 # The modid of the mod
 modId="oreveins" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="3.0.0-alpha.1" #mandatory
+version="${file.jarVersion}" #mandatory
  # A display name for the mod
 displayName="Realistic Ore Veins" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
@@ -32,7 +32,7 @@ description='''
 This is a minecraft mod to add realistically shaped veins of ore to your world. Useful for custom maps, modpacks, or just a different survival experience. Everything is fully configurable via json, meaning you can have ore veins of whatever type of shape or size you want.
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.examplemod]] #optional
+[[dependencies.oreveins]] #optional
     # the modid of the dependency
     modId="forge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
@@ -44,7 +44,7 @@ This is a minecraft mod to add realistically shaped veins of ore to your world. 
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="SERVER"
 # Here's another dependency
-[[dependencies.examplemod]]
+[[dependencies.oreveins]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.13]"

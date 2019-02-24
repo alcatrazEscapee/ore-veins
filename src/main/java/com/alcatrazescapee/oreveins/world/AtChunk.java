@@ -27,7 +27,7 @@ public class AtChunk extends BasePlacement<IPlacementConfig>
     @Override
     public <C extends IFeatureConfig> boolean generate(IWorld world, IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, Random random, BlockPos pos, IPlacementConfig placementConfig, Feature<C> feature, C featureConfig)
     {
-        feature.func_212245_a(world, chunkGenerator, random, pos, featureConfig);
+        feature.place(world, chunkGenerator, random, pos, featureConfig);
         return true;
     }
 }

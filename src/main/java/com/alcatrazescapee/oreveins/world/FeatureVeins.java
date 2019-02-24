@@ -73,7 +73,7 @@ public class FeatureVeins extends Feature<NoFeatureConfig>
     }
 
     @Override
-    public boolean func_212245_a(IWorld world, IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, Random random, BlockPos pos, NoFeatureConfig config)
+    public boolean place(IWorld world, IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, Random random, BlockPos pos, NoFeatureConfig config)
     {
         List<IVein> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, world.getSeed(), CHUNK_RADIUS);
         if (veins.isEmpty()) return false;
@@ -81,7 +81,7 @@ public class FeatureVeins extends Feature<NoFeatureConfig>
         for (IVein vein : veins)
         {
             // todo: dimension checks
-            //if (vein.getType().matchesDimension(world.getDimension().get))
+            //if (vein.getType().matchesDimension(world.getDimension()))
             {
                 generate(world, random, pos.getX(), pos.getZ(), vein);
             }

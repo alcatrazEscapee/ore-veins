@@ -16,10 +16,10 @@ buildscript {
 }
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'idea'
 apply plugin: 'com.matthewprenger.cursegradle'
+apply plugin: 'idea'
 
-version = '3.0.0-alpha.1'
+version = "${mod_version}"
 group = 'com.alcatrazescapee.oreveins' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'oreveins'
 
@@ -33,7 +33,7 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'snapshot', version: '20180921-1.13'
+    mappings channel: 'snapshot', version: '20190224-1.13.1'
     //makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     
     //accessTransformer = file('my_at.cfg')
@@ -61,7 +61,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.13.2-25.0.22'
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 }
 
 curseforge {
@@ -74,10 +74,15 @@ curseforge {
         changelog = file("changelog.txt")
         releaseType = "alpha"
 
-        addGameVersion("1.13.2")
-        afterEvaluate {
-            gameVersionStrings.remove('Java 9')
-        }
+        addGameVersion("${mc_version}")
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+                "Implementation-Version": "${mod_version}",
+        ])
     }
 }
 
