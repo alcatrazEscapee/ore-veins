@@ -1,7 +1,7 @@
 {
   "iron_ore_example": {
     "type": "cluster",
-    "ore": "minecraft:iron_ore",
+    "ore": "ore:oreIron",
     "stone": "minecraft:stone",
     "indicator": {
       "blocks": {
@@ -30,7 +30,7 @@
     "type": "sphere",
     "ore": [
       {
-        "block": "minecraft:coal_ore",
+        "ore": "oreCoal",
         "weight": 39
       },
       {

@@ -1,4 +1,4 @@
-v2.0.8
+v2.0.10
 
 Changes:
-- No new features (and hopefully no new bugs :) ), but lots of under-the-hood rewrites in prep for 1.13
+- Added the capability to specify block entries by ore dictionary entry

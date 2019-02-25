@@ -89,7 +89,9 @@ An example indicator that spawns roses when ore blocks are less than twenty bloc
 A Block Entry can be any of the following:
 
 1. A single string representing a block's registry name: `"ore": "minecraft:iron_ore"`
+2. A single string representing a block via a corresponding ore dictionary name, prefixed with "ore": `"ore": "ore:oreCoal"`.
 2. A single object representing a block with metadata: `"ore": { "block": "minecraft:wool", "meta": 3 }`
+3. A single object representing a block via an corresponding ore dictionary name: `"stone": { "ore": "oreIron" }`.
 3. A list of objects (as above). Note that these can be weighed (when used in `ore`) but are not necessary. If weight is not found for a particular object, it will default to 1.
 ```json
 {
@@ -104,7 +106,7 @@ A Block Entry can be any of the following:
       "weight": 39
     },
     {
-      "block": "minecraft:diamond_ore"
+      "ore": "oreIron"
     }
   ]
 }
