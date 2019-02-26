@@ -35,4 +35,7 @@ public class OreVeinsConfig
     @Config.Comment("Enables debug commands /clearworld, /veininfo, /reloadveins and /findveins")
     @Config.RequiresMcRestart
     public static boolean DEBUG_COMMANDS = true;
+
+    @Config.Comment("Always create default ore_veins.json file if none if found.")
+    public static boolean ALWAYS_CREATE_DEFAULT_CONFIG = true;
 }
