@@ -1,5 +1,5 @@
 v2.0.11
 
 Changes:
-- Added a config option to stop the default ore_veins.json to exit
+- Added a config option to stop the default ore_veins.json from generating
 - Made the mod less crash-trigger-happy if it can't create or find default files

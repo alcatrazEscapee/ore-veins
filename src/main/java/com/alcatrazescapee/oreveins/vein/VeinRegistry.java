@@ -70,9 +70,9 @@ public final class VeinRegistry
     {
         OreVeins.getLog().info("Loading or creating ore generation config file");
 
+        worldGenFolder = new File(modConfigDir, MOD_ID);
         if (OreVeinsConfig.ALWAYS_CREATE_DEFAULT_CONFIG)
         {
-            worldGenFolder = new File(modConfigDir, MOD_ID);
             if (!worldGenFolder.exists() && !worldGenFolder.mkdir())
             {
                 OreVeins.getLog().warn("Error creating world gen config folder ");
@@ -150,7 +150,14 @@ public final class VeinRegistry
                             IVeinType<?> vein = GSON.fromJson(entry.getValue(), IVeinType.class);
                             if (vein.isValid())
                             {
-                                VEINS.put(entry.getKey(), vein);
+                                if (VEINS.containsKey(entry.getKey()))
+                                {
+                                    OreVeins.getLog().warn("Duplicate Veins found for the name {}. One has been discarded.", entry.getKey());
+                                }
+                                else
+                                {
+                                    VEINS.put(entry.getKey(), vein);
+                                }
                             }
                             else
                             {
