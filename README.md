@@ -58,7 +58,7 @@ This vein represents a curve (created with a cubic Bezier curve.) It has two opt
 
 Indicators are configurable objects that will spawn on the surface when a vein is detected underneath them. An indicator must contain the following entries:
 
-* `blocks` is a [Block Entry](#block-entries). This represents the possible states that the indicator will spawn. This does **not** support weighted entries.
+* `blocks` is a [Block Entry](#block-entries). This represents the possible states that the indicator will spawn. This supports weighted entries.
 
 Indicators can also contain the following optional entries
 
