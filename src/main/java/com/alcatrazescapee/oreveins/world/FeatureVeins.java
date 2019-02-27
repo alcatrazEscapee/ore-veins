@@ -80,8 +80,7 @@ public class FeatureVeins extends Feature<NoFeatureConfig>
 
         for (IVein vein : veins)
         {
-            // todo: dimension checks
-            //if (vein.getType().matchesDimension(world.getDimension()))
+            if (vein.getType().matchesDimension(world.getDimension()))
             {
                 generate(world, random, pos.getX(), pos.getZ(), vein);
             }

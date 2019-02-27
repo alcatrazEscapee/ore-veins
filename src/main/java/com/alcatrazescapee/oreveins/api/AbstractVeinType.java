@@ -15,8 +15,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.IRegistry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.dimension.Dimension;
 import net.minecraftforge.common.BiomeDictionary;
 
 import com.alcatrazescapee.oreveins.util.IWeightedList;
@@ -50,7 +53,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     private IWeightedList<IBlockState> oreStates = null;
 
     private List<String> biomes = null;
-    private List<Integer> dimensions = null;
+    private List<String> dimensions = null;
     private Indicator indicator = null;
 
     @Nonnull
@@ -87,15 +90,23 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     }
 
     @Override
-    public boolean matchesDimension(int id)
+    @SuppressWarnings("deprecation")
+    public boolean matchesDimension(Dimension dimension)
     {
+        ResourceLocation loc = IRegistry.DIMENSION_TYPE.getKey(dimension.getType());
+        if (loc == null)
+        {
+            System.out.println("Loc is null");
+            return true;
+        }
+        String name = loc.toString();
         if (dimensions == null)
         {
-            return id == 0;
+            return "minecraft:overworld".equals(name);
         }
-        for (int i : dimensions)
+        for (String dim : dimensions)
         {
-            if (id == i)
+            if (dim.equals(name))
             {
                 return dimensionIsWhitelist;
             }

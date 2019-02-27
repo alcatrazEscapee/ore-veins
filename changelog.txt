@@ -1,2 +1,5 @@
-v3.0.0-alpha.1
-Well whadayaknow its a 1.13 alpha release
+v3.0.0-alpha.2
+
+Changes:
+ - Fixed dimension whitelisting - now uses the dimension name rather than the ID
+ - Added block property detection. See the README.md for info on how to use it

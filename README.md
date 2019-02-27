@@ -1,4 +1,4 @@
-![Ore Veins Banner Image](https://github.com/alcatrazEscapee/ore-veins/blob/1.12/img/banner.png?raw=true)
+![Ore Veins Banner Image](https://github.com/alcatrazEscapee/ore-veins/blob/1.13/img/banner.png?raw=true)
 
 This is a Minecraft mod to add realistically shaped veins of ore to your world. Useful for custom maps, mod packs, or just a different survival experience. Everything is fully configurable via json, meaning you can have ore veins of whatever type of shape or size you want.
 
@@ -6,7 +6,7 @@ For example images of various types and configurations of veins see the cursefor
 
 ## Configuration:
 
-Ore Veins will look for all files under config/oreveins/. When you first add ore veins, it will create a default file with some example configuration. Feel free to use or modify this. It is also found here on github at [src/main/resources/assets/ore_veins.json](https://github.com/alcatrazEscapee/ore-veins/blob/1.12/src/main/resources/assets/ore_veins.json).
+Ore Veins will look for all files under config/oreveins/. When you first add ore veins, it will create a default file with some example configuration. Feel free to use or modify this. It is also found here on github at [src/main/resources/assets/ore_veins.json](https://github.com/alcatrazEscapee/ore-veins/blob/1.13/src/main/resources/assets/ore_veins.json).
 
 Each json file in config/oreveins/ should consist of a set of objects, each one being a different type of vein. These represent a single ore type or configuration that will be generated in the world. Each entry must contain the following values:
 
@@ -23,9 +23,9 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `density` (Default: 50) Density of the ore vein. Higher values are more dense. (FYI: This number is not a percentage. For 100% density use values >1000)
 * `vertical_size` (Default: 15) Vertical radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
 * `horizontal_size` (Default: 8) Horizontal radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
-* `biomes` (Default: all) Whitelist of biome names or biome tags for a biome to spawn in. Must be a list of strings. For info on possible tags see the Forge [Biome Dictionary](https://github.com/MinecraftForge/MinecraftForge/blob/1.12.x/src/main/java/net/minecraftforge/common/BiomeDictionary.java).
+* `biomes` (Default: all) Whitelist of biome names or biome tags for a biome to spawn in. Must be a list of strings. For info on possible tags see the Forge [Biome Dictionary](https://github.com/MinecraftForge/MinecraftForge/blob/1.13.x/src/main/java/net/minecraftforge/common/BiomeDictionary.java).
 * `biomes_is_whitelist` (Default: true) When false, the biome list becomes a blacklist
-* `dimensions` (Default: 0) Whitelist of dimension ids that the ore can spawn in. Must be a list of integers.
+* `dimensions` (Default: `["overworld"]`) Whitelist of dimension names that the ore can spawn in. Must be a list of strings.
 * `dimensions_is_whitelist` (Default: true) When false, the dimension list becomes a blacklist
 * `indicator` (Default: empty) This is an [Indicator](#indicators) which will spawn on the surface underneath where the vein is found.
 
@@ -58,7 +58,7 @@ This vein represents a curve (created with a cubic Bezier curve.) It has two opt
 
 Indicators are configurable objects that will spawn on the surface when a vein is detected underneath them. An indicator must contain the following entries:
 
-* `blocks` is a [Block Entry](#block-entries). This represents the possible states that the indicator will spawn. This does **not** support weighted entries.
+* `blocks` is a [Block Entry](#block-entries). This represents the possible states that the indicator will spawn. This supports weighted entries.
 
 Indicators can also contain the following optional entries
 
@@ -86,17 +86,26 @@ An example indicator that spawns roses when ore blocks are less than twenty bloc
 
 ### Block Entries
 
+**1.13 Removed Metadata - You can no longer specify blocks via their meta values.**
+
 A Block Entry can be any of the following:
 
 1. A single string representing a block's registry name: `"ore": "minecraft:iron_ore"`
-2. A single object representing a block with metadata: `"ore": { "block": "minecraft:wool", "meta": 3 }`
-3. A list of objects (as above). Note that these can be weighed (when used in `ore`) but are not necessary. If weight is not found for a particular object, it will default to 1.
+2. A single object representing a block with various properties. Each property must be specified as a key-value pair. If left out, properties will assume their default value.
+```json
+{
+  "block": "minecraft:oak_stairs",
+  "half": "top",
+  "facing": "east"
+}
+```
+3. A list of objects (as above). Note that these can be weighed (when used in `ore`) but are not necessary. If weight is not found for a particular object, it will default to 1. Properties are optional.
 ```json
 {
   "ore": [
    {
-      "block": "minecraft:wool",
-      "weight": 4,
+      "block": "minecraft:oak_stairs",
+      "half": "top",
       "meta": 3
     },
     {

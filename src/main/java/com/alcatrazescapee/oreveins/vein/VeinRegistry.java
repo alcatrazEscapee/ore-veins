@@ -22,9 +22,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import net.minecraft.block.state.IBlockState;
 
-import com.alcatrazescapee.oreveins.OreVeins;
 import com.alcatrazescapee.oreveins.api.IVeinType;
 import com.alcatrazescapee.oreveins.util.IWeightedList;
 import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
@@ -36,6 +37,7 @@ import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
 public final class VeinRegistry
 {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final BiMap<String, IVeinType> VEINS = HashBiMap.create();
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(IVeinType.class, new VeinTypeDeserializer())
@@ -61,97 +63,105 @@ public final class VeinRegistry
 
     public static void preInit()
     {
-        OreVeins.getLog().info("Loading or creating ore generation config file");
+        LOGGER.info("Loading or creating ore generation config file");
 
         final File configFolder = new File(System.getProperty("user.dir") + "/config", MOD_ID);
         if (!configFolder.exists() && !configFolder.mkdir())
         {
-            throw new Error("Problem creating Ore Veins config directory.");
+            LOGGER.warn("Problem creating Ore Veins config directory.");
         }
-
-        final File defaultFile = new File(configFolder, "ore_veins.json");
-        String defaultData = null;
-        if (defaultFile.exists())
+        else
         {
-            try
+            final File defaultFile = new File(configFolder, "ore_veins.json");
+            String defaultData = null;
+            if (defaultFile.exists())
             {
-                defaultData = FileUtils.readFileToString(defaultFile, Charset.defaultCharset());
+                try
+                {
+                    defaultData = FileUtils.readFileToString(defaultFile, Charset.defaultCharset());
+                }
+                catch (IOException e)
+                {
+                    LOGGER.warn("Error reading default file.", e);
+                }
             }
-            catch (IOException e)
+            if (Strings.isNullOrEmpty(defaultData))
             {
-                throw new Error("Error reading default file.", e);
-            }
-        }
-        if (Strings.isNullOrEmpty(defaultData))
-        {
-            // todo: write default generation
-            try (BufferedWriter writer = Files.newBufferedWriter(defaultFile.toPath()))
-            {
-                writer.write("{}");
-            }
-            catch (IOException e)
-            {
-                throw new Error("Failed to copy default world gen data to file");
+                // todo: write default generation
+                try (BufferedWriter writer = Files.newBufferedWriter(defaultFile.toPath()))
+                {
+                    writer.write("{\n\n}");
+                }
+                catch (IOException e)
+                {
+                    LOGGER.warn("Error initializing default file", e);
+                }
             }
         }
 
         File[] worldGenFiles = configFolder.listFiles((file, name) -> name != null && name.toLowerCase(Locale.US).endsWith(".json"));
-        if (worldGenFiles == null) throw new Error("There are no valid files in the world gen directory");
-        String worldGenData;
-        for (File worldGenFile : worldGenFiles)
+        if (worldGenFiles == null)
         {
-            worldGenData = null;
-            if (worldGenFile.exists())
+            LOGGER.warn("There are no valid files in the world gen folder, this mod will not do anything!");
+        }
+        else
+        {
+            String worldGenData;
+            for (File worldGenFile : worldGenFiles)
             {
-                try
-                {
-                    worldGenData = FileUtils.readFileToString(worldGenFile, Charset.defaultCharset());
-                }
-                catch (IOException e)
-                {
-                    OreVeins.getLog().warn("Error reading world gen file.", e);
-                    continue;
-                }
-            }
-
-            if (Strings.isNullOrEmpty(worldGenData))
-            {
-                OreVeins.getLog().warn("There is no data in a world gen file.");
-                continue;
-            }
-
-            try
-            {
-                Set<Map.Entry<String, JsonElement>> allVeinsJson = new JsonParser().parse(worldGenData).getAsJsonObject().entrySet();
-                for (Map.Entry<String, JsonElement> entry : allVeinsJson)
+                worldGenData = null;
+                if (worldGenFile.exists())
                 {
                     try
                     {
-                        IVeinType<?> vein = GSON.fromJson(entry.getValue(), IVeinType.class);
-                        if (vein.isValid())
-                        {
-                            VEINS.put(entry.getKey(), vein);
-                        }
-                        else
-                        {
-                            OreVeins.getLog().warn("Vein {} is invalid. This is likely caused by one or more required parameters being left out.", entry.getKey());
-                        }
+                        worldGenData = FileUtils.readFileToString(worldGenFile, Charset.defaultCharset());
                     }
-                    catch (Throwable e)
+                    catch (IOException e)
                     {
-                        OreVeins.getLog().warn("Vein {} failed to parse. This is most likely caused by incorrectly specified JSON.", entry.getKey());
-                        OreVeins.getLog().warn("Error: ", e);
+                        LOGGER.warn("Error reading world gen file.", e);
+                        continue;
                     }
                 }
-            }
-            catch (Throwable e)
-            {
-                OreVeins.getLog().warn("File {} failed to parse. This is most likely caused by invalid JSON. Error: {}", worldGenFile, e);
-                OreVeins.getLog().warn("Error: ", e);
+
+                if (Strings.isNullOrEmpty(worldGenData))
+                {
+                    LOGGER.warn("There is no data in a world gen file.");
+                    continue;
+                }
+
+                try
+                {
+                    Set<Map.Entry<String, JsonElement>> allVeinsJson = new JsonParser().parse(worldGenData).getAsJsonObject().entrySet();
+                    for (Map.Entry<String, JsonElement> entry : allVeinsJson)
+                    {
+                        try
+                        {
+                            IVeinType<?> vein = GSON.fromJson(entry.getValue(), IVeinType.class);
+                            if (vein.isValid())
+                            {
+                                VEINS.put(entry.getKey(), vein);
+                            }
+                            else
+                            {
+                                LOGGER.warn("Vein {} is invalid. This is likely caused by one or more required parameters being left out.", entry.getKey());
+                            }
+                        }
+                        catch (Throwable e)
+                        {
+                            LOGGER.warn("Vein {} failed to parse. This is most likely caused by incorrectly specified JSON.", entry.getKey());
+                            LOGGER.warn("Error: ", e);
+                        }
+                    }
+                }
+                catch (Throwable e)
+                {
+                    LOGGER.warn("File {} failed to parse. This is most likely caused by invalid JSON. Error: {}", worldGenFile, e);
+                    LOGGER.warn("Error: ", e);
+                }
             }
         }
 
-        OreVeins.getLog().info("Registered {} Veins Successfully.", VeinRegistry.getVeins().size());
+        LOGGER.info("Registered {} Veins Successfully.", VeinRegistry.getVeins().size());
     }
 
     private VeinRegistry() {}

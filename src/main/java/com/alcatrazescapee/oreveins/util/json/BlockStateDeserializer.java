@@ -7,41 +7,60 @@
 package com.alcatrazescapee.oreveins.util.json;
 
 import java.lang.reflect.Type;
+import java.util.Optional;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.state.IProperty;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class BlockStateDeserializer implements JsonDeserializer<IBlockState>
 {
+    private static IBlockState getDefaultState(String blockName) throws JsonParseException
+    {
+        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
+        if (block == null)
+        {
+            throw new JsonParseException("Unrecognized Block: " + blockName);
+        }
+        return block.getDefaultState();
+    }
+
+    private static <T extends Comparable<T>> IBlockState withProperty(IBlockState base, JsonObject obj, IProperty<T> prop)
+    {
+        String propName = prop.getName();
+        if (obj.has(propName) && obj.get(propName).isJsonPrimitive())
+        {
+            Optional<T> propValue = prop.parseValue(obj.get(propName).getAsString());
+            if (propValue.isPresent())
+            {
+                return base.with(prop, propValue.get());
+            }
+        }
+        return base;
+    }
+
     @Override
     public IBlockState deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
-        String name;
         if (json.isJsonPrimitive())
         {
-            name = json.getAsString();
+            String name = json.getAsString();
+            return getDefaultState(name);
         }
         else if (json.isJsonObject())
         {
-            name = json.getAsJsonObject().get("block").getAsString();
-
+            JsonObject jsonObj = json.getAsJsonObject();
+            String name = jsonObj.get("block").getAsString();
+            IBlockState state = getDefaultState(name);
+            for (IProperty<?> prop : state.getProperties())
+            {
+                state = withProperty(state, jsonObj, prop);
+            }
+            return state;
         }
-        else
-        {
-            throw new JsonParseException("IBlockState must be JsonPrimitive or JsonObject");
-        }
-        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(name));
-        if (block == null)
-        {
-            throw new JsonParseException("Unrecognized Block: " + name);
-        }
-        // todo: figure out metadata / state properties handling
-        return block.getDefaultState();
+        throw new JsonParseException("IBlockState must be String or Object");
     }
 }

@@ -39,13 +39,9 @@ public class OreVeins
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static Logger getLog()
-    {
-        return LOGGER;
-    }
-
     public OreVeins()
     {
+        LOGGER.info("Init " + MOD_ID);
         // Config
         OreVeinsConfig.INSTANCE.setup();
 
@@ -91,6 +87,7 @@ public class OreVeins
     {
         if (OreVeinsConfig.INSTANCE.debugCommands)
         {
+            LOGGER.info("Registering Debug Commands");
             CommandDispatcher<CommandSource> dispatcher = event.getCommandDispatcher();
 
             CommandClearWorld.register(dispatcher);

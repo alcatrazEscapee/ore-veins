@@ -15,6 +15,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.dimension.Dimension;
 
 import com.alcatrazescapee.oreveins.vein.Indicator;
 
@@ -87,10 +88,10 @@ public interface IVeinType<V extends IVein<?>>
     /**
      * Check if the dimension is valid for this vein
      *
-     * @param dimensionID a dimension ID
+     * @param dimension a dimension
      * @return true if the dimension is valid
      */
-    boolean matchesDimension(int dimensionID);
+    boolean matchesDimension(Dimension dimension);
 
     /**
      * Check if the biome is valid for this vein
