@@ -1,5 +1,5 @@
-v2.0.11
+v2.0.12
 
 Changes:
-- Added a config option to stop the default ore_veins.json from generating
-- Made the mod less crash-trigger-happy if it can't create or find default files
+ - Added the ability to specify offset from surface y levels.
+ - Added the ability to specify multiple indicators in a weighted list.

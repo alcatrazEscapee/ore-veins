@@ -112,7 +112,7 @@ public class WorldGenVeins implements IWorldGenerator
                 Biome biomeAt = world.getBiome(new BlockPos(x, 0, z));
                 if (vein.getType().matchesBiome(biomeAt) && vein.inRange(x, z))
                 {
-                    Indicator veinIndicator = vein.getType().getIndicator();
+                    Indicator veinIndicator = vein.getType().getIndicator(random);
                     boolean canGenerateIndicator = false;
 
                     for (int y = vein.getType().getMinY(); y <= vein.getType().getMaxY(); y++)
@@ -120,6 +120,11 @@ public class WorldGenVeins implements IWorldGenerator
                         BlockPos posAt = new BlockPos(x, y, z);
                         if (random.nextFloat() < vein.getChanceToGenerate(posAt))
                         {
+                            // At this point, shift the vein upwards if using relative y position
+                            if (vein.getType().useRelativeY())
+                            {
+                                posAt = getTopBlockIgnoreVegetation(world, posAt).up(y);
+                            }
                             IBlockState stoneState = world.getBlockState(posAt);
                             if (vein.getType().canGenerateIn(stoneState))
                             {

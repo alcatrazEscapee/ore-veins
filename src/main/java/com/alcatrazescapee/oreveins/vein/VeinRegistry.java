@@ -41,7 +41,8 @@ public final class VeinRegistry
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(IVeinType.class, new VeinTypeDeserializer())
             .registerTypeAdapter(new TypeToken<List<IBlockState>>() {}.getType(), new BlockStateListDeserializer())
-            .registerTypeAdapter(IWeightedList.class, new WeightedListDeserializer())
+            .registerTypeAdapter(new TypeToken<IWeightedList<IBlockState>>() {}.getType(), new WeightedListDeserializer<>(IBlockState.class))
+            .registerTypeAdapter(new TypeToken<IWeightedList<Indicator>>() {}.getType(), new WeightedListDeserializer<>(Indicator.class))
             .registerTypeAdapter(IBlockState.class, new BlockStateDeserializer())
             .create();
     private static File worldGenFolder;
@@ -152,7 +153,7 @@ public final class VeinRegistry
                             {
                                 if (VEINS.containsKey(entry.getKey()))
                                 {
-                                    OreVeins.getLog().warn("Duplicate Veins found for the name {}. One has been discarded.", entry.getKey());
+                                    OreVeins.getLog().error("Duplicate Veins found for the name {}. One has been discarded.", entry.getKey());
                                 }
                                 else
                                 {
@@ -161,20 +162,20 @@ public final class VeinRegistry
                             }
                             else
                             {
-                                OreVeins.getLog().warn("Vein {} is invalid. This is likely caused by one or more required parameters being left out.", entry.getKey());
+                                OreVeins.getLog().error("Vein {} is invalid. This is likely caused by one or more required parameters being left out.", entry.getKey());
                             }
                         }
-                        catch (Throwable e)
+                        catch (Exception e)
                         {
-                            OreVeins.getLog().warn("Vein {} failed to parse. This is most likely caused by incorrectly specified JSON.", entry.getKey());
-                            OreVeins.getLog().warn("Error: ", e);
+                            OreVeins.getLog().error("Vein {} failed to parse. This is most likely caused by incorrectly specified JSON.", entry.getKey());
+                            OreVeins.getLog().error("Error: ", e);
                         }
                     }
                 }
-                catch (Throwable e)
+                catch (Exception e)
                 {
-                    OreVeins.getLog().warn("File {} failed to parse. This is most likely caused by invalid JSON. Error: {}", worldGenFile, e);
-                    OreVeins.getLog().warn("Error: ", e);
+                    OreVeins.getLog().error("File {} failed to parse. This is most likely caused by invalid JSON. Error: {}", worldGenFile, e);
+                    OreVeins.getLog().error("Error: ", e);
                 }
             }
         }

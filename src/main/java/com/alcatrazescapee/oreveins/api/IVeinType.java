@@ -52,10 +52,11 @@ public interface IVeinType<V extends IVein<?>>
     /**
      * Gets the indicator for this vein type
      *
+     * @param random A random to use when selecting an indicator
      * @return An IIndicator if it exists, or null if not
      */
     @Nullable
-    Indicator getIndicator();
+    Indicator getIndicator(Random random);
 
     /**
      * If the vein can generate on the previous state
@@ -121,6 +122,13 @@ public interface IVeinType<V extends IVein<?>>
      * @return a Y position
      */
     int getMaxY();
+
+    /**
+     * If the vein should use a relative y-position
+     *
+     * @return true if the vein should add the height to the possible y positions
+     */
+    boolean useRelativeY();
 
     /**
      * Gets the number of rolls for a chunk

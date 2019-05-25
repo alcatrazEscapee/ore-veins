@@ -20,6 +20,7 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `rarity` (Default: 10) 1 / N chunks will spawn this ore vein.
 * `min_y` (Default: 16) Minimum y value for veins to generate at.
 * `max_y` (Default: 64) Maximum y value for veins to generate at.
+* `use_realitive_y` (Default: false) If true, the y-values will be interpreted as an offset from the surface at each position. (i.e. min_y = -20, max_y = -5 will generate ore veins from 20 to 5 blocks under the surface)
 * `density` (Default: 50) Density of the ore vein. Higher values are more dense. (FYI: This number is not a percentage. For 100% density use values >1000)
 * `vertical_size` (Default: 15) Vertical radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
 * `horizontal_size` (Default: 8) Horizontal radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
@@ -27,7 +28,7 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `biomes_is_whitelist` (Default: true) When false, the biome list becomes a blacklist
 * `dimensions` (Default: 0) Whitelist of dimension ids that the ore can spawn in. Must be a list of integers.
 * `dimensions_is_whitelist` (Default: true) When false, the dimension list becomes a blacklist
-* `indicator` (Default: empty) This is an [Indicator](#indicators) which will spawn on the surface underneath where the vein is found.
+* `indicator` (Default: empty) This is an [Indicator](#indicators) which will spawn on the surface underneath where the vein is found. This can also be a weighted list of multiple indicators, in which case only one will be chosen for each vertical column within range of a vein.
 
 ### Veins
 
@@ -56,7 +57,9 @@ This vein represents a curve (created with a cubic Bezier curve.) It has two opt
 
 ### Indicators
 
-Indicators are configurable objects that will spawn on the surface when a vein is detected underneath them. An indicator must contain the following entries:
+Indicators are configurable objects that will spawn on the surface when a vein is detected underneath them. They are specified as a JSON object. They can also be specified as a JSON array to specify a weighted list of indicators.
+
+An indicator must contain the following entries:
 
 * `blocks` is a [Block Entry](#block-entries). This represents the possible states that the indicator will spawn. This supports weighted entries.
 
@@ -67,6 +70,7 @@ Indicators can also contain the following optional entries
 * `ignore_vegetation` (Default: true) If the vein should ignore vegetation when trying to spawn indicators. (i.e. should the indicators spawn underneath trees, leaves or huge mushrooms?)
 * `ignore_liquids` (Default: false) If the vein should ignore liquids when trying to spawn indicators. (i.e. should the indicator spawn inside lakes or the ocean?)
 * `blocks_under` (Default: accepts all blocks) This is a [Block Entry](#block-entries). The list of blocks that this indicator is allowed to spawn on.
+* `weight` (Default: 1). If specified in a list, this is the weight assigned to each entry. 
 
 An example indicator that spawns roses when ore blocks are less than twenty blocks under the surface would be added to the ore entry as such:
 

@@ -27,6 +27,8 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     protected int minY = 16;
     @SerializedName("max_y")
     protected int maxY = 64;
+    @SerializedName("use_relative_y")
+    protected boolean useRelativeY = false;
     @SerializedName("vertical_size")
     protected int verticalSize = 8;
     @SerializedName("horizontal_size")
@@ -45,7 +47,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
 
     private List<String> biomes = null;
     private List<Integer> dimensions = null;
-    private Indicator indicator = null;
+    private IWeightedList<Indicator> indicator = null;
 
     @Nonnull
     @Override
@@ -63,9 +65,9 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
 
     @Nullable
     @Override
-    public Indicator getIndicator()
+    public Indicator getIndicator(Random random)
     {
-        return indicator;
+        return indicator != null ? indicator.get(random) : null;
     }
 
     @Override
@@ -125,8 +127,8 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     {
         return oreStates != null && !oreStates.isEmpty() &&
                 stoneStates != null && !stoneStates.isEmpty() &&
-                (indicator == null || indicator.isValid()) &&
-                maxY > minY && minY >= 0 &&
+                (indicator == null || (!indicator.isEmpty() && indicator.values().stream().map(Indicator::isValid).reduce((x, y) -> x && y).orElse(false))) &&
+                maxY > minY && (minY >= 0 || useRelativeY) &&
                 count > 0 &&
                 rarity > 0 &&
                 verticalSize > 0 && horizontalSize > 0 && density > 0;
@@ -176,5 +178,11 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     public int getChunkRadius()
     {
         return 1 + (horizontalSize >> 4);
+    }
+
+    @Override
+    public boolean useRelativeY()
+    {
+        return useRelativeY;
     }
 }
