@@ -38,4 +38,7 @@ public class OreVeinsConfig
 
     @Config.Comment("Always create default ore_veins.json file if none if found.")
     public static boolean ALWAYS_CREATE_DEFAULT_CONFIG = true;
+
+    @Config.Comment("Try and avoid cutting off veins at the min / max of the range by not creating centers at the min / max of the y-range")
+    public static boolean AVOID_VEIN_CUTOFFS = true;
 }

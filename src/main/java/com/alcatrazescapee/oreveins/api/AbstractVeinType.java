@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
 
+import com.alcatrazescapee.oreveins.OreVeinsConfig;
 import com.alcatrazescapee.oreveins.util.IWeightedList;
 import com.alcatrazescapee.oreveins.vein.Indicator;
 import com.alcatrazescapee.oreveins.vein.VeinRegistry;
@@ -161,9 +162,23 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
 
     protected final BlockPos defaultStartPos(int chunkX, int chunkZ, Random rand)
     {
+        int spawnRange = maxY - minY, minRange = minY;
+        if (OreVeinsConfig.AVOID_VEIN_CUTOFFS)
+        {
+            if (verticalSize * 2 < spawnRange)
+            {
+                spawnRange -= verticalSize * 2;
+                minRange += verticalSize;
+            }
+            else
+            {
+                minRange = minY + (maxY - minY) / 2;
+                spawnRange = 1;
+            }
+        }
         return new BlockPos(
                 chunkX * 16 + rand.nextInt(16),
-                minY + rand.nextInt(maxY - minY),
+                minRange + rand.nextInt(spawnRange),
                 chunkZ * 16 + rand.nextInt(16)
         );
     }
