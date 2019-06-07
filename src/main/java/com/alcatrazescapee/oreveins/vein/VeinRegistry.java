@@ -24,13 +24,11 @@ import net.minecraft.block.state.IBlockState;
 
 import com.alcatrazescapee.oreveins.OreVeins;
 import com.alcatrazescapee.oreveins.OreVeinsConfig;
+import com.alcatrazescapee.oreveins.api.ICondition;
 import com.alcatrazescapee.oreveins.api.IVeinType;
 import com.alcatrazescapee.oreveins.cmd.CommandClearWorld;
 import com.alcatrazescapee.oreveins.util.IWeightedList;
-import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
-import com.alcatrazescapee.oreveins.util.json.BlockStateListDeserializer;
-import com.alcatrazescapee.oreveins.util.json.VeinTypeDeserializer;
-import com.alcatrazescapee.oreveins.util.json.WeightedListDeserializer;
+import com.alcatrazescapee.oreveins.util.json.*;
 import com.alcatrazescapee.oreveins.world.WorldGenVeins;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
@@ -44,6 +42,7 @@ public final class VeinRegistry
             .registerTypeAdapter(new TypeToken<IWeightedList<IBlockState>>() {}.getType(), new WeightedListDeserializer<>(IBlockState.class))
             .registerTypeAdapter(new TypeToken<IWeightedList<Indicator>>() {}.getType(), new WeightedListDeserializer<>(Indicator.class))
             .registerTypeAdapter(IBlockState.class, new BlockStateDeserializer())
+            .registerTypeAdapter(ICondition.class, new ConditionDeserializer())
             .create();
     private static File worldGenFolder;
 

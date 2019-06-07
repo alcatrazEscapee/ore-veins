@@ -29,6 +29,7 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `dimensions` (Default: 0) Whitelist of dimension ids that the ore can spawn in. Must be a list of integers.
 * `dimensions_is_whitelist` (Default: true) When false, the dimension list becomes a blacklist
 * `indicator` (Default: empty) This is an [Indicator](#indicators) which will spawn on the surface underneath where the vein is found. This can also be a weighted list of multiple indicators, in which case only one will be chosen for each vertical column within range of a vein.
+* `conditions` (Default: none) This is a list of json objects which specifies conditions on each individual block within the ore vein. See [Conditions](#conditions).
 
 ### Veins
 
@@ -115,3 +116,34 @@ A Block Entry can be any of the following:
   ]
 }
 ```
+
+### Conditions
+
+A condition is a check for each ore block in a vein. The vein will still generate, but ore each block will only appear if each condition is passed.
+
+Conditions must be passed in as a list of json objects. Each object must have a `type` entry which specifies the name of the condition. The following types are available
+
+##### Touching
+Specification: `"type": "touching"
+`
+This condition specifies that an ore block must be adjacent to another block.
+
+Required Parameters
+ - `block` is a [Block Entry](#block-entries) (Not a list! A single block entry!) which specifies a block that the vein must touch
+
+Optional Parameters
+ - `min` (Default: 1) This specifies the minimum amount of additional blocks that this ore block must touch.
+ - `max` (Default: Infinity) This specifies the maximum amount of additional blocks that this ore block must touch.
+ 
+ Example: Any ore block must be adjacent to at least two air blocks.
+ ```json
+ {
+  "conditions": [
+    {
+      "type": "touching",
+      "block": "minecraft:air",
+      "min": 2
+    }
+  ]
+ }
+ ```

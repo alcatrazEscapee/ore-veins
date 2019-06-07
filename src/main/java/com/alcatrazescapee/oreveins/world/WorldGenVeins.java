@@ -125,8 +125,7 @@ public class WorldGenVeins implements IWorldGenerator
                             {
                                 posAt = getTopBlockIgnoreVegetation(world, posAt).up(y);
                             }
-                            IBlockState stoneState = world.getBlockState(posAt);
-                            if (vein.getType().canGenerateIn(stoneState))
+                            if (vein.getType().canGenerateAt(world, posAt))
                             {
                                 IBlockState oreState = vein.getType().getStateToGenerate(random);
                                 world.setBlockState(posAt, oreState);

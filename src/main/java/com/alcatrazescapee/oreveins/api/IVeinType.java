@@ -14,6 +14,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
 import com.alcatrazescapee.oreveins.vein.Indicator;
@@ -59,12 +60,13 @@ public interface IVeinType<V extends IVein<?>>
     Indicator getIndicator(Random random);
 
     /**
-     * If the vein can generate on the previous state
-     *
-     * @param state the current state
-     * @return if the vein can generate
+     * If the vein can generate at the given position
+     * Replaces the old canGenerateIn check, and condition checks
+     * @param world The world
+     * @param pos The position to generate at
+     * @return true if the vein can generate at a given position
      */
-    boolean canGenerateIn(IBlockState state);
+    boolean canGenerateAt(World world, BlockPos pos);
 
     /**
      * Is the vein in range of a vertical column with specific offsets

@@ -2,11 +2,14 @@ package com.alcatrazescapee.oreveins.api;
 
 import java.util.Random;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 
+@ParametersAreNonnullByDefault
 public abstract class AbstractVein<T extends IVeinType<?>> implements IVein<T>
 {
     protected final T type;
@@ -47,5 +50,11 @@ public abstract class AbstractVein<T extends IVeinType<?>> implements IVein<T>
     public String toString()
     {
         return String.format("Vein: %s, Pos: %s", VeinRegistry.getName(type), pos);
+    }
+
+    @Override
+    public boolean canGenerateAt(World world, BlockPos pos)
+    {
+        return getType().canGenerateAt(world, pos);
     }
 }

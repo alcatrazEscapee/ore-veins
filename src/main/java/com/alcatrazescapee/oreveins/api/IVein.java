@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 /**
  * This is a vein instance. It is created from a {@link IVeinType} to create a ore vein in the world
@@ -50,6 +51,17 @@ public interface IVein<T extends IVeinType<?>>
      * @return if the vein can generate at any y position in that column
      */
     boolean inRange(int x, int z);
+
+    /**
+     * Checks if the vein can generate at a specific position
+     * Applies this check to all conditions and the stone to spawn in
+     * Called directly before {@link IVein#getChanceToGenerate(BlockPos)}
+     *
+     * @param world the world
+     * @param pos   the pos to generate at
+     * @return true if the vein can generate
+     */
+    boolean canGenerateAt(World world, BlockPos pos);
 
     /**
      * Gets the chance to generate at a position

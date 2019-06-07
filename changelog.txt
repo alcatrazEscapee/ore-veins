@@ -1,5 +1,6 @@
-v2.0.12
+v2.0.13
 
 Changes:
- - Added the ability to specify offset from surface y levels.
- - Added the ability to specify multiple indicators in a weighted list.
+ - Made veins starting locations better centered within their y range, to stop them from getting cut off at the edges. (This is configurable if you don't like it)
+ - Added conditions! These can be used to restrict where ore blocks are allowed to generate within a vein.
+ - Added "touching" condition: Ore blocks only generate when touching a specific number of blocks

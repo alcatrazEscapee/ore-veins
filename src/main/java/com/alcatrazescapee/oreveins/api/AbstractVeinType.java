@@ -10,6 +10,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
 
@@ -48,6 +49,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
 
     private List<String> biomes = null;
     private List<Integer> dimensions = null;
+    private List<ICondition> conditions = null;
     private IWeightedList<Indicator> indicator = null;
 
     @Nonnull
@@ -72,9 +74,24 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     }
 
     @Override
-    public boolean canGenerateIn(IBlockState state)
+    public boolean canGenerateAt(World world, BlockPos pos)
     {
-        return stoneStates.contains(state);
+        IBlockState stoneState = world.getBlockState(pos);
+        if (stoneStates.contains(stoneState))
+        {
+            if (conditions != null)
+            {
+                for (ICondition condition : conditions)
+                {
+                    if (!condition.test(world, pos))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

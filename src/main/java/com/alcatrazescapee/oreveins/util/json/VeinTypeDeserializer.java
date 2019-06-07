@@ -17,16 +17,16 @@ import com.alcatrazescapee.oreveins.vein.*;
 
 public class VeinTypeDeserializer implements JsonDeserializer<IVeinType<?>>
 {
-    private static final Map<String, Class<? extends IVeinType>> TYPES = new HashMap<>();
+    private final Map<String, Class<? extends IVeinType>> types = new HashMap<>();
 
-    static
+    public VeinTypeDeserializer()
     {
         // If you add more vein types, remember to add a map entry here
-        TYPES.put("sphere", VeinTypeSphere.class);
-        TYPES.put("cluster", VeinTypeCluster.class);
-        TYPES.put("cone", VeinTypeCone.class);
-        TYPES.put("pipe", VeinTypePipe.class);
-        TYPES.put("curve", VeinTypeCurve.class);
+        types.put("sphere", VeinTypeSphere.class);
+        types.put("cluster", VeinTypeCluster.class);
+        types.put("cone", VeinTypeCone.class);
+        types.put("pipe", VeinTypePipe.class);
+        types.put("curve", VeinTypeCurve.class);
     }
 
     @Override
@@ -34,9 +34,9 @@ public class VeinTypeDeserializer implements JsonDeserializer<IVeinType<?>>
     {
         JsonObject obj = json.getAsJsonObject();
         String veinType = obj.get("type").getAsString();
-        if (TYPES.containsKey(veinType))
+        if (types.containsKey(veinType))
         {
-            return context.deserialize(json, TYPES.get(veinType));
+            return context.deserialize(json, types.get(veinType));
         }
         throw new JsonParseException("Unknown vein type " + veinType);
     }
