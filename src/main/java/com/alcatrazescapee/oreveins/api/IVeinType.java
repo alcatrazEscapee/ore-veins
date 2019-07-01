@@ -50,12 +50,13 @@ public interface IVeinType<V extends IVein<?>>
     Collection<BlockState> getOreStates();
 
     /**
-     * Gets the indicator for this vein type
+     * Gets an indicator for this vein type
      *
-     * @return An IIndicator if it exists, or null if not
+     * @param random A random to use to select an indicator
+     * @return An Indicator if it exists, or null if not
      */
     @Nullable
-    Indicator getIndicator();
+    Indicator getIndicator(Random random);
 
     /**
      * If the vein can generate on the previous state

@@ -103,7 +103,7 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                 Biome biomeAt = world.getBiome(new BlockPos(x, 0, z));
                 if (vein.getType().matchesBiome(biomeAt) && vein.inRange(x, z))
                 {
-                    Indicator veinIndicator = vein.getType().getIndicator();
+                    Indicator veinIndicator = vein.getType().getIndicator(random);
                     boolean canGenerateIndicator = false;
 
                     for (int y = vein.getType().getMinY(); y <= vein.getType().getMaxY(); y++)

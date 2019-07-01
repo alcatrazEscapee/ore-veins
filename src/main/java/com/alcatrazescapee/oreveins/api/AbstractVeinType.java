@@ -54,7 +54,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
 
     private List<String> biomes = null;
     private List<String> dimensions = null;
-    private Indicator indicator = null;
+    private IWeightedList<Indicator> indicator = null;
 
     @Nonnull
     @Override
@@ -72,9 +72,9 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
 
     @Nullable
     @Override
-    public Indicator getIndicator()
+    public Indicator getIndicator(Random random)
     {
-        return indicator;
+        return indicator != null ? indicator.get(random) : null;
     }
 
     @Override
@@ -142,7 +142,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     {
         return oreStates != null && !oreStates.isEmpty() &&
                 stoneStates != null && !stoneStates.isEmpty() &&
-                (indicator == null || indicator.isValid()) &&
+                (indicator == null || (!indicator.isEmpty() && indicator.values().stream().map(Indicator::isValid).reduce((x, y) -> x && y).orElse(false))) &&
                 maxY > minY && minY >= 0 &&
                 count > 0 &&
                 rarity > 0 &&
