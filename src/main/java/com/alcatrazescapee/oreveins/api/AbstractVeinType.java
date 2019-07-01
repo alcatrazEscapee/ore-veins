@@ -14,10 +14,10 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.IRegistry;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraftforge.common.BiomeDictionary;
@@ -48,9 +48,9 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     protected boolean biomesIsWhitelist = true;
 
     @SerializedName("stone")
-    private List<IBlockState> stoneStates = null;
+    private List<BlockState> stoneStates = null;
     @SerializedName("ore")
-    private IWeightedList<IBlockState> oreStates = null;
+    private IWeightedList<BlockState> oreStates = null;
 
     private List<String> biomes = null;
     private List<String> dimensions = null;
@@ -58,14 +58,14 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
 
     @Nonnull
     @Override
-    public IBlockState getStateToGenerate(Random rand)
+    public BlockState getStateToGenerate(Random rand)
     {
         return oreStates.get(rand);
     }
 
     @Nonnull
     @Override
-    public Collection<IBlockState> getOreStates()
+    public Collection<BlockState> getOreStates()
     {
         return oreStates.values();
     }
@@ -78,7 +78,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     }
 
     @Override
-    public boolean canGenerateIn(IBlockState state)
+    public boolean canGenerateIn(BlockState state)
     {
         return stoneStates.contains(state);
     }
@@ -93,7 +93,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     @SuppressWarnings("deprecation")
     public boolean matchesDimension(Dimension dimension)
     {
-        ResourceLocation loc = IRegistry.DIMENSION_TYPE.getKey(dimension.getType());
+        ResourceLocation loc = Registry.DIMENSION_TYPE.getKey(dimension.getType());
         if (loc == null)
         {
             System.out.println("Loc is null");

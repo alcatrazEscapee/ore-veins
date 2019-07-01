@@ -12,13 +12,13 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.IChunkGenSettings;
-import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 
@@ -31,7 +31,7 @@ import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 import static net.minecraft.world.gen.Heightmap.Type.WORLD_SURFACE_WG;
 
 @ParametersAreNonnullByDefault
-public class FeatureVeins extends Feature<NoFeatureConfig>
+public class VeinsFeature extends Feature<NoFeatureConfig>
 {
     private static final Random RANDOM = new Random();
     private static int CHUNK_RADIUS = 0;
@@ -72,17 +72,22 @@ public class FeatureVeins extends Feature<NoFeatureConfig>
         }
     }
 
-    @Override
-    public boolean place(IWorld world, IChunkGenerator<? extends IChunkGenSettings> chunkGenerator, Random random, BlockPos pos, NoFeatureConfig config)
+    public VeinsFeature()
     {
-        List<IVein> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, world.getSeed(), CHUNK_RADIUS);
+        super(NoFeatureConfig::deserialize);
+    }
+
+    @Override
+    public boolean place(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, NoFeatureConfig config)
+    {
+        List<IVein> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, worldIn.getSeed(), CHUNK_RADIUS);
         if (veins.isEmpty()) return false;
 
         for (IVein vein : veins)
         {
-            if (vein.getType().matchesDimension(world.getDimension()))
+            if (vein.getType().matchesDimension(worldIn.getDimension()))
             {
-                generate(world, random, pos.getX(), pos.getZ(), vein);
+                generate(worldIn, rand, pos.getX(), pos.getZ(), vein);
             }
         }
         return true;
@@ -106,10 +111,10 @@ public class FeatureVeins extends Feature<NoFeatureConfig>
                         BlockPos posAt = new BlockPos(x, y, z);
                         if (random.nextFloat() < vein.getChanceToGenerate(posAt))
                         {
-                            IBlockState stoneState = world.getBlockState(posAt);
+                            BlockState stoneState = world.getBlockState(posAt);
                             if (vein.getType().canGenerateIn(stoneState))
                             {
-                                IBlockState oreState = vein.getType().getStateToGenerate(random);
+                                BlockState oreState = vein.getType().getStateToGenerate(random);
                                 setBlockState(world, posAt, oreState);
                                 if (veinIndicator != null && !canGenerateIndicator)
                                 {
@@ -128,8 +133,8 @@ public class FeatureVeins extends Feature<NoFeatureConfig>
                             // todo: checks for vegetation?
                             BlockPos posAt = world.getHeight(Heightmap.Type.WORLD_SURFACE_WG, new BlockPos(x, 0, z));
 
-                            IBlockState indicatorState = veinIndicator.getStateToGenerate(random);
-                            IBlockState stateAt = world.getBlockState(posAt);
+                            BlockState indicatorState = veinIndicator.getStateToGenerate(random);
+                            BlockState stateAt = world.getBlockState(posAt);
 
                             // The indicator must pass canPlaceBlockAt
                             // The previous state must be replaceable, non-liquid or the vein ignores liquids

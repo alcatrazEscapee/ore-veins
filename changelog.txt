@@ -1,5 +1,3 @@
-v3.0.0-alpha.2
+v4.0.0-alpha.1
 
-Changes:
- - Fixed dimension whitelisting - now uses the dimension name rather than the ID
- - Added block property detection. See the README.md for info on how to use it
+Initial Port to 1.14.3!

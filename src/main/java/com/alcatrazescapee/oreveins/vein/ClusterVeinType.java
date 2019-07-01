@@ -17,7 +17,7 @@ import com.alcatrazescapee.oreveins.api.AbstractVeinType;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 @ParametersAreNonnullByDefault
-public class VeinTypeCluster extends AbstractVeinType<VeinTypeCluster.VeinCluster>
+public class ClusterVeinType extends AbstractVeinType<ClusterVeinType.VeinCluster>
 {
     int clusters = 3;
 
@@ -52,11 +52,11 @@ public class VeinTypeCluster extends AbstractVeinType<VeinTypeCluster.VeinCluste
         return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize * vein.getSize();
     }
 
-    static class VeinCluster extends AbstractVein<VeinTypeCluster>
+    static class VeinCluster extends AbstractVein<ClusterVeinType>
     {
         private final Cluster[] spawnPoints;
 
-        VeinCluster(VeinTypeCluster type, BlockPos pos, Random rand)
+        VeinCluster(ClusterVeinType type, BlockPos pos, Random rand)
         {
             super(type, pos, rand);
 

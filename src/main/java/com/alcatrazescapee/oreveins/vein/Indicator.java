@@ -11,7 +11,7 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 
 import com.alcatrazescapee.oreveins.util.IWeightedList;
 
@@ -27,17 +27,17 @@ public class Indicator
     private boolean ignoreLiquids = false;
 
     @SerializedName("blocks")
-    private IWeightedList<IBlockState> states = null;
+    private IWeightedList<BlockState> states = null;
     @SerializedName("blocks_under")
-    private List<IBlockState> underStates = null;
+    private List<BlockState> underStates = null;
 
     @Nonnull
-    public IBlockState getStateToGenerate(Random random)
+    public BlockState getStateToGenerate(Random random)
     {
         return states.get(random);
     }
 
-    public boolean validUnderState(IBlockState state)
+    public boolean validUnderState(BlockState state)
     {
         return underStates == null || underStates.contains(state);
     }

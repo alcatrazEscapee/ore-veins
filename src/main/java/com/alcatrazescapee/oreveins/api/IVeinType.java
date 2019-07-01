@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.Dimension;
@@ -38,7 +38,7 @@ public interface IVeinType<V extends IVein<?>>
      * @return A block state
      */
     @Nonnull
-    IBlockState getStateToGenerate(Random rand);
+    BlockState getStateToGenerate(Random rand);
 
     /**
      * Gets all possible ore states spawned by this vein.
@@ -47,7 +47,7 @@ public interface IVeinType<V extends IVein<?>>
      * @return a collection of block states
      */
     @Nonnull
-    Collection<IBlockState> getOreStates();
+    Collection<BlockState> getOreStates();
 
     /**
      * Gets the indicator for this vein type
@@ -63,7 +63,7 @@ public interface IVeinType<V extends IVein<?>>
      * @param state the current state
      * @return if the vein can generate
      */
-    boolean canGenerateIn(IBlockState state);
+    boolean canGenerateIn(BlockState state);
 
     /**
      * Is the vein in range of a vertical column with specific offsets

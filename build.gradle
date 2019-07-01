@@ -78,6 +78,7 @@ curseforge {
     }
 }
 
+// Puts the mod version into the jar for mods.toml to read from
 jar {
     manifest {
         attributes([

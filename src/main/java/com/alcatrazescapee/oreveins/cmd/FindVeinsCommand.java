@@ -12,18 +12,18 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 
 import com.alcatrazescapee.oreveins.api.IVein;
 import com.alcatrazescapee.oreveins.api.IVeinType;
 import com.alcatrazescapee.oreveins.vein.VeinRegistry;
-import com.alcatrazescapee.oreveins.world.FeatureVeins;
+import com.alcatrazescapee.oreveins.world.VeinsFeature;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 
 @ParametersAreNonnullByDefault
-public final class CommandFindVeins
+public final class FindVeinsCommand
 {
     public static void register(CommandDispatcher<CommandSource> dispatcher)
     {
@@ -37,20 +37,20 @@ public final class CommandFindVeins
 
     private static int findVeins(CommandSource source, String veinName, int radius)
     {
-        source.sendFeedback(new TextComponentString("Veins Found: "), true);
+        source.sendFeedback(new StringTextComponent("Veins Found: "), true);
 
         final BlockPos pos = new BlockPos(source.getPos());
         final int chunkX = pos.getX() >> 4, chunkZ = pos.getZ() >> 4;
-        final List<IVein> veins = FeatureVeins.getNearbyVeins(chunkX, chunkZ, source.getWorld().getSeed(), radius);
+        final List<IVein> veins = VeinsFeature.getNearbyVeins(chunkX, chunkZ, source.getWorld().getSeed(), radius);
         final IVeinType type = VeinRegistry.getVein(veinName);
         if (type == null)
         {
-            source.sendErrorMessage(new TextComponentString("Vein supplied does not match any valid vein names"));
+            source.sendErrorMessage(new StringTextComponent("Vein supplied does not match any valid vein names"));
         }
 
         // Search for veins matching type
         veins.removeIf(x -> x.getType() != type);
-        veins.forEach(x -> source.sendFeedback(new TextComponentString("> Vein: " + x.toString()), true));
+        veins.forEach(x -> source.sendFeedback(new StringTextComponent("> Vein: " + x.toString()), true));
         return 1;
     }
 }

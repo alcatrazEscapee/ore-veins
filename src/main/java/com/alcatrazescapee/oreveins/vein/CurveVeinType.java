@@ -1,3 +1,9 @@
+/*
+ * Part of the Ore Veins Mod by alcatrazEscapee
+ * Work under Copyright. Licensed under the GPL-3.0.
+ * See the project LICENSE.md for more information.
+ */
+
 package com.alcatrazescapee.oreveins.vein;
 
 import java.util.ArrayList;
@@ -14,7 +20,7 @@ import com.alcatrazescapee.oreveins.api.AbstractVeinType;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 @ParametersAreNonnullByDefault
-public class VeinTypeCurve extends AbstractVeinType<VeinTypeCurve.VeinCurve>
+public class CurveVeinType extends AbstractVeinType<CurveVeinType.VeinCurve>
 {
     float radius = 5;
     float angle = 45;
@@ -73,13 +79,13 @@ public class VeinTypeCurve extends AbstractVeinType<VeinTypeCurve.VeinCurve>
         return new VeinCurve(this, pos, rand);
     }
 
-    static class VeinCurve extends AbstractVein<VeinTypeCurve>
+    static class VeinCurve extends AbstractVein<CurveVeinType>
     {
         private final Random rand;
         private boolean isInitialized = false;
         private List<CurveSegment> segmentList;
 
-        VeinCurve(VeinTypeCurve type, BlockPos pos, Random random)
+        VeinCurve(CurveVeinType type, BlockPos pos, Random random)
         {
             super(type, pos, 0.5f * (1.0f + random.nextFloat()));
             this.rand = new Random(random.nextLong());

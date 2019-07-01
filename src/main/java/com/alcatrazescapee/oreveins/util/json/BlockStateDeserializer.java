@@ -11,14 +11,14 @@ import java.util.Optional;
 
 import com.google.gson.*;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.state.IProperty;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class BlockStateDeserializer implements JsonDeserializer<IBlockState>
+public class BlockStateDeserializer implements JsonDeserializer<BlockState>
 {
-    private static IBlockState getDefaultState(String blockName) throws JsonParseException
+    private static BlockState getDefaultState(String blockName) throws JsonParseException
     {
         Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
         if (block == null)
@@ -28,7 +28,7 @@ public class BlockStateDeserializer implements JsonDeserializer<IBlockState>
         return block.getDefaultState();
     }
 
-    private static <T extends Comparable<T>> IBlockState withProperty(IBlockState base, JsonObject obj, IProperty<T> prop)
+    private static <T extends Comparable<T>> BlockState withProperty(BlockState base, JsonObject obj, IProperty<T> prop)
     {
         String propName = prop.getName();
         if (obj.has(propName) && obj.get(propName).isJsonPrimitive())
@@ -43,7 +43,7 @@ public class BlockStateDeserializer implements JsonDeserializer<IBlockState>
     }
 
     @Override
-    public IBlockState deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+    public BlockState deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
         if (json.isJsonPrimitive())
         {
@@ -54,7 +54,7 @@ public class BlockStateDeserializer implements JsonDeserializer<IBlockState>
         {
             JsonObject jsonObj = json.getAsJsonObject();
             String name = jsonObj.get("block").getAsString();
-            IBlockState state = getDefaultState(name);
+            BlockState state = getDefaultState(name);
             for (IProperty<?> prop : state.getProperties())
             {
                 state = withProperty(state, jsonObj, prop);

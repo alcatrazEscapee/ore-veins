@@ -16,7 +16,7 @@ import com.alcatrazescapee.oreveins.api.DefaultVeinType;
 
 @SuppressWarnings({"unused"})
 @ParametersAreNonnullByDefault
-public class VeinTypeSphere extends DefaultVeinType
+public class SphereVeinType extends DefaultVeinType
 {
     @Override
     public float getChanceToGenerate(DefaultVein vein, BlockPos pos)

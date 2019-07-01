@@ -1,3 +1,9 @@
+/*
+ * Part of the Ore Veins Mod by alcatrazEscapee
+ * Work under Copyright. Licensed under the GPL-3.0.
+ * See the project LICENSE.md for more information.
+ */
+
 package com.alcatrazescapee.oreveins.vein;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -9,7 +15,7 @@ import com.alcatrazescapee.oreveins.api.DefaultVeinType;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 @ParametersAreNonnullByDefault
-public class VeinTypeCone extends DefaultVeinType
+public class ConeVeinType extends DefaultVeinType
 {
     float shape = 0.5f;
     boolean inverted = false;

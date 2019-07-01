@@ -12,25 +12,25 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.*;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 
-public class BlockStateListDeserializer implements JsonDeserializer<List<IBlockState>>
+public class BlockStateListDeserializer implements JsonDeserializer<List<BlockState>>
 {
     @Override
-    public List<IBlockState> deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException
+    public List<BlockState> deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException
     {
         if (json.isJsonPrimitive() || json.isJsonObject())
         {
-            final IBlockState state = context.deserialize(json, IBlockState.class);
+            final BlockState state = context.deserialize(json, BlockState.class);
             return Collections.singletonList(state);
         }
         else if (json.isJsonArray())
         {
             final JsonArray array = json.getAsJsonArray();
-            final List<IBlockState> states = new ArrayList<>();
+            final List<BlockState> states = new ArrayList<>();
             for (JsonElement element : array)
             {
-                states.add(context.deserialize(element, IBlockState.class));
+                states.add(context.deserialize(element, BlockState.class));
             }
             return states;
         }

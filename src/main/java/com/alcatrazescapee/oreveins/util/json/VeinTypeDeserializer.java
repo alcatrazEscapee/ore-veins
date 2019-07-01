@@ -22,11 +22,11 @@ public class VeinTypeDeserializer implements JsonDeserializer<IVeinType<?>>
     static
     {
         // If you add more vein types, remember to add a map entry here
-        TYPES.put("sphere", VeinTypeSphere.class);
-        TYPES.put("cluster", VeinTypeCluster.class);
-        TYPES.put("cone", VeinTypeCone.class);
-        TYPES.put("pipe", VeinTypePipe.class);
-        TYPES.put("curve", VeinTypeCurve.class);
+        TYPES.put("sphere", SphereVeinType.class);
+        TYPES.put("cluster", ClusterVeinType.class);
+        TYPES.put("cone", ConeVeinType.class);
+        TYPES.put("pipe", PipeVeinType.class);
+        TYPES.put("curve", CurveVeinType.class);
     }
 
     @Override

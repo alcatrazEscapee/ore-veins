@@ -10,12 +10,12 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import com.alcatrazescapee.oreveins.api.IVeinType;
@@ -24,9 +24,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 @ParametersAreNonnullByDefault
-public final class CommandClearWorld
+public final class ClearWorldCommand
 {
-    private static final Set<IBlockState> VEIN_STATES = new HashSet<>();
+    private static final Set<BlockState> VEIN_STATES = new HashSet<>();
 
     public static void resetVeinStates()
     {
@@ -45,7 +45,7 @@ public final class CommandClearWorld
     {
         final World world = source.getWorld();
         final BlockPos center = new BlockPos(source.getPos());
-        final IBlockState air = Blocks.AIR.getDefaultState();
+        final BlockState air = Blocks.AIR.getDefaultState();
 
         for (int x = -radius; x <= radius; x++)
         {
@@ -54,14 +54,14 @@ public final class CommandClearWorld
                 for (int y = 255 - center.getY(); y >= -center.getY(); y--)
                 {
                     final BlockPos pos = center.add(x, y, z);
-                    if (!VEIN_STATES.contains(world.getBlockState(pos)) && world.getBlockState(pos) != air)
+                    if (!VEIN_STATES.contains(world.getBlockState(pos)) && !world.isAirBlock(pos))
                     {
                         world.setBlockState(pos, air, 2 | 16);
                     }
                 }
             }
         }
-        source.sendFeedback(new TextComponentString("Done."), true);
+        source.sendFeedback(new StringTextComponent("Done."), true);
         return 1;
     }
 }

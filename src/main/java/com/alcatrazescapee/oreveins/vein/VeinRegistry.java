@@ -24,7 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 
 import com.alcatrazescapee.oreveins.api.IVeinType;
 import com.alcatrazescapee.oreveins.util.IWeightedList;
@@ -41,9 +41,9 @@ public final class VeinRegistry
     private static final BiMap<String, IVeinType> VEINS = HashBiMap.create();
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(IVeinType.class, new VeinTypeDeserializer())
-            .registerTypeAdapter(new TypeToken<List<IBlockState>>() {}.getType(), new BlockStateListDeserializer())
+            .registerTypeAdapter(new TypeToken<List<BlockState>>() {}.getType(), new BlockStateListDeserializer())
             .registerTypeAdapter(IWeightedList.class, new WeightedListDeserializer())
-            .registerTypeAdapter(IBlockState.class, new BlockStateDeserializer())
+            .registerTypeAdapter(BlockState.class, new BlockStateDeserializer())
             .create();
 
     public static Collection<IVeinType> getVeins()
