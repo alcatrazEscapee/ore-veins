@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package com.alcatrazescapee.oreveins.cmd;
+package com.alcatrazescapee.oreveins.command;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +19,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import com.alcatrazescapee.oreveins.api.IVeinType;
-import com.alcatrazescapee.oreveins.vein.VeinRegistry;
+import com.alcatrazescapee.oreveins.util.VeinReloadListener;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
@@ -28,9 +28,9 @@ public final class ClearWorldCommand
 {
     private static final Set<BlockState> VEIN_STATES = new HashSet<>();
 
-    public static void resetVeinStates()
+    public static void resetVeinStates(VeinReloadListener reloadListener)
     {
-        VeinRegistry.getVeins().stream().map(IVeinType::getOreStates).forEach(VEIN_STATES::addAll);
+        reloadListener.getVeins().stream().map(IVeinType::getOreStates).forEach(VEIN_STATES::addAll);
     }
 
     public static void register(CommandDispatcher<CommandSource> dispatcher)

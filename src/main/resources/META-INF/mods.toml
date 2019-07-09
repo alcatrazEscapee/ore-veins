@@ -7,7 +7,7 @@ issueTrackerURL="https://github.com/alcatrazEscapee/ore-veins/issues" # optional
 # Ore Veins
 [[mods]] # mandatory
     modId="oreveins" # mandatory
-    version="4.0.0-beta.1" # mandatory
+    version="4.0.0" # mandatory
     displayName="Realistic Ore Veins" # mandatory
     #updateJSONURL="http://myurl.me/" #optional
     displayURL="https://www.curseforge.com/minecraft/mc-mods/realistic-ore-veins" #optional

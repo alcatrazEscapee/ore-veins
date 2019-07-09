@@ -15,14 +15,14 @@ import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.placement.IPlacementConfig;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import com.alcatrazescapee.oreveins.cmd.ClearWorldCommand;
-import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 import com.alcatrazescapee.oreveins.world.AtChunk;
 import com.alcatrazescapee.oreveins.world.VeinsFeature;
 
@@ -36,8 +36,20 @@ public class OreVeins
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    public OreVeins()
+    {
+        LOGGER.info("Constructor");
+
+        // Setup config
+        OreVeinsConfig.INSTANCE.setup();
+
+        // Register this class for mod event bus
+        FMLJavaModLoadingContext.get().getModEventBus().register(this);
+        MinecraftForge.EVENT_BUS.register(new ForgeEventHandler());
+    }
+
     @SubscribeEvent
-    public static void onLoadConfig(final ModConfig.Loading event)
+    public void onLoadConfig(final ModConfig.Loading event)
     {
         LOGGER.debug("Loading Config");
         if (event.getConfig().getType() == ModConfig.Type.SERVER)
@@ -60,28 +72,14 @@ public class OreVeins
     }
 
     @SubscribeEvent
-    public static void setup(final FMLCommonSetupEvent event)
+    public void setup(final FMLCommonSetupEvent event)
     {
         LOGGER.debug("Setup");
-        // Setup Vein Config Folder
-        VeinRegistry.preInit();
 
         // World Gen
         ForgeRegistries.BIOMES.forEach(biome -> {
             ConfiguredFeature<?> feature = Biome.createDecoratedFeature(new VeinsFeature(), new NoFeatureConfig(), new AtChunk(), IPlacementConfig.NO_PLACEMENT_CONFIG);
             biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, feature);
         });
-
-        // After Veins have Reloaded
-        ClearWorldCommand.resetVeinStates();
-        VeinsFeature.resetChunkRadius();
-    }
-
-    public OreVeins()
-    {
-        LOGGER.info("Constructor");
-
-        // Setup config
-        OreVeinsConfig.INSTANCE.setup();
     }
 }

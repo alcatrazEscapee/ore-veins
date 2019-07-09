@@ -1,0 +1,15 @@
+{
+  "type": "cluster",
+  "ore": "minecraft:iron_ore",
+  "stone": "minecraft:stone",
+  "indicator": {
+    "blocks": {
+      "block": "minecraft:red_flower",
+      "meta": 3
+    },
+    "rarity": 3,
+    "max_depth": 23
+  },
+  "rarity": 20,
+  "count": 5
+}

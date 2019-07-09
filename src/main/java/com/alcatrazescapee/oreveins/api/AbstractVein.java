@@ -1,3 +1,9 @@
+/*
+ * Part of the Ore Veins Mod by alcatrazEscapee
+ * Work under Copyright. Licensed under the GPL-3.0.
+ * See the project LICENSE.md for more information.
+ */
+
 package com.alcatrazescapee.oreveins.api;
 
 import java.util.Random;
@@ -5,7 +11,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.util.math.BlockPos;
 
-import com.alcatrazescapee.oreveins.vein.VeinRegistry;
+import com.alcatrazescapee.oreveins.util.VeinReloadListener;
 
 public abstract class AbstractVein<T extends IVeinType<?>> implements IVein<T>
 {
@@ -46,6 +52,6 @@ public abstract class AbstractVein<T extends IVeinType<?>> implements IVein<T>
     @Override
     public String toString()
     {
-        return String.format("Vein: %s, Pos: %s", VeinRegistry.getName(type), pos);
+        return String.format("Vein: %s, Pos: %s", VeinReloadListener.INSTANCE.getName(type), pos);
     }
 }

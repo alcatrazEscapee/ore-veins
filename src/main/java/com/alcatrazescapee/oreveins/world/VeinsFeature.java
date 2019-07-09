@@ -25,8 +25,8 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 import com.alcatrazescapee.oreveins.OreVeinsConfig;
 import com.alcatrazescapee.oreveins.api.IVein;
 import com.alcatrazescapee.oreveins.api.IVeinType;
+import com.alcatrazescapee.oreveins.util.VeinReloadListener;
 import com.alcatrazescapee.oreveins.vein.Indicator;
-import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 
 import static net.minecraft.world.gen.Heightmap.Type.WORLD_SURFACE_WG;
 
@@ -36,9 +36,9 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
     private static final Random RANDOM = new Random();
     private static int CHUNK_RADIUS = 0;
 
-    public static void resetChunkRadius()
+    public static void resetChunkRadius(VeinReloadListener reloadListener)
     {
-        CHUNK_RADIUS = 1 + VeinRegistry.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0) + OreVeinsConfig.INSTANCE.extraChunkRange;
+        CHUNK_RADIUS = 1 + reloadListener.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0) + OreVeinsConfig.INSTANCE.extraChunkRange;
     }
 
     @Nonnull
@@ -59,7 +59,7 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
     private static void getVeinsAtChunk(List<IVein> veins, int chunkX, int chunkZ, long worldSeed)
     {
         Random random = new Random(worldSeed + chunkX * 341873128712L + chunkZ * 132897987541L);
-        for (IVeinType type : VeinRegistry.getVeins())
+        for (IVeinType type : VeinReloadListener.INSTANCE.getVeins())
         {
             for (int i = 0; i < type.getCount(); i++)
             {

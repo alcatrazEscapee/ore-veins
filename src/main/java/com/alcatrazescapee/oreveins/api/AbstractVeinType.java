@@ -23,8 +23,8 @@ import net.minecraft.world.dimension.Dimension;
 import net.minecraftforge.common.BiomeDictionary;
 
 import com.alcatrazescapee.oreveins.util.IWeightedList;
+import com.alcatrazescapee.oreveins.util.VeinReloadListener;
 import com.alcatrazescapee.oreveins.vein.Indicator;
-import com.alcatrazescapee.oreveins.vein.VeinRegistry;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 @ParametersAreNonnullByDefault
@@ -183,7 +183,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     @Override
     public String toString()
     {
-        return String.format("[%s: Count: %d, Rarity: %d, Y: %d - %d, Size: %d / %d, Density: %2.2f, Ores: %s, Stones: %s]", VeinRegistry.getName(this), count, rarity, minY, maxY, horizontalSize, verticalSize, density, oreStates, stoneStates);
+        return String.format("[%s: Count: %d, Rarity: %d, Y: %d - %d, Size: %d / %d, Density: %2.2f, Ores: %s, Stones: %s]", VeinReloadListener.INSTANCE.getName(this), count, rarity, minY, maxY, horizontalSize, verticalSize, density, oreStates, stoneStates);
     }
 
     protected final BlockPos defaultStartPos(int chunkX, int chunkZ, Random rand)

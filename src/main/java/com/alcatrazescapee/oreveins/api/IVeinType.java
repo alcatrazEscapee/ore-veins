@@ -22,7 +22,6 @@ import com.alcatrazescapee.oreveins.vein.Indicator;
 /**
  * This is a template for a vein type. It represents a "type" value as specified in JSON.
  * See {@link IVein} for proper procedure on adding a new {@link IVeinType} class
- * Register vein types via the static initializer in {@link com.alcatrazescapee.oreveins.vein.VeinRegistry}
  *
  * @param <V> the vein implementation
  * @author AlcatrazEscapee
