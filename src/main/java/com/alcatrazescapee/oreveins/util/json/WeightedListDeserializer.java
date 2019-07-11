@@ -9,30 +9,36 @@ package com.alcatrazescapee.oreveins.util.json;
 import java.lang.reflect.Type;
 
 import com.google.gson.*;
-import net.minecraft.block.BlockState;
 
 import com.alcatrazescapee.oreveins.util.IWeightedList;
 import com.alcatrazescapee.oreveins.util.WeightedList;
 
-public class WeightedListDeserializer implements JsonDeserializer<IWeightedList<BlockState>>
+public class WeightedListDeserializer<T> implements JsonDeserializer<IWeightedList<T>>
 {
+    private final Class<T> elementClass;
+
+    public WeightedListDeserializer(Class<T> elementClass)
+    {
+        this.elementClass = elementClass;
+    }
+
     @Override
-    public IWeightedList<BlockState> deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException
+    public IWeightedList<T> deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException
     {
         if (json.isJsonPrimitive() || json.isJsonObject())
         {
-            BlockState state = context.deserialize(json, BlockState.class);
+            T state = context.deserialize(json, elementClass);
             return IWeightedList.singleton(state);
         }
         else if (json.isJsonArray())
         {
             JsonArray array = json.getAsJsonArray();
-            IWeightedList<BlockState> states = new WeightedList<>();
+            IWeightedList<T> states = new WeightedList<>();
             for (JsonElement element : array)
             {
                 JsonObject obj = element.getAsJsonObject();
                 double weight = obj.has("weight") ? obj.get("weight").getAsDouble() : 1;
-                states.add(weight, context.deserialize(element, BlockState.class));
+                states.add(weight, context.deserialize(element, elementClass));
             }
             return states;
         }

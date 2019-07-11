@@ -22,11 +22,11 @@ import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 
-import com.alcatrazescapee.oreveins.OreVeinsConfig;
+import com.alcatrazescapee.oreveins.Config;
 import com.alcatrazescapee.oreveins.api.IVein;
 import com.alcatrazescapee.oreveins.api.IVeinType;
-import com.alcatrazescapee.oreveins.util.VeinReloadListener;
-import com.alcatrazescapee.oreveins.vein.Indicator;
+import com.alcatrazescapee.oreveins.world.indicator.Indicator;
+import com.alcatrazescapee.oreveins.world.veins.VeinManager;
 
 import static net.minecraft.world.gen.Heightmap.Type.WORLD_SURFACE_WG;
 
@@ -36,9 +36,9 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
     private static final Random RANDOM = new Random();
     private static int CHUNK_RADIUS = 0;
 
-    public static void resetChunkRadius(VeinReloadListener reloadListener)
+    public static void resetChunkRadius()
     {
-        CHUNK_RADIUS = 1 + reloadListener.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0) + OreVeinsConfig.INSTANCE.extraChunkRange;
+        CHUNK_RADIUS = 1 + VeinManager.INSTANCE.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0) + Config.SERVER.extraChunkRange.get();
     }
 
     @Nonnull
@@ -59,7 +59,7 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
     private static void getVeinsAtChunk(List<IVein> veins, int chunkX, int chunkZ, long worldSeed)
     {
         Random random = new Random(worldSeed + chunkX * 341873128712L + chunkZ * 132897987541L);
-        for (IVeinType type : VeinReloadListener.INSTANCE.getVeins())
+        for (IVeinType type : VeinManager.INSTANCE.getVeins())
         {
             for (int i = 0; i < type.getCount(); i++)
             {
@@ -111,8 +111,7 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                         BlockPos posAt = new BlockPos(x, y, z);
                         if (random.nextFloat() < vein.getChanceToGenerate(posAt))
                         {
-                            BlockState stoneState = world.getBlockState(posAt);
-                            if (vein.getType().canGenerateIn(stoneState))
+                            if (vein.getType().canGenerateAt(world, posAt))
                             {
                                 BlockState oreState = vein.getType().getStateToGenerate(random);
                                 setBlockState(world, posAt, oreState);

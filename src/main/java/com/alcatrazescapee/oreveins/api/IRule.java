@@ -13,15 +13,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.IBlockReader;
 
 @ParametersAreNonnullByDefault
-public interface ICondition extends BiPredicate<World, BlockPos>
+public interface IRule extends BiPredicate<IBlockReader, BlockPos>
 {
     @Override
-    boolean test(World world, BlockPos pos);
+    boolean test(IBlockReader world, BlockPos pos);
 
-    interface Factory<T extends ICondition>
+    interface Factory<T extends IRule>
     {
         @Nonnull
         T parse(JsonObject json, JsonDeserializationContext context);

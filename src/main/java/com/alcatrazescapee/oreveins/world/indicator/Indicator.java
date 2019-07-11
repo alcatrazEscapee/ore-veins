@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package com.alcatrazescapee.oreveins.vein;
+package com.alcatrazescapee.oreveins.world.indicator;
 
 import java.util.List;
 import java.util.Random;

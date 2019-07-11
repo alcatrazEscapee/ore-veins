@@ -8,15 +8,16 @@ package com.alcatrazescapee.oreveins;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -24,6 +25,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import com.alcatrazescapee.oreveins.world.AtChunk;
+import com.alcatrazescapee.oreveins.world.VanillaFeatureManager;
 import com.alcatrazescapee.oreveins.world.VeinsFeature;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
@@ -41,7 +43,10 @@ public class OreVeins
         LOGGER.info("Constructor");
 
         // Setup config
-        OreVeinsConfig.INSTANCE.setup();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_SPEC);
+
+        // Condition for default vein loading
+        CraftingHelper.register(new ResourceLocation(MOD_ID, "default_veins"), json -> Config.SERVER.enableDefaultVeins::get);
 
         // Register this class for mod event bus
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
@@ -49,25 +54,12 @@ public class OreVeins
     }
 
     @SubscribeEvent
-    public void onLoadConfig(final ModConfig.Loading event)
+    public void onLoadConfig(final ModConfig.ConfigReloading event)
     {
-        LOGGER.debug("Loading Config");
+        LOGGER.debug("Reloading config - reevaluating vanilla ore vein settings");
         if (event.getConfig().getType() == ModConfig.Type.SERVER)
         {
-            OreVeinsConfig.INSTANCE.load();
-            // remove all other ore veins
-            if (OreVeinsConfig.INSTANCE.noOres)
-            {
-                ForgeRegistries.BIOMES.forEach(biome -> {
-                    biome.getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).removeIf(feature -> {
-                        if (feature.config instanceof DecoratedFeatureConfig)
-                        {
-                            return ((DecoratedFeatureConfig) feature.config).feature.feature == Feature.ORE;
-                        }
-                        return false;
-                    });
-                });
-            }
+            VanillaFeatureManager.onConfigReloading();
         }
     }
 

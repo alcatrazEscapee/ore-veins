@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package com.alcatrazescapee.oreveins.conditions;
+package com.alcatrazescapee.oreveins.world.rules;
 
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
@@ -16,17 +16,17 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.IBlockReader;
 
-import com.alcatrazescapee.oreveins.api.ICondition;
+import com.alcatrazescapee.oreveins.api.IRule;
 
 @ParametersAreNonnullByDefault
-public class TouchingCondition implements ICondition
+public class TouchingRule implements IRule
 {
     private Predicate<BlockState> blockMatcher;
     private int minMatches, maxMatches;
 
-    private TouchingCondition(Predicate<BlockState> blockMatcher, int minMatches, int maxMatches)
+    private TouchingRule(Predicate<BlockState> blockMatcher, int minMatches, int maxMatches)
     {
         this.blockMatcher = blockMatcher;
         this.minMatches = minMatches;
@@ -34,7 +34,7 @@ public class TouchingCondition implements ICondition
     }
 
     @Override
-    public boolean test(World world, BlockPos pos)
+    public boolean test(IBlockReader world, BlockPos pos)
     {
         int matchCount = 0;
         for (Direction face : Direction.values())
@@ -51,17 +51,17 @@ public class TouchingCondition implements ICondition
         return false;
     }
 
-    public static final class Factory implements ICondition.Factory<TouchingCondition>
+    public static final class Factory implements IRule.Factory<TouchingRule>
     {
         @Override
         @Nonnull
-        public TouchingCondition parse(JsonObject json, JsonDeserializationContext context)
+        public TouchingRule parse(JsonObject json, JsonDeserializationContext context)
         {
             BlockState stateToMatch = context.deserialize(json.get("block"), BlockState.class);
             Predicate<BlockState> blockMatcher = state -> state == stateToMatch;
             int min = JSONUtils.getInt(json, "min", 1);
             int max = JSONUtils.getInt(json, "max", 8);
-            return new TouchingCondition(blockMatcher, min, max);
+            return new TouchingRule(blockMatcher, min, max);
         }
     }
 }

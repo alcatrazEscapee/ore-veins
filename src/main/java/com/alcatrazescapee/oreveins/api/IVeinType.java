@@ -14,10 +14,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.Dimension;
 
-import com.alcatrazescapee.oreveins.vein.Indicator;
+import com.alcatrazescapee.oreveins.world.indicator.Indicator;
 
 /**
  * This is a template for a vein type. It represents a "type" value as specified in JSON.
@@ -60,10 +61,11 @@ public interface IVeinType<V extends IVein<?>>
     /**
      * If the vein can generate on the previous state
      *
-     * @param state the current state
+     * @param world The world
+     * @param pos   The position to generate at
      * @return if the vein can generate
      */
-    boolean canGenerateIn(BlockState state);
+    boolean canGenerateAt(IBlockReader world, BlockPos pos);
 
     /**
      * Is the vein in range of a vertical column with specific offsets

@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.util.math.BlockPos;
 
-import com.alcatrazescapee.oreveins.util.VeinReloadListener;
+import com.alcatrazescapee.oreveins.world.veins.VeinManager;
 
 public abstract class AbstractVein<T extends IVeinType<?>> implements IVein<T>
 {
@@ -52,6 +52,6 @@ public abstract class AbstractVein<T extends IVeinType<?>> implements IVein<T>
     @Override
     public String toString()
     {
-        return String.format("Vein: %s, Pos: %s", VeinReloadListener.INSTANCE.getName(type), pos);
+        return String.format("Vein: %s, Pos: %s", VeinManager.INSTANCE.getName(type), pos);
     }
 }

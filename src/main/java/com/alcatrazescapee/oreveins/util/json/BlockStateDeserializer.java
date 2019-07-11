@@ -7,60 +7,58 @@
 package com.alcatrazescapee.oreveins.util.json;
 
 import java.lang.reflect.Type;
-import java.util.Optional;
 
 import com.google.gson.*;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.state.IProperty;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.command.arguments.BlockStateParser;
 
-public class BlockStateDeserializer implements JsonDeserializer<BlockState>
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
+public enum BlockStateDeserializer implements JsonDeserializer<BlockState>
 {
-    private static BlockState getDefaultState(String blockName) throws JsonParseException
-    {
-        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockName));
-        if (block == null)
-        {
-            throw new JsonParseException("Unrecognized Block: " + blockName);
-        }
-        return block.getDefaultState();
-    }
-
-    private static <T extends Comparable<T>> BlockState withProperty(BlockState base, JsonObject obj, IProperty<T> prop)
-    {
-        String propName = prop.getName();
-        if (obj.has(propName) && obj.get(propName).isJsonPrimitive())
-        {
-            Optional<T> propValue = prop.parseValue(obj.get(propName).getAsString());
-            if (propValue.isPresent())
-            {
-                return base.with(prop, propValue.get());
-            }
-        }
-        return base;
-    }
+    INSTANCE;
 
     @Override
     public BlockState deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
         if (json.isJsonPrimitive())
         {
-            String name = json.getAsString();
-            return getDefaultState(name);
+            return readBlockState(json.getAsString());
         }
         else if (json.isJsonObject())
         {
             JsonObject jsonObj = json.getAsJsonObject();
             String name = jsonObj.get("block").getAsString();
-            BlockState state = getDefaultState(name);
-            for (IProperty<?> prop : state.getProperties())
-            {
-                state = withProperty(state, jsonObj, prop);
-            }
-            return state;
+            return readBlockState(name);
         }
-        throw new JsonParseException("IBlockState must be String or Object");
+        throw new JsonParseException("BlockState must be String or Object");
+    }
+
+    public BlockState readBlockState(String block)
+    {
+        StringReader reader = new StringReader(block);
+        try
+        {
+            BlockStateParser parser = new BlockStateParser(reader, true).parse(false);
+            return parser.getState();
+        }
+        catch (CommandSyntaxException e)
+        {
+            throw new JsonParseException("Unable to parse block state", e);
+        }
+    }
+
+    public boolean isBlockState(String block)
+    {
+        try
+        {
+            new BlockStateParser(new StringReader(block), true).parse(false);
+            return true;
+        }
+        catch (CommandSyntaxException e)
+        {
+            return false;
+        }
     }
 }

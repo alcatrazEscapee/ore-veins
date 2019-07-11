@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package com.alcatrazescapee.oreveins.vein;
+package com.alcatrazescapee.oreveins.world.veins;
 
 import java.util.ArrayList;
 import java.util.List;

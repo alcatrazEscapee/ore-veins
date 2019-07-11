@@ -10,24 +10,33 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import net.minecraft.command.CommandSource;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
-import com.alcatrazescapee.oreveins.command.ClearWorldCommand;
-import com.alcatrazescapee.oreveins.command.FindVeinsCommand;
-import com.alcatrazescapee.oreveins.command.VeinInfoCommand;
-import com.alcatrazescapee.oreveins.util.VeinReloadListener;
+import com.alcatrazescapee.oreveins.commands.ClearWorldCommand;
+import com.alcatrazescapee.oreveins.commands.FindVeinsCommand;
+import com.alcatrazescapee.oreveins.commands.VeinInfoCommand;
+import com.alcatrazescapee.oreveins.world.veins.VeinManager;
 import com.mojang.brigadier.CommandDispatcher;
 
 public class ForgeEventHandler
 {
-    private final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    @SubscribeEvent
+    public void beforeServerStart(FMLServerAboutToStartEvent event)
+    {
+        // Register vein reload listener
+        LOGGER.debug("Before Server Start");
+        event.getServer().getResourceManager().addReloadListener(VeinManager.INSTANCE);
+    }
 
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event)
     {
         LOGGER.debug("On Server Starting");
 
-        if (OreVeinsConfig.INSTANCE.debugCommands)
+        if (Config.SERVER.debugCommands.get())
         {
             LOGGER.info("Registering Debug Commands");
             CommandDispatcher<CommandSource> dispatcher = event.getCommandDispatcher();
@@ -36,7 +45,5 @@ public class ForgeEventHandler
             FindVeinsCommand.register(dispatcher);
             VeinInfoCommand.register(dispatcher);
         }
-
-        event.getServer().getResourceManager().addReloadListener(VeinReloadListener.INSTANCE);
     }
 }

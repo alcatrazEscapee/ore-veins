@@ -12,20 +12,22 @@ import java.util.Map;
 
 import com.google.gson.*;
 
-import com.alcatrazescapee.oreveins.api.ICondition;
-import com.alcatrazescapee.oreveins.conditions.TouchingCondition;
+import com.alcatrazescapee.oreveins.api.IRule;
+import com.alcatrazescapee.oreveins.world.rules.TouchingRule;
 
-public class ConditionDeserializer implements JsonDeserializer<ICondition>
+public enum RuleDeserializer implements JsonDeserializer<IRule>
 {
-    private final Map<String, ICondition.Factory<? extends ICondition>> types = new HashMap<>();
+    INSTANCE;
 
-    public ConditionDeserializer()
+    private final Map<String, IRule.Factory<? extends IRule>> types = new HashMap<>();
+
+    RuleDeserializer()
     {
-        types.put("touching", new TouchingCondition.Factory());
+        types.put("touching", new TouchingRule.Factory());
     }
 
     @Override
-    public ICondition deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+    public IRule deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
     {
         JsonObject obj = json.getAsJsonObject();
         String conditionType = obj.get("type").getAsString();

@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package com.alcatrazescapee.oreveins.command;
+package com.alcatrazescapee.oreveins.commands;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -14,7 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 
 import com.alcatrazescapee.oreveins.api.IVeinType;
-import com.alcatrazescapee.oreveins.util.VeinReloadListener;
+import com.alcatrazescapee.oreveins.world.veins.VeinManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 
@@ -25,6 +25,7 @@ public final class VeinInfoCommand
     {
         dispatcher.register(
                 Commands.literal("veininfo").requires(source -> source.hasPermissionLevel(2))
+                        // todo: make this a special argument type
                         .then(Commands.argument("type", StringArgumentType.word())
                                 .executes(cmd -> veinInfo(cmd.getSource(), StringArgumentType.getString(cmd, "type")))
                         ));
@@ -35,7 +36,7 @@ public final class VeinInfoCommand
         source.sendFeedback(new StringTextComponent("Registered Veins: "), true);
 
         // Search for veins that match a type
-        final IVeinType type = VeinReloadListener.INSTANCE.getVein(new ResourceLocation(veinName));
+        final IVeinType type = VeinManager.INSTANCE.getVein(new ResourceLocation(veinName));
         if (type == null)
         {
             source.sendErrorMessage(new StringTextComponent("Vein supplied does not match any valid vein names"));

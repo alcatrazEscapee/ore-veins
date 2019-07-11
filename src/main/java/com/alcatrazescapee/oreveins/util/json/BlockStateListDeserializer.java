@@ -14,8 +14,10 @@ import java.util.List;
 import com.google.gson.*;
 import net.minecraft.block.BlockState;
 
-public class BlockStateListDeserializer implements JsonDeserializer<List<BlockState>>
+public enum BlockStateListDeserializer implements JsonDeserializer<List<BlockState>>
 {
+    INSTANCE;
+
     @Override
     public List<BlockState> deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException
     {

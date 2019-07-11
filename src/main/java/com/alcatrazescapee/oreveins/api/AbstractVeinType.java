@@ -18,13 +18,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraftforge.common.BiomeDictionary;
 
 import com.alcatrazescapee.oreveins.util.IWeightedList;
-import com.alcatrazescapee.oreveins.util.VeinReloadListener;
-import com.alcatrazescapee.oreveins.vein.Indicator;
+import com.alcatrazescapee.oreveins.world.indicator.Indicator;
+import com.alcatrazescapee.oreveins.world.veins.VeinManager;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 @ParametersAreNonnullByDefault
@@ -54,6 +55,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
 
     private List<String> biomes = null;
     private List<String> dimensions = null;
+    private List<IRule> rules = null;
     private IWeightedList<Indicator> indicator = null;
 
     @Nonnull
@@ -78,9 +80,24 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     }
 
     @Override
-    public boolean canGenerateIn(BlockState state)
+    public boolean canGenerateAt(IBlockReader world, BlockPos pos)
     {
-        return stoneStates.contains(state);
+        BlockState stoneState = world.getBlockState(pos);
+        if (stoneStates.contains(stoneState))
+        {
+            if (rules != null)
+            {
+                for (IRule rule : rules)
+                {
+                    if (!rule.test(world, pos))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -183,7 +200,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     @Override
     public String toString()
     {
-        return String.format("[%s: Count: %d, Rarity: %d, Y: %d - %d, Size: %d / %d, Density: %2.2f, Ores: %s, Stones: %s]", VeinReloadListener.INSTANCE.getName(this), count, rarity, minY, maxY, horizontalSize, verticalSize, density, oreStates, stoneStates);
+        return String.format("[%s: Count: %d, Rarity: %d, Y: %d - %d, Size: %d / %d, Density: %2.2f, Ores: %s, Stones: %s]", VeinManager.INSTANCE.getName(this), count, rarity, minY, maxY, horizontalSize, verticalSize, density, oreStates, stoneStates);
     }
 
     protected final BlockPos defaultStartPos(int chunkX, int chunkZ, Random rand)

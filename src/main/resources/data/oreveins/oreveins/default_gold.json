@@ -1,0 +1,17 @@
+{
+  "type": "cone",
+  "ore": "minecraft:gold_ore",
+  "stone": "minecraft:stone",
+  "rarity": 30,
+  "min_y": 8,
+  "max_y": 50,
+  "density": 360,
+  "vertical_size": 20,
+  "horizontal_size": 10,
+  "inverted": false,
+  "conditions": [
+    {
+      "type": "oreveins:default_veins"
+    }
+  ]
+}

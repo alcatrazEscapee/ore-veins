@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package com.alcatrazescapee.oreveins.command;
+package com.alcatrazescapee.oreveins.commands;
 
 import java.util.List;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -17,8 +17,8 @@ import net.minecraft.util.text.StringTextComponent;
 
 import com.alcatrazescapee.oreveins.api.IVein;
 import com.alcatrazescapee.oreveins.api.IVeinType;
-import com.alcatrazescapee.oreveins.util.VeinReloadListener;
 import com.alcatrazescapee.oreveins.world.VeinsFeature;
+import com.alcatrazescapee.oreveins.world.veins.VeinManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -43,7 +43,7 @@ public final class FindVeinsCommand
         final BlockPos pos = new BlockPos(source.getPos());
         final int chunkX = pos.getX() >> 4, chunkZ = pos.getZ() >> 4;
         final List<IVein> veins = VeinsFeature.getNearbyVeins(chunkX, chunkZ, source.getWorld().getSeed(), radius);
-        final IVeinType type = VeinReloadListener.INSTANCE.getVein(new ResourceLocation(veinName));
+        final IVeinType type = VeinManager.INSTANCE.getVein(new ResourceLocation(veinName));
         if (type == null)
         {
             source.sendErrorMessage(new StringTextComponent("Vein supplied does not match any valid vein names"));
