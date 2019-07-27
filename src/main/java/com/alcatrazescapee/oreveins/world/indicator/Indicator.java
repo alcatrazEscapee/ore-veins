@@ -21,8 +21,6 @@ public class Indicator
     @SerializedName("max_depth")
     private int maxDepth = 32;
     private int rarity = 10;
-    @SerializedName("ignore_vegetation")
-    private boolean ignoreVegetation = true;
     @SerializedName("ignore_liquids")
     private boolean ignoreLiquids = false;
 
@@ -50,11 +48,6 @@ public class Indicator
     public int getRarity()
     {
         return rarity;
-    }
-
-    public boolean shouldIgnoreVegetation()
-    {
-        return ignoreVegetation;
     }
 
     public boolean shouldIgnoreLiquids()

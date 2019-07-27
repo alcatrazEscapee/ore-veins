@@ -22,15 +22,15 @@ import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
 @SuppressWarnings("WeakerAccess")
 public final class Config
 {
-    public static final ServerConfig SERVER;
+    public static final ServerConfig COMMON;
 
-    static final ForgeConfigSpec SERVER_SPEC;
+    static final ForgeConfigSpec COMMON_SPEC;
 
     static
     {
         final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
-        SERVER_SPEC = specPair.getRight();
-        SERVER = specPair.getLeft();
+        COMMON_SPEC = specPair.getRight();
+        COMMON = specPair.getLeft();
     }
 
     public static final class ServerConfig
@@ -48,19 +48,19 @@ public final class Config
 
             noOres = builder
                     .comment("Stop all vanilla ore gen calls? Warning: this includes calls such as andesite/diorite, and potentially others that internally behave the same as ores. For more customization, see the disabled ores option.")
-                    .define("no_ores", false);
+                    .define("noOres", false);
 
             disabledOres = builder
                     .comment("Vanilla ore gen to disable. Must be specified as a list of block states, i.e. minecraft:gold_ore, minecraft:iron_ore, etc.")
-                    .defineList("disabledOres", ArrayList::new, obj -> BlockStateDeserializer.INSTANCE.isBlockState(obj.toString()));
+                    .defineList("disabledOres", this::defaultDisabledBlockStates, obj -> BlockStateDeserializer.INSTANCE.isBlockState(obj.toString()));
 
             debugCommands = builder
                     .comment("Enable debug commands such as /veininfo, /clearworld, /findveins")
-                    .define("debug_commands", true);
+                    .define("debugCommands", true);
 
             extraChunkRange = builder
                     .comment("Extra chunk search range when generating veins", "Use if your veins are getting cut off at chunk boundaries")
-                    .defineInRange("extra_chunk_range", 0, 0, 20);
+                    .defineInRange("extraChunkRange", 0, 0, 20);
 
             enableDefaultVeins = builder
                     .comment("Enable veins in the default data pack. (This is the 'oreveins:default_veins' condition")

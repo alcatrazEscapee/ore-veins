@@ -40,27 +40,17 @@ public class OreVeins
 
     public OreVeins()
     {
-        LOGGER.info("Constructor");
+        LOGGER.debug("Constructor");
 
         // Setup config
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
 
         // Condition for default vein loading
-        CraftingHelper.register(new ResourceLocation(MOD_ID, "default_veins"), json -> Config.SERVER.enableDefaultVeins::get);
+        CraftingHelper.register(new ResourceLocation(MOD_ID, "default_veins"), json -> Config.COMMON.enableDefaultVeins::get);
 
         // Register this class for mod event bus
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
-        MinecraftForge.EVENT_BUS.register(new ForgeEventHandler());
-    }
-
-    @SubscribeEvent
-    public void onLoadConfig(final ModConfig.ConfigReloading event)
-    {
-        LOGGER.debug("Reloading config - reevaluating vanilla ore vein settings");
-        if (event.getConfig().getType() == ModConfig.Type.SERVER)
-        {
-            VanillaFeatureManager.onConfigReloading();
-        }
+        MinecraftForge.EVENT_BUS.register(ForgeEventHandler.INSTANCE);
     }
 
     @SubscribeEvent
@@ -73,5 +63,15 @@ public class OreVeins
             ConfiguredFeature<?> feature = Biome.createDecoratedFeature(new VeinsFeature(), new NoFeatureConfig(), new AtChunk(), IPlacementConfig.NO_PLACEMENT_CONFIG);
             biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, feature);
         });
+    }
+
+    @SubscribeEvent
+    public void onLoadConfig(final ModConfig.ConfigReloading event)
+    {
+        LOGGER.debug("Reloading config - reevaluating vanilla ore vein settings");
+        if (event.getConfig().getType() == ModConfig.Type.SERVER)
+        {
+            VanillaFeatureManager.onConfigReloading();
+        }
     }
 }

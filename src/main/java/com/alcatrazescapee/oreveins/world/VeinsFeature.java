@@ -38,34 +38,33 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
 
     public static void resetChunkRadius()
     {
-        CHUNK_RADIUS = 1 + VeinManager.INSTANCE.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0) + Config.SERVER.extraChunkRange.get();
+        CHUNK_RADIUS = 1 + VeinManager.INSTANCE.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0) + Config.COMMON.extraChunkRange.get();
     }
 
     @Nonnull
-    public static List<IVein> getNearbyVeins(int chunkX, int chunkZ, long worldSeed, int radius)
+    public static List<IVein<?>> getNearbyVeins(int chunkX, int chunkZ, long worldSeed, int radius)
     {
-        List<IVein> veins = new ArrayList<>();
+        List<IVein<?>> veins = new ArrayList<>();
         for (int x = chunkX - radius; x <= chunkX + radius; x++)
         {
             for (int z = chunkZ - radius; z <= chunkZ + radius; z++)
             {
-                RANDOM.setSeed(worldSeed + x * 341873128712L + z * 132897987541L);
                 getVeinsAtChunk(veins, x, z, worldSeed);
             }
         }
         return veins;
     }
 
-    private static void getVeinsAtChunk(List<IVein> veins, int chunkX, int chunkZ, long worldSeed)
+    private static void getVeinsAtChunk(List<IVein<?>> veins, int chunkX, int chunkZ, long worldSeed)
     {
-        Random random = new Random(worldSeed + chunkX * 341873128712L + chunkZ * 132897987541L);
-        for (IVeinType type : VeinManager.INSTANCE.getVeins())
+        RANDOM.setSeed(worldSeed + chunkX * 341873128712L + chunkZ * 132897987541L);
+        for (IVeinType<?> type : VeinManager.INSTANCE.getVeins())
         {
             for (int i = 0; i < type.getCount(); i++)
             {
-                if (random.nextInt(type.getRarity()) == 0)
+                if (RANDOM.nextInt(type.getRarity()) == 0)
                 {
-                    IVein vein = type.createVein(chunkX, chunkZ, random);
+                    IVein<?> vein = type.createVein(chunkX, chunkZ, RANDOM);
                     veins.add(vein);
                 }
             }
@@ -80,10 +79,10 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
     @Override
     public boolean place(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, NoFeatureConfig config)
     {
-        List<IVein> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, worldIn.getSeed(), CHUNK_RADIUS);
+        List<IVein<?>> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, worldIn.getSeed(), CHUNK_RADIUS);
         if (veins.isEmpty()) return false;
 
-        for (IVein vein : veins)
+        for (IVein<?> vein : veins)
         {
             if (vein.getType().matchesDimension(worldIn.getDimension()))
             {
@@ -129,7 +128,6 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                     {
                         if (random.nextInt(veinIndicator.getRarity()) == 0)
                         {
-                            // todo: checks for vegetation?
                             BlockPos posAt = world.getHeight(Heightmap.Type.WORLD_SURFACE_WG, new BlockPos(x, 0, z));
 
                             BlockState indicatorState = veinIndicator.getStateToGenerate(random);

@@ -47,6 +47,14 @@ public final class ClearWorldCommand
         final BlockPos center = new BlockPos(source.getPos());
         final BlockState air = Blocks.AIR.getDefaultState();
 
+        for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBoxMutable(center.add(-radius, 255 - center.getY(), -radius), center.add(radius, -center.getY(), radius)))
+        {
+            if (!VEIN_STATES.contains(world.getBlockState(pos)))
+            {
+                world.setBlockState(pos, air, 2 | 16);
+            }
+        }
+
         for (int x = -radius; x <= radius; x++)
         {
             for (int z = -radius; z <= radius; z++)

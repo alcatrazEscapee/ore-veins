@@ -12,11 +12,13 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import com.alcatrazescapee.oreveins.api.IVeinType;
 import com.alcatrazescapee.oreveins.world.veins.VeinManager;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
+
+import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
 @ParametersAreNonnullByDefault
 public final class VeinInfoCommand
@@ -25,21 +27,20 @@ public final class VeinInfoCommand
     {
         dispatcher.register(
                 Commands.literal("veininfo").requires(source -> source.hasPermissionLevel(2))
-                        // todo: make this a special argument type
-                        .then(Commands.argument("type", StringArgumentType.word())
-                                .executes(cmd -> veinInfo(cmd.getSource(), StringArgumentType.getString(cmd, "type")))
+                        .then(Commands.argument("type", new VeinTypeArgument())
+                                .executes(cmd -> veinInfo(cmd.getSource(), VeinTypeArgument.getVein(cmd, "type")))
                         ));
     }
 
-    private static int veinInfo(CommandSource source, String veinName)
+    private static int veinInfo(CommandSource source, ResourceLocation veinName)
     {
-        source.sendFeedback(new StringTextComponent("Registered Veins: "), true);
+        source.sendFeedback(new TranslationTextComponent(MOD_ID + ".tooltip.registered_veins"), true);
 
         // Search for veins that match a type
-        final IVeinType type = VeinManager.INSTANCE.getVein(new ResourceLocation(veinName));
+        final IVeinType type = VeinManager.INSTANCE.getVein(veinName);
         if (type == null)
         {
-            source.sendErrorMessage(new StringTextComponent("Vein supplied does not match any valid vein names"));
+            source.sendErrorMessage(new TranslationTextComponent(MOD_ID + ".tooltip.unknown_vein", veinName));
         }
         else
         {

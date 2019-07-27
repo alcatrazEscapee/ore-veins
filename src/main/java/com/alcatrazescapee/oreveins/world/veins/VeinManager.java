@@ -6,10 +6,7 @@
 
 package com.alcatrazescapee.oreveins.world.veins;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -84,6 +81,12 @@ public class VeinManager extends JsonReloadListener
     public Collection<IVeinType> getVeins()
     {
         return veins.values();
+    }
+
+    @Nonnull
+    public Set<ResourceLocation> getKeys()
+    {
+        return veins.keySet();
     }
 
     @Nullable

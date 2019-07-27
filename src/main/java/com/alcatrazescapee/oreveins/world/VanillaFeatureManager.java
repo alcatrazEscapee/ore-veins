@@ -25,8 +25,8 @@ public class VanillaFeatureManager
 
     public static void onConfigReloading()
     {
-        disabledBlockStates = Config.SERVER.disabledBlockStates();
-        disableAll = Config.SERVER.noOres.get();
+        disabledBlockStates = Config.COMMON.disabledBlockStates();
+        disableAll = Config.COMMON.noOres.get();
 
         ForgeRegistries.BIOMES.forEach(biome -> {
             // Re-add previously disabled features

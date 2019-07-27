@@ -19,9 +19,11 @@ import com.alcatrazescapee.oreveins.commands.VeinInfoCommand;
 import com.alcatrazescapee.oreveins.world.veins.VeinManager;
 import com.mojang.brigadier.CommandDispatcher;
 
-public class ForgeEventHandler
+public enum ForgeEventHandler
 {
-    private static final Logger LOGGER = LogManager.getLogger();
+    INSTANCE;
+
+    private final Logger LOGGER = LogManager.getLogger();
 
     @SubscribeEvent
     public void beforeServerStart(FMLServerAboutToStartEvent event)
@@ -36,7 +38,7 @@ public class ForgeEventHandler
     {
         LOGGER.debug("On Server Starting");
 
-        if (Config.SERVER.debugCommands.get())
+        if (Config.COMMON.debugCommands.get())
         {
             LOGGER.info("Registering Debug Commands");
             CommandDispatcher<CommandSource> dispatcher = event.getCommandDispatcher();

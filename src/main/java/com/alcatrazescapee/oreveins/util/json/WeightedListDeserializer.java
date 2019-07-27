@@ -9,6 +9,7 @@ package com.alcatrazescapee.oreveins.util.json;
 import java.lang.reflect.Type;
 
 import com.google.gson.*;
+import net.minecraft.util.JSONUtils;
 
 import com.alcatrazescapee.oreveins.util.IWeightedList;
 import com.alcatrazescapee.oreveins.util.WeightedList;
@@ -37,7 +38,7 @@ public class WeightedListDeserializer<T> implements JsonDeserializer<IWeightedLi
             for (JsonElement element : array)
             {
                 JsonObject obj = element.getAsJsonObject();
-                double weight = obj.has("weight") ? obj.get("weight").getAsDouble() : 1;
+                float weight = JSONUtils.getFloat(obj, "weight", 1);
                 states.add(weight, context.deserialize(element, elementClass));
             }
             return states;

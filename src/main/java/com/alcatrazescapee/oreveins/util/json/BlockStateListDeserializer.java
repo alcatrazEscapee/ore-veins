@@ -36,6 +36,6 @@ public enum BlockStateListDeserializer implements JsonDeserializer<List<BlockSta
             }
             return states;
         }
-        throw new JsonParseException("Unable to parse IBlockState List");
+        throw new JsonParseException("Unable to parse BlockState List");
     }
 }
