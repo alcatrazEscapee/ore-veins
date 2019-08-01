@@ -1,6 +1,4 @@
-v2.0.13
+v2.0.14
 
 Changes:
- - Made veins starting locations better centered within their y range, to stop them from getting cut off at the edges. (This is configurable if you don't like it)
- - Added conditions! These can be used to restrict where ore blocks are allowed to generate within a vein.
- - Added "touching" condition: Ore blocks only generate when touching a specific number of blocks
+ - Added the ability to specify a dimension whitelist/blacklist for stopped vanilla ore gen calls. Veins still use the normal method to control dimensions, this is ONLY for the config setting controlling stopped vanilla ore gen calls (which may apply in various dimensions).

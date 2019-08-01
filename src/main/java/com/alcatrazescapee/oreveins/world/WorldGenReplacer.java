@@ -18,12 +18,36 @@ public class WorldGenReplacer
     @SubscribeEvent
     public void onGenerateMineable(OreGenEvent.GenerateMinable event)
     {
-        if (OreVeinsConfig.NO_ORES || isBlockedType(event.getType()))
+        if (shouldBlock(event))
+        {
             event.setResult(Event.Result.DENY);
+        }
     }
 
-    private boolean isBlockedType(OreGenEvent.GenerateMinable.EventType type)
+    private boolean shouldBlock(OreGenEvent.GenerateMinable event)
     {
+        int dimensionId = event.getWorld().provider.getDimension();
+        boolean found = false;
+        for (int configDimId : OreVeinsConfig.STOPPED_ORES_DIMENSIONS)
+        {
+            if (dimensionId == configDimId)
+            {
+                found = true;
+                break;
+            }
+        }
+        // Don't block ores if whitelisted + not found, or blacklisted + found
+        if (OreVeinsConfig.STOPPED_ORES_DIMENSIONS_IS_WHITELIST != found)
+        {
+            return false;
+        }
+        if (OreVeinsConfig.NO_ORES)
+        {
+            // Block everything
+            return true;
+        }
+        // Check by type
+        OreGenEvent.GenerateMinable.EventType type = event.getType();
         for (String s : OreVeinsConfig.STOPPED_ORES)
         {
             try

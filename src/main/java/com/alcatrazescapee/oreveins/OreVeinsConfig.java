@@ -28,6 +28,12 @@ public class OreVeinsConfig
             "REDSTONE"
     };
 
+    @Config.Comment({"This is a list of dimensions in which to stop vanilla / common modded ore generation calls. By default it is a blacklist.", "Note, this ONLY applies to stopped vanilla ores, veins have their own dimension config settings"})
+    public static int[] STOPPED_ORES_DIMENSIONS = {};
+
+    @Config.Comment({"Should the list of dimensions to stop ores in be a whitelist?", "Note, this ONLY applies to stopped vanilla ores, veins have their own dimension config settings"})
+    public static boolean STOPPED_ORES_DIMENSIONS_IS_WHITELIST = false;
+
     @Config.Comment("If you notice that your veins (especially large ones) are being cut off at chunk boundaries, then try increasing this value. Warning: it will have an impact on world generation performance, so don't go overboard.")
     @Config.RangeInt(min = 0, max = 10)
     public static int EXTRA_CHUNK_SEARCH_RANGE = 0;
