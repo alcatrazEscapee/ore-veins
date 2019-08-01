@@ -16,6 +16,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import com.alcatrazescapee.oreveins.Config;
 
+/**
+ * Manages the removal and replacement of vanilla world gen features
+ * Called on config reload
+ *
+ * @author AlcatrazEscapee
+ */
 public class VanillaFeatureManager
 {
     private static final Map<Biome, List<ConfiguredFeature<?>>> DISABLED_FEATURES = new HashMap<>();
