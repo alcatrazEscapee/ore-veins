@@ -20,7 +20,7 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `rarity` (Default: 10) 1 / N chunks will spawn this ore vein.
 * `min_y` (Default: 16) Minimum y value for veins to generate at.
 * `max_y` (Default: 64) Maximum y value for veins to generate at.
-* `use_realitive_y` (Default: false) If true, the y-values will be interpreted as an offset from the surface at each position. (i.e. min_y = -20, max_y = -5 will generate ore veins from 20 to 5 blocks under the surface)
+* `use_relative_y` (Default: false) If true, the y-values will be interpreted as an offset from the surface at each position. (i.e. min_y = -20, max_y = -5 will generate ore veins from 20 to 5 blocks under the surface)
 * `density` (Default: 50) Density of the ore vein. Higher values are more dense. (FYI: This number is not a percentage. For 100% density use values >1000)
 * `vertical_size` (Default: 15) Vertical radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
 * `horizontal_size` (Default: 8) Horizontal radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
