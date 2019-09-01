@@ -131,7 +131,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
             }
             for (BiomeDictionary.Type type : BiomeDictionary.getTypes(biome))
             {
-                if (s.equalsIgnoreCase(type.getName()))
+                if (s.equals(type.getName()))
                 {
                     return biomesIsWhitelist;
                 }
