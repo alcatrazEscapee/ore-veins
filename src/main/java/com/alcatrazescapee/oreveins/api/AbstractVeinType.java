@@ -179,7 +179,8 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
 
     protected final BlockPos defaultStartPos(int chunkX, int chunkZ, Random rand)
     {
-        int spawnRange = maxY - minY, minRange = minY;
+        int spawnRange = maxY - minY;
+        int minRange = minY;
         if (OreVeinsConfig.AVOID_VEIN_CUTOFFS)
         {
             if (verticalSize * 2 < spawnRange)
