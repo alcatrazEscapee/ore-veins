@@ -13,16 +13,29 @@ Despite the wide array of configuration options available, if you desire additio
 Veins are now loaded from datapacks. This has several advantages:
 
  - Veins can now by easily affected by recipe conditions (i.e. enabling or disabling the vein based on various factors)
- - Veins can be reloaded during play when reloading all data packs
- - Configuration for veins can be present on the server only
+ - Veins can be reloaded during play when reloading all data packs, allowing changes to be made without restarting minecraft or the world.
+ - Configuration for veins can be present on the server only.
 
 Each vein must be a **separate** json file, located under the path `data/domain/oreveins/`. For instance, Realistic Ore Veins includes several default ore veins, which are found under `data/oreveins/oreveins/default_???.json`. (The first `oreveins` is the path required for the veins, the second is the domain of this mod / datapack)
+
+---
+
+### Veins
 
 A vein must consist of a single json object, which contains at least the following entries:
 
 * `type` is the registry name of the [Vein Type](#vein-types) that this entry will spawn. Based on what vein this is, there might be other required or optional values as well.
 * `stone` is a [Block Entry](#block-entries). This represents the block states that the ore can spawn in.
 * `ore` is a [Block Entry](#block-entries), with optional weights. This represents the possible states that the vein will spawn. This **does** support weighted entries.
+
+```json
+{
+  "type": "sphere",
+  "stone": "minecraft:stone",
+  "ore": "minecraft:iron_ore"
+}
+
+```
 
 Each entry can also contain any or all of the following values. If they don't exist, they will assume a default value. These apply to all vein types:
 
@@ -33,13 +46,13 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `density` (Default: 50) Density of the ore vein. Higher values are more dense. (Tip: This number is not a percentage. For 100% density use values >1000)
 * `vertical_size` (Default: 15) Vertical radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
 * `horizontal_size` (Default: 8) Horizontal radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
-* `biomes` (Default: all) Whitelist of biome names or biome tags for a biome to spawn in. Must be a list of strings. For info on possible tags see the Forge [Biome Dictionary](https://github.com/MinecraftForge/MinecraftForge/blob/1.13.x/src/main/java/net/minecraftforge/common/BiomeDictionary.java).
-* `biomes_is_whitelist` (Default: true) When false, the biome list becomes a blacklist
-* `dimensions` (Default: `["overworld"]`) Whitelist of dimension names that the ore can spawn in. Must be a list of strings.
-* `dimensions_is_whitelist` (Default: `true`) When false, the dimension list becomes a blacklist
-* `indicator` (Default: `{}`) This is an [Indicator](#indicators) which will spawn on the surface underneath where the vein is found.
-* `rules` (Default: `[]`) This is a list of [Rules](#rules) which are checked for each ore block that attempts to spawn. Must be a list of json objects, where each object is a rule
-* `conditions` (Default: `[]`) These are conditions that will enable or disable the vein. Realistic Ore Veins includes a condition `oreveins:default_veins`, which will disable the default veins if the relevant config value is set. For more information on conditions, consult the minecraft wiki
+* `biomes` (Default: Allow any) This is a [Biome Rule](#biome-rule). It specifies a list of biomes to include or exclude, or tags to include or exclude.
+* `dimensions` (Default: Only Overworld) This is a [Dimension Rule](#dimension-rules). It specifies a list of dimensions to include or exclude.
+* `indicator` (Default: None) This is an [Indicator](#indicators) which will spawn on the surface underneath where the vein is found.
+* `rules` (Default: None) This is a list of [Spawn Rules](#spawn-rules) which are checked for each ore block that attempts to spawn. Must be a list of json objects, where each object is a rule
+* `conditions` (Default: None) These are conditions that will enable or disable the vein. Realistic Ore Veins includes a condition `oreveins:default_veins`, which will disable the default veins if the relevant config value is set. For more information on conditions, consult the minecraft wiki
+
+---
 
 ### Vein Types
 
@@ -65,8 +78,59 @@ This vein represents a curve (created with a cubic Bezier curve.) It has two opt
 * `radius` (Default: 5) This is the approximate radius of the curve in blocks.
 * `angle` (Default: 45) This is the maximum angle for vertical vein rotation, in a range from 0 to 90. Zero be completely horizontal, and 90 will have the full range of vertical directions to curve in.
 
+---
 
-### Rules
+### Biome / Dimension Rules
+
+Biome and Dimension rules both can be a string, an array, or an object. The syntax is very similar for both*, except replacing the keyword `biomes` for the keyword `dimensions`. As such, all examples here will be of biome rules, but the logic is the same for using dimension rules.
+
+\*One exception is that biomes have the `"type": "tag"` ability, which dimensions do not.
+
+```json
+"biomes": "minecraft:forest"
+```
+This will match the biome with the name `minecraft:forest`. Alternatively, a biome dictionary tag can be specified. In order to specify a tag, the type field `tag` is required:
+```json
+"biomes": { "type":  "tag", "biomes": "forest" }
+```
+This will match any biome that has the biome dictionary tag `forest`.
+
+You can use an array as a logical "OR" operation, which will match any of the following entries:
+```json
+"biomes": [ 
+  "minecraft:forest", 
+  "minecraft:plains", 
+  { "type": "tag", "biomes": "hot" }
+]
+```
+The above will match a forest biome, a plains biome, or any hot biome.
+
+There are also types for creating logical AND or NOT conditions:
+```json
+"biomes": {
+  "type": "not",
+  "biomes": [
+    "minecraft:forest",
+    "minecraft:desert"
+  ]
+}
+```
+This will act as a blacklist - if the biome is NOT a forest, NOR a desert, the vein will spawn. Similar with the AND:
+
+```json
+"biomes": {
+  "type": "and",
+  "biomes": [
+    { "type": "tag", "biomes": "hot" },
+    { "type": "tag", "biomes": "dry" }
+  ]
+}
+```
+This will only match biomes that are hot AND dry.
+
+---
+
+### Spawn Rules
 
 Rules are conditions that are checked for each individual ore block. This allows ore blocks to only spawn on cave walls for example, by defining a rule that only spawns ores if it is touching an air block.
 
@@ -82,6 +146,7 @@ This rule also has the following optional parameters:
 * `min` (Default: 1) This is the minimum number (inclusive) of the block that the ore must touch. Must be an integer.
 * `max` (Default: 6) This is the maximum number (inclusive) of the block that the ore must touch. Must be an integer.
 
+---
 
 ### Indicators
 

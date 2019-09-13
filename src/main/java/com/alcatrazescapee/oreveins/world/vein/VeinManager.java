@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package com.alcatrazescapee.oreveins.world.veins;
+package com.alcatrazescapee.oreveins.world.vein;
 
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -28,16 +28,15 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
-import com.alcatrazescapee.oreveins.api.IRule;
-import com.alcatrazescapee.oreveins.api.IVeinType;
 import com.alcatrazescapee.oreveins.commands.ClearWorldCommand;
 import com.alcatrazescapee.oreveins.util.IWeightedList;
 import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
-import com.alcatrazescapee.oreveins.util.json.BlockStateListDeserializer;
-import com.alcatrazescapee.oreveins.util.json.RuleDeserializer;
+import com.alcatrazescapee.oreveins.util.json.LenientListDeserializer;
 import com.alcatrazescapee.oreveins.util.json.WeightedListDeserializer;
 import com.alcatrazescapee.oreveins.world.VeinsFeature;
-import com.alcatrazescapee.oreveins.world.indicator.Indicator;
+import com.alcatrazescapee.oreveins.world.rule.BiomeRule;
+import com.alcatrazescapee.oreveins.world.rule.DimensionRule;
+import com.alcatrazescapee.oreveins.world.rule.IRule;
 
 @ParametersAreNonnullByDefault
 public class VeinManager extends JsonReloadListener
@@ -46,22 +45,33 @@ public class VeinManager extends JsonReloadListener
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new GsonBuilder()
+            // Collections
             .registerTypeAdapter(new TypeToken<IWeightedList<BlockState>>() {}.getType(), new WeightedListDeserializer<>(BlockState.class))
             .registerTypeAdapter(new TypeToken<IWeightedList<Indicator>>() {}.getType(), new WeightedListDeserializer<>(Indicator.class))
-            .registerTypeAdapter(new TypeToken<List<BlockState>>() {}.getType(), BlockStateListDeserializer.INSTANCE)
+            .registerTypeAdapter(new TypeToken<List<BlockState>>() {}.getType(), new LenientListDeserializer<>(BlockState.class, Collections::singletonList, ArrayList::new))
+            // Components
             .registerTypeAdapter(BlockState.class, BlockStateDeserializer.INSTANCE)
-            .registerTypeAdapter(IRule.class, RuleDeserializer.INSTANCE)
+            .registerTypeAdapter(IRule.class, IRule.Deserializer.INSTANCE)
+            .registerTypeAdapter(Indicator.class, Indicator.Deserializer.INSTANCE)
+            .registerTypeAdapter(BiomeRule.class, BiomeRule.Deserializer.INSTANCE)
+            .registerTypeAdapter(DimensionRule.class, DimensionRule.Deserializer.INSTANCE)
+            // Vein Types
+            .registerTypeAdapter(ClusterVeinType.class, ClusterVeinType.Deserializer.INSTANCE)
+            .registerTypeAdapter(ConeVeinType.class, ConeVeinType.Deserializer.INSTANCE)
+            .registerTypeAdapter(CurveVeinType.class, CurveVeinType.Deserializer.INSTANCE)
+            .registerTypeAdapter(PipeVeinType.class, PipeVeinType.Deserializer.INSTANCE)
+            .registerTypeAdapter(SphereVeinType.class, SphereVeinType.Deserializer.INSTANCE)
             .disableHtmlEscaping()
             .create();
 
     static
     {
-        // Constructor call must come after
+        // Constructor call must come after GSON declaration
         INSTANCE = new VeinManager();
     }
 
-    private final BiMap<ResourceLocation, IVeinType> veins;
-    private final Map<String, Class<? extends IVeinType<?>>> veinTypes;
+    private final BiMap<ResourceLocation, VeinType<?>> veins;
+    private final Map<String, Class<? extends VeinType<?>>> veinTypes;
 
     private VeinManager()
     {
@@ -78,7 +88,7 @@ public class VeinManager extends JsonReloadListener
     }
 
     @Nonnull
-    public Collection<IVeinType> getVeins()
+    public Collection<VeinType<?>> getVeins()
     {
         return veins.values();
     }
@@ -90,22 +100,15 @@ public class VeinManager extends JsonReloadListener
     }
 
     @Nullable
-    public IVeinType getVein(ResourceLocation key)
+    public VeinType<?> getVein(ResourceLocation key)
     {
         return veins.get(key);
     }
 
     @Nonnull
-    public ResourceLocation getName(IVeinType key)
+    public ResourceLocation getName(VeinType<?> key)
     {
         return veins.inverse().get(key);
-    }
-
-    @Nonnull
-    @SuppressWarnings("unused")
-    public Map<String, Class<? extends IVeinType<?>>> getVeinTypes()
-    {
-        return veinTypes;
     }
 
     @Override
@@ -117,26 +120,19 @@ public class VeinManager extends JsonReloadListener
             JsonObject json = entry.getValue();
             try
             {
-                if (CraftingHelper.processConditions(json, "rules"))
+                if (CraftingHelper.processConditions(json, "conditions"))
                 {
-                    String veinType = JSONUtils.getString(json, "type");
-                    if (!veinTypes.containsKey(veinType))
+                    String veinTypeName = JSONUtils.getString(json, "type");
+                    Class<? extends VeinType<?>> veinTypeClass = veinTypes.get(veinTypeName);
+                    if (veinTypeClass == null)
                     {
-                        LOGGER.warn("Vein '{}' has an unknown type '{}'. Defaulting to 'sphere' type.", name, veinType);
+                        throw new JsonParseException("Unknown Vein Type: " + veinTypeName);
                     }
-                    IVeinType<?> vein = GSON.fromJson(json, veinTypes.getOrDefault(veinType, SphereVeinType.class));
-                    if (vein.isValid())
-                    {
-                        veins.put(name, vein);
-                    }
-                    else
-                    {
-                        LOGGER.warn("Vein '{}' is invalid. This is likely caused by one or more required parameters being left out.", name);
-                    }
+                    VeinType<?> vein = GSON.fromJson(json, veinTypeClass);
                 }
                 else
                 {
-                    LOGGER.info("Skipping loading vein '{}' as it's rules were not met", name);
+                    LOGGER.info("Skipping loading vein '{}' as it's conditions were not met", name);
                 }
             }
             catch (IllegalArgumentException | JsonParseException e)

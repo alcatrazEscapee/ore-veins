@@ -14,6 +14,40 @@ import javax.annotation.Nonnull;
 
 public interface IWeightedList<E> extends Iterable<E>
 {
+    static <E> IWeightedList<E> empty()
+    {
+        return new IWeightedList<E>()
+        {
+            @Override
+            public void add(double weight, E element) {}
+
+            @Override
+            public E get(Random random)
+            {
+                return null;
+            }
+
+            @Override
+            public Collection<E> values()
+            {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public boolean isEmpty()
+            {
+                return true;
+            }
+
+            @Override
+            @Nonnull
+            public Iterator<E> iterator()
+            {
+                return Collections.emptyIterator();
+            }
+        };
+    }
+
     static <E> IWeightedList<E> singleton(E element)
     {
         return new IWeightedList<E>()

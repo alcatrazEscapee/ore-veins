@@ -40,8 +40,7 @@ public enum BlockStateDeserializer implements JsonDeserializer<BlockState>
         StringReader reader = new StringReader(block);
         try
         {
-            BlockStateParser parser = new BlockStateParser(reader, true).parse(false);
-            return parser.getState();
+            return new BlockStateParser(reader, true).parse(false).getState();
         }
         catch (CommandSyntaxException e)
         {

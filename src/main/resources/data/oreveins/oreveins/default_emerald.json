@@ -10,8 +10,14 @@
   "vertical_size": 5,
   "horizontal_size": 20,
   "biomes": [
-    "mountain",
-    "cold",
+    {
+      "type": "tag",
+      "biomes": "mountain"
+    },
+    {
+      "type": "tag",
+      "biomes": "cold"
+    },
     "extreme_hills",
     "extreme_hills_with_trees",
     "mutated_extreme_hills",

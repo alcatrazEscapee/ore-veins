@@ -14,24 +14,22 @@ apply plugin: 'idea'
 
 version = '4.0.0-beta.1'
 group = 'com.alcatrazescapee.oreveins' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'oreveins-forge-1.14.3'
+archivesBaseName = "oreveins-forge-${forge_version}"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
-    // MCP Mappings
-    mappings channel: 'snapshot', version: '20190701-1.14.3'
+    mappings channel: 'snapshot', version: '20190828-1.14.3'
+    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Run configurations
     runs {
         client {
             workingDirectory project.file('run')
-
-            // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-
             mods {
-                examplemod {
+                oreveins {
                     source sourceSets.main
                 }
             }
@@ -39,12 +37,9 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-
-            // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-
             mods {
-                examplemod {
+                oreveins {
                     source sourceSets.main
                 }
             }
@@ -53,12 +48,12 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${MC_VERSION}-${FORGE_VERSION}"
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 }
 
 // Puts the mod version into the jar for mods.toml to read from
 jar {
     manifest {
-        attributes "Implementation-Version": "${MOD_VERSION}"
+        attributes "Implementation-Version": "${mod_version}"
     }
 }

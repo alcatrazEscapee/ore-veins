@@ -23,10 +23,10 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 
 import com.alcatrazescapee.oreveins.Config;
-import com.alcatrazescapee.oreveins.api.IVein;
-import com.alcatrazescapee.oreveins.api.IVeinType;
-import com.alcatrazescapee.oreveins.world.indicator.Indicator;
-import com.alcatrazescapee.oreveins.world.veins.VeinManager;
+import com.alcatrazescapee.oreveins.world.vein.Indicator;
+import com.alcatrazescapee.oreveins.world.vein.Vein;
+import com.alcatrazescapee.oreveins.world.vein.VeinManager;
+import com.alcatrazescapee.oreveins.world.vein.VeinType;
 
 import static net.minecraft.world.gen.Heightmap.Type.WORLD_SURFACE_WG;
 
@@ -38,13 +38,13 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
 
     public static void resetChunkRadius()
     {
-        CHUNK_RADIUS = 1 + VeinManager.INSTANCE.getVeins().stream().mapToInt(IVeinType::getChunkRadius).max().orElse(0) + Config.COMMON.extraChunkRange.get();
+        CHUNK_RADIUS = 1 + VeinManager.INSTANCE.getVeins().stream().mapToInt(VeinType::getChunkRadius).max().orElse(0) + Config.SERVER.extraChunkRange.get();
     }
 
     @Nonnull
-    public static List<IVein<?>> getNearbyVeins(int chunkX, int chunkZ, long worldSeed, int radius)
+    public static List<Vein<?>> getNearbyVeins(int chunkX, int chunkZ, long worldSeed, int radius)
     {
-        List<IVein<?>> veins = new ArrayList<>();
+        List<Vein<?>> veins = new ArrayList<>();
         for (int x = chunkX - radius; x <= chunkX + radius; x++)
         {
             for (int z = chunkZ - radius; z <= chunkZ + radius; z++)
@@ -55,16 +55,16 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
         return veins;
     }
 
-    private static void getVeinsAtChunk(List<IVein<?>> veins, int chunkX, int chunkZ, long worldSeed)
+    private static void getVeinsAtChunk(List<Vein<?>> veins, int chunkX, int chunkZ, long worldSeed)
     {
         RANDOM.setSeed(worldSeed + chunkX * 341873128712L + chunkZ * 132897987541L);
-        for (IVeinType<?> type : VeinManager.INSTANCE.getVeins())
+        for (VeinType<?> type : VeinManager.INSTANCE.getVeins())
         {
             for (int i = 0; i < type.getCount(); i++)
             {
                 if (RANDOM.nextInt(type.getRarity()) == 0)
                 {
-                    IVein<?> vein = type.createVein(chunkX, chunkZ, RANDOM);
+                    Vein<?> vein = type.createVein(chunkX, chunkZ, RANDOM);
                     veins.add(vein);
                 }
             }
@@ -79,10 +79,10 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
     @Override
     public boolean place(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, NoFeatureConfig config)
     {
-        List<IVein<?>> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, worldIn.getSeed(), CHUNK_RADIUS);
+        List<Vein<?>> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, worldIn.getSeed(), CHUNK_RADIUS);
         if (veins.isEmpty()) return false;
 
-        for (IVein<?> vein : veins)
+        for (Vein<?> vein : veins)
         {
             if (vein.getType().matchesDimension(worldIn.getDimension()))
             {
@@ -92,7 +92,7 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
         return true;
     }
 
-    private void generate(IWorld world, Random random, int xOff, int zOff, IVein<?> vein)
+    private void generate(IWorld world, Random random, int xOff, int zOff, Vein<?> vein)
     {
         for (int x = xOff; x < 16 + xOff; x++)
         {

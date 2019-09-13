@@ -22,15 +22,15 @@ import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
 @SuppressWarnings("WeakerAccess")
 public final class Config
 {
-    public static final ServerConfig COMMON;
+    public static final ServerConfig SERVER;
 
-    static final ForgeConfigSpec COMMON_SPEC;
+    static final ForgeConfigSpec SERVER_SPEC;
 
     static
     {
         final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
-        COMMON_SPEC = specPair.getRight();
-        COMMON = specPair.getLeft();
+        SERVER_SPEC = specPair.getRight();
+        SERVER = specPair.getLeft();
     }
 
     public static final class ServerConfig

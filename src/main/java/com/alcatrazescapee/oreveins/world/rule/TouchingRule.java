@@ -4,7 +4,7 @@
  * See the project LICENSE.md for more information.
  */
 
-package com.alcatrazescapee.oreveins.world.rules;
+package com.alcatrazescapee.oreveins.world.rule;
 
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
@@ -17,8 +17,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-
-import com.alcatrazescapee.oreveins.api.IRule;
 
 @ParametersAreNonnullByDefault
 public class TouchingRule implements IRule

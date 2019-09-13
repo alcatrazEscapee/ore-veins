@@ -14,8 +14,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import com.alcatrazescapee.oreveins.api.IVeinType;
-import com.alcatrazescapee.oreveins.world.veins.VeinManager;
+import com.alcatrazescapee.oreveins.world.vein.VeinManager;
+import com.alcatrazescapee.oreveins.world.vein.VeinType;
 import com.mojang.brigadier.CommandDispatcher;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
@@ -37,7 +37,7 @@ public final class VeinInfoCommand
         source.sendFeedback(new TranslationTextComponent(MOD_ID + ".tooltip.registered_veins"), true);
 
         // Search for veins that match a type
-        final IVeinType type = VeinManager.INSTANCE.getVein(veinName);
+        final VeinType<?> type = VeinManager.INSTANCE.getVein(veinName);
         if (type == null)
         {
             source.sendErrorMessage(new TranslationTextComponent(MOD_ID + ".tooltip.unknown_vein", veinName));

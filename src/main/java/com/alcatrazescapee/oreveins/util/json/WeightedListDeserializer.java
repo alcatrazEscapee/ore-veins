@@ -43,6 +43,6 @@ public class WeightedListDeserializer<T> implements JsonDeserializer<IWeightedLi
             }
             return states;
         }
-        throw new JsonParseException("Unable to parse IBlockState List");
+        throw new JsonParseException("Unable to parse Weighted List of " + elementClass.getSimpleName());
     }
 }

@@ -20,10 +20,10 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponentUtils;
 import net.minecraft.util.text.TextFormatting;
 
-import com.alcatrazescapee.oreveins.api.IVein;
-import com.alcatrazescapee.oreveins.api.IVeinType;
 import com.alcatrazescapee.oreveins.world.VeinsFeature;
-import com.alcatrazescapee.oreveins.world.veins.VeinManager;
+import com.alcatrazescapee.oreveins.world.vein.Vein;
+import com.alcatrazescapee.oreveins.world.vein.VeinManager;
+import com.alcatrazescapee.oreveins.world.vein.VeinType;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -49,8 +49,8 @@ public final class FindVeinsCommand
 
         final BlockPos pos = new BlockPos(source.getPos());
         final int chunkX = pos.getX() >> 4, chunkZ = pos.getZ() >> 4;
-        final List<IVein<?>> veins = VeinsFeature.getNearbyVeins(chunkX, chunkZ, source.getWorld().getSeed(), radius);
-        final IVeinType type = VeinManager.INSTANCE.getVein(veinName);
+        final List<Vein<?>> veins = VeinsFeature.getNearbyVeins(chunkX, chunkZ, source.getWorld().getSeed(), radius);
+        final VeinType type = VeinManager.INSTANCE.getVein(veinName);
         if (type == null)
         {
             source.sendErrorMessage(new StringTextComponent("Vein supplied does not match any valid vein names"));
@@ -58,7 +58,7 @@ public final class FindVeinsCommand
 
         // Search for veins matching type
         veins.removeIf(x -> x.getType() != type);
-        for (IVein<?> vein : veins)
+        for (Vein<?> vein : veins)
         {
             ITextComponent resultText = new StringTextComponent("> Vein: " + vein.toString());
             if (source.getEntity() instanceof PlayerEntity)

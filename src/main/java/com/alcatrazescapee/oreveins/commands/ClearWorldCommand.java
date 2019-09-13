@@ -18,8 +18,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
-import com.alcatrazescapee.oreveins.api.IVeinType;
-import com.alcatrazescapee.oreveins.world.veins.VeinManager;
+import com.alcatrazescapee.oreveins.world.vein.VeinManager;
+import com.alcatrazescapee.oreveins.world.vein.VeinType;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
@@ -30,7 +30,7 @@ public final class ClearWorldCommand
 
     public static void resetVeinStates()
     {
-        VeinManager.INSTANCE.getVeins().stream().map(IVeinType::getOreStates).forEach(VEIN_STATES::addAll);
+        VeinManager.INSTANCE.getVeins().stream().map(VeinType::getOreStates).forEach(VEIN_STATES::addAll);
     }
 
     public static void register(CommandDispatcher<CommandSource> dispatcher)

@@ -8,7 +8,6 @@ package com.alcatrazescapee.oreveins;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -24,13 +23,13 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import com.alcatrazescapee.oreveins.util.condition.DefaultVeinsCondition;
 import com.alcatrazescapee.oreveins.world.AtChunk;
 import com.alcatrazescapee.oreveins.world.VanillaFeatureManager;
 import com.alcatrazescapee.oreveins.world.VeinsFeature;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
-@Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @Mod(MOD_ID)
 public class OreVeins
 {
@@ -40,15 +39,15 @@ public class OreVeins
 
     public OreVeins()
     {
-        LOGGER.debug("Constructor");
+        LOGGER.debug("Constructing");
 
         // Setup config
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SERVER_SPEC);
 
         // Condition for default vein loading
-        CraftingHelper.register(new ResourceLocation(MOD_ID, "default_veins"), json -> Config.COMMON.enableDefaultVeins::get);
+        CraftingHelper.register(DefaultVeinsCondition.Serializer.INSTANCE);
 
-        // Register this class for mod event bus
+        // Register event handlers
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
         MinecraftForge.EVENT_BUS.register(ForgeEventHandler.INSTANCE);
     }

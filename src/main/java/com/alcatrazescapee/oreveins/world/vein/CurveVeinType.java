@@ -4,26 +4,32 @@
  * See the project LICENSE.md for more information.
  */
 
-package com.alcatrazescapee.oreveins.world.veins;
+package com.alcatrazescapee.oreveins.world.vein;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import com.google.gson.*;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-import com.alcatrazescapee.oreveins.api.AbstractVein;
-import com.alcatrazescapee.oreveins.api.AbstractVeinType;
-
-@SuppressWarnings({"unused", "WeakerAccess"})
 @ParametersAreNonnullByDefault
-public class CurveVeinType extends AbstractVeinType<CurveVeinType.VeinCurve>
+public class CurveVeinType extends VeinType<CurveVeinType.VeinCurve>
 {
-    float radius = 5;
-    float angle = 45;
+    private final float radius;
+    private final float angle;
+
+    private CurveVeinType(Builder builder, float radius, float angle)
+    {
+        super(builder);
+        this.radius = radius;
+        this.angle = angle;
+    }
 
     @Override
     public boolean inRange(VeinCurve vein, int xOffset, int zOffset)
@@ -41,15 +47,11 @@ public class CurveVeinType extends AbstractVeinType<CurveVeinType.VeinCurve>
 
             // rotate block pos around Y axis
             double yaw = segment.yaw;
-            Vec3d posX = new Vec3d(Math.cos(yaw) * centeredPos.x + Math.sin(yaw) * centeredPos.z,
-                    centeredPos.y,
-                    -Math.sin(yaw) * centeredPos.x + Math.cos(yaw) * centeredPos.z);
+            Vec3d posX = new Vec3d(Math.cos(yaw) * centeredPos.x + Math.sin(yaw) * centeredPos.z, centeredPos.y, -Math.sin(yaw) * centeredPos.x + Math.cos(yaw) * centeredPos.z);
 
             // rotate block pos around Z axis
             double pitch = segment.pitch;
-            Vec3d posY = new Vec3d(Math.cos(pitch) * posX.x - Math.sin(pitch) * posX.y,
-                    Math.sin(pitch) * posX.x + Math.cos(pitch) * posX.y,
-                    posX.z);
+            Vec3d posY = new Vec3d(Math.cos(pitch) * posX.x - Math.sin(pitch) * posX.y, Math.sin(pitch) * posX.x + Math.cos(pitch) * posX.y, posX.z);
 
             double rad = Math.sqrt(posY.x * posY.x + posY.z * posY.z);
             double length = segment.length;
@@ -59,7 +61,6 @@ public class CurveVeinType extends AbstractVeinType<CurveVeinType.VeinCurve>
                 return 0.005f * density * (1f - 0.9f * (float) rad / this.radius);
             }
         }
-
         return 0.0f;
     }
 
@@ -69,17 +70,32 @@ public class CurveVeinType extends AbstractVeinType<CurveVeinType.VeinCurve>
     {
         int maxOffY = getMaxY() - getMinY() - verticalSize;
         int posY = getMinY() + verticalSize / 2 + ((maxOffY > 0) ? rand.nextInt(maxOffY) : 0);
-
-        BlockPos pos = new BlockPos(
-                chunkX * 16 + rand.nextInt(16),
-                posY,
-                chunkZ * 16 + rand.nextInt(16)
+        BlockPos pos = new BlockPos(chunkX * 16 + rand.nextInt(16), posY, chunkZ * 16 + rand.nextInt(16)
         );
 
         return new VeinCurve(this, pos, rand);
     }
 
-    static class VeinCurve extends AbstractVein<CurveVeinType>
+    public enum Deserializer implements JsonDeserializer<CurveVeinType>
+    {
+        INSTANCE;
+
+        @Override
+        public CurveVeinType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
+        {
+            JsonObject obj = json.getAsJsonObject();
+            Builder builder = Builder.deserialize(obj, context);
+            float radius = JSONUtils.getFloat(obj, "radius", 5);
+            if (radius <= 0)
+            {
+                throw new JsonParseException("Radius must be > 0");
+            }
+            float angle = JSONUtils.getFloat(obj, "angle", 45f);
+            return new CurveVeinType(builder, radius, angle);
+        }
+    }
+
+    static class VeinCurve extends Vein<CurveVeinType>
     {
         private final Random rand;
         private boolean isInitialized = false;
