@@ -3,11 +3,6 @@
  * Work under Copyright. See the project LICENSE.md for details.
  */
 
-/*
- * Part of the Ore Veins Mod by alcatrazEscapee
- *
- * See the project LICENSE.md for more information.
- */
 
 package com.alcatrazescapee.oreveins.commands;
 
