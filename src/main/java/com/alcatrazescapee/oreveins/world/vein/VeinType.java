@@ -1,7 +1,6 @@
 /*
- * Part of the Ore Veins Mod by alcatrazEscapee
- * Work under Copyright. Licensed under the GPL-3.0.
- * See the project LICENSE.md for more information.
+ * Part of the Realistic Ore Veins Mod by AlcatrazEscapee
+ * Work under Copyright. See the project LICENSE.md for details.
  */
 
 package com.alcatrazescapee.oreveins.world.vein;
@@ -42,8 +41,6 @@ public abstract class VeinType<V extends Vein<?>>
     protected final int horizontalSize;
     protected final float density;
 
-    protected final boolean dimensionIsWhitelist;
-
     private final List<BlockState> stoneStates;
     private final IWeightedList<BlockState> oreStates;
 
@@ -52,22 +49,53 @@ public abstract class VeinType<V extends Vein<?>>
     private final List<IRule> rules;
     private final IWeightedList<Indicator> indicator;
 
-    protected VeinType(Builder builder)
+    protected VeinType(JsonObject json, JsonDeserializationContext context) throws JsonParseException
     {
-        this.count = builder.count;
-        this.rarity = builder.rarity;
-        this.minY = builder.minY;
-        this.maxY = builder.maxY;
-        this.verticalSize = builder.verticalSize;
-        this.horizontalSize = builder.horizontalSize;
-        this.density = builder.density;
-        this.dimensionIsWhitelist = builder.dimensionIsWhitelist;
-        this.stoneStates = builder.stoneStates;
-        this.oreStates = builder.oreStates;
-        this.biomes = builder.biomes;
-        this.dimensions = builder.dimensions;
-        this.rules = builder.rules;
-        this.indicator = builder.indicator;
+        count = JSONUtils.getInt(json, "count", 1);
+        if (count <= 0)
+        {
+            throw new JsonParseException("Count must be > 0.");
+        }
+        rarity = JSONUtils.getInt(json, "rarity", 10);
+        if (rarity <= 0)
+        {
+            throw new JsonParseException("Count must be > 0.");
+        }
+        minY = JSONUtils.getInt(json, "min_y", 16);
+        maxY = JSONUtils.getInt(json, "max_y", 64);
+        if (minY < 0 || maxY > 256 || minY > maxY)
+        {
+            throw new JsonParseException("Min Y and Max Y must be within [0, 256], and Min Y must be <= Max Y.");
+        }
+        verticalSize = JSONUtils.getInt(json, "vertical_size", 8);
+        if (verticalSize <= 0)
+        {
+            throw new JsonParseException("Vertical Size must be > 0.");
+        }
+        horizontalSize = JSONUtils.getInt(json, "horizontal_size", 15);
+        if (horizontalSize <= 0)
+        {
+            throw new JsonParseException("Horizontal Size must be > 0.");
+        }
+        density = JSONUtils.getInt(json, "density", 20);
+        if (density <= 0)
+        {
+            throw new JsonParseException("Density must be > 0.");
+        }
+        stoneStates = context.deserialize(json.get("stone"), new TypeToken<List<BlockState>>() {}.getType());
+        if (stoneStates.isEmpty())
+        {
+            throw new JsonParseException("Stone States cannot be empty.");
+        }
+        oreStates = context.deserialize(json.get("ore"), new TypeToken<IWeightedList<BlockState>>() {}.getType());
+        if (oreStates.isEmpty())
+        {
+            throw new JsonParseException("Ore States cannot be empty.");
+        }
+        biomes = json.has("biomes") ? context.deserialize(json.get("biomes"), BiomeRule.class) : BiomeRule.DEFAULT;
+        dimensions = json.has("dimensions") ? context.deserialize(json.get("dimensions"), DimensionRule.class) : DimensionRule.DEFAULT;
+        rules = json.has("rules") ? context.deserialize(json.get("rules"), new TypeToken<List<IRule>>() {}.getType()) : Collections.emptyList();
+        indicator = json.has("indicator") ? context.deserialize(json.get("indicator"), new TypeToken<IWeightedList<Indicator>>() {}.getType()) : IWeightedList.empty();
     }
 
     /**
@@ -267,76 +295,5 @@ public abstract class VeinType<V extends Vein<?>>
             }
         }
         return new BlockPos(chunkX * 16 + rand.nextInt(16), minRange + rand.nextInt(spawnRange), chunkZ * 16 + rand.nextInt(16));
-    }
-
-    public static class Builder
-    {
-        @Nonnull
-        public static Builder deserialize(JsonObject json, JsonDeserializationContext context) throws JsonParseException
-        {
-            Builder builder = new Builder();
-            builder.count = JSONUtils.getInt(json, "count", 1);
-            if (builder.count <= 0)
-            {
-                throw new JsonParseException("Count must be > 0.");
-            }
-            builder.rarity = JSONUtils.getInt(json, "rarity", 10);
-            if (builder.rarity <= 0)
-            {
-                throw new JsonParseException("Count must be > 0.");
-            }
-            builder.minY = JSONUtils.getInt(json, "min_y", 16);
-            builder.maxY = JSONUtils.getInt(json, "max_y", 64);
-            if (builder.minY < 0 || builder.maxY > 256 || builder.minY > builder.maxY)
-            {
-                throw new JsonParseException("Min Y and Max Y must be within [0, 256], and Min Y must be <= Max Y.");
-            }
-            builder.verticalSize = JSONUtils.getInt(json, "vertical_size", 8);
-            if (builder.verticalSize <= 0)
-            {
-                throw new JsonParseException("Vertical Size must be > 0.");
-            }
-            builder.horizontalSize = JSONUtils.getInt(json, "horizontal_size", 15);
-            if (builder.horizontalSize <= 0)
-            {
-                throw new JsonParseException("Horizontal Size must be > 0.");
-            }
-            builder.density = JSONUtils.getInt(json, "density", 20);
-            if (builder.density <= 0)
-            {
-                throw new JsonParseException("Density must be > 0.");
-            }
-            builder.dimensionIsWhitelist = JSONUtils.getBoolean(json, "dimensions_is_whitelist", true);
-            builder.stoneStates = context.deserialize(json.get("stone"), new TypeToken<List<BlockState>>() {}.getType());
-            if (builder.stoneStates.isEmpty())
-            {
-                throw new JsonParseException("Stone States cannot be empty.");
-            }
-            builder.oreStates = context.deserialize(json.get("ore"), new TypeToken<IWeightedList<BlockState>>() {}.getType());
-            if (builder.oreStates.isEmpty())
-            {
-                throw new JsonParseException("Ore States cannot be empty.");
-            }
-            builder.biomes = json.has("biomes") ? context.deserialize(json.get("biomes"), BiomeRule.class) : BiomeRule.DEFAULT;
-            builder.dimensions = json.has("dimensions") ? context.deserialize(json.get("dimensions"), DimensionRule.class) : DimensionRule.DEFAULT;
-            builder.rules = json.has("rules") ? context.deserialize(json.get("rules"), new TypeToken<List<IRule>>() {}.getType()) : Collections.emptyList();
-            builder.indicator = json.has("indicator") ? context.deserialize(json.get("indicator"), new TypeToken<IWeightedList<Indicator>>() {}.getType()) : IWeightedList.empty();
-            return builder;
-        }
-
-        private int count;
-        private int rarity;
-        private int minY;
-        private int maxY;
-        private int verticalSize;
-        private int horizontalSize;
-        private float density;
-        private boolean dimensionIsWhitelist;
-        private List<BlockState> stoneStates;
-        private IWeightedList<BlockState> oreStates;
-        private BiomeRule biomes;
-        private DimensionRule dimensions;
-        private List<IRule> rules;
-        private IWeightedList<Indicator> indicator = null;
     }
 }

@@ -1,7 +1,6 @@
 /*
- * Part of the Ore Veins Mod by alcatrazEscapee
- * Work under Copyright. Licensed under the GPL-3.0.
- * See the project LICENSE.md for more information.
+ * Part of the Realistic Ore Veins Mod by AlcatrazEscapee
+ * Work under Copyright. See the project LICENSE.md for details.
  */
 
 package com.alcatrazescapee.oreveins.world.vein;
@@ -24,7 +23,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
@@ -32,6 +30,7 @@ import com.alcatrazescapee.oreveins.commands.ClearWorldCommand;
 import com.alcatrazescapee.oreveins.util.IWeightedList;
 import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
 import com.alcatrazescapee.oreveins.util.json.LenientListDeserializer;
+import com.alcatrazescapee.oreveins.util.json.VeinTypeDeserializer;
 import com.alcatrazescapee.oreveins.util.json.WeightedListDeserializer;
 import com.alcatrazescapee.oreveins.world.VeinsFeature;
 import com.alcatrazescapee.oreveins.world.rule.BiomeRule;
@@ -49,18 +48,12 @@ public class VeinManager extends JsonReloadListener
             .registerTypeAdapter(new TypeToken<IWeightedList<BlockState>>() {}.getType(), new WeightedListDeserializer<>(BlockState.class))
             .registerTypeAdapter(new TypeToken<IWeightedList<Indicator>>() {}.getType(), new WeightedListDeserializer<>(Indicator.class))
             .registerTypeAdapter(new TypeToken<List<BlockState>>() {}.getType(), new LenientListDeserializer<>(BlockState.class, Collections::singletonList, ArrayList::new))
-            // Components
             .registerTypeAdapter(BlockState.class, BlockStateDeserializer.INSTANCE)
             .registerTypeAdapter(IRule.class, IRule.Deserializer.INSTANCE)
             .registerTypeAdapter(Indicator.class, Indicator.Deserializer.INSTANCE)
             .registerTypeAdapter(BiomeRule.class, BiomeRule.Deserializer.INSTANCE)
             .registerTypeAdapter(DimensionRule.class, DimensionRule.Deserializer.INSTANCE)
-            // Vein Types
-            .registerTypeAdapter(ClusterVeinType.class, ClusterVeinType.Deserializer.INSTANCE)
-            .registerTypeAdapter(ConeVeinType.class, ConeVeinType.Deserializer.INSTANCE)
-            .registerTypeAdapter(CurveVeinType.class, CurveVeinType.Deserializer.INSTANCE)
-            .registerTypeAdapter(PipeVeinType.class, PipeVeinType.Deserializer.INSTANCE)
-            .registerTypeAdapter(SphereVeinType.class, SphereVeinType.Deserializer.INSTANCE)
+            .registerTypeAdapter(VeinType.class, VeinTypeDeserializer.INSTANCE)
             .disableHtmlEscaping()
             .create();
 
@@ -122,13 +115,7 @@ public class VeinManager extends JsonReloadListener
             {
                 if (CraftingHelper.processConditions(json, "conditions"))
                 {
-                    String veinTypeName = JSONUtils.getString(json, "type");
-                    Class<? extends VeinType<?>> veinTypeClass = veinTypes.get(veinTypeName);
-                    if (veinTypeClass == null)
-                    {
-                        throw new JsonParseException("Unknown Vein Type: " + veinTypeName);
-                    }
-                    VeinType<?> vein = GSON.fromJson(json, veinTypeClass);
+                    veins.put(name, GSON.fromJson(json, VeinType.class));
                 }
                 else
                 {

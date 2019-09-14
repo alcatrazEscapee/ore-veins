@@ -1,7 +1,6 @@
 /*
- * Part of the Ore Veins Mod by alcatrazEscapee
- * Work under Copyright. Licensed under the GPL-3.0.
- * See the project LICENSE.md for more information.
+ * Part of the Realistic Ore Veins Mod by AlcatrazEscapee
+ * Work under Copyright. See the project LICENSE.md for details.
  */
 
 package com.alcatrazescapee.oreveins.world.vein;
@@ -10,19 +9,22 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * Used for veins that don't require any type parameters
+ * Used for veins that don't require a custom vein implementation
  *
  * @author AlcatrazEscapee
  */
 @ParametersAreNonnullByDefault
 public abstract class SimpleVeinType extends VeinType<Vein<?>>
 {
-    protected SimpleVeinType(Builder builder)
+    protected SimpleVeinType(JsonObject obj, JsonDeserializationContext context) throws JsonParseException
     {
-        super(builder);
+        super(obj, context);
     }
 
     @Nonnull

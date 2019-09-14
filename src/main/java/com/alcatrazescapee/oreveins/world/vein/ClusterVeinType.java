@@ -1,29 +1,35 @@
 /*
- * Part of the Ore Veins Mod by alcatrazEscapee
- * Work under Copyright. Licensed under the GPL-3.0.
- * See the project LICENSE.md for more information.
+ * Part of the Realistic Ore Veins Mod by AlcatrazEscapee
+ * Work under Copyright. See the project LICENSE.md for details.
  */
 
 package com.alcatrazescapee.oreveins.world.vein;
 
-import java.lang.reflect.Type;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 
+import static com.alcatrazescapee.oreveins.world.vein.ClusterVeinType.VeinCluster;
+
 @ParametersAreNonnullByDefault
-public class ClusterVeinType extends VeinType<ClusterVeinType.VeinCluster>
+public class ClusterVeinType extends VeinType<VeinCluster>
 {
     private final int clusters;
 
-    private ClusterVeinType(Builder builder, int clusters)
+    public ClusterVeinType(JsonObject obj, JsonDeserializationContext context) throws JsonParseException
     {
-        super(builder);
-        this.clusters = clusters;
+        super(obj, context);
+        clusters = JSONUtils.getInt(obj, "clusters", 3);
+        if (clusters <= 0)
+        {
+            throw new JsonParseException("Clusters must be > 0");
+        }
     }
 
     @Override
@@ -57,30 +63,11 @@ public class ClusterVeinType extends VeinType<ClusterVeinType.VeinCluster>
         return new VeinCluster(this, defaultStartPos(chunkX, chunkZ, rand), rand);
     }
 
-    public enum Deserializer implements JsonDeserializer<ClusterVeinType>
-    {
-        INSTANCE;
-
-        @Override
-        @Nonnull
-        public ClusterVeinType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
-        {
-            JsonObject obj = json.getAsJsonObject();
-            Builder builder = Builder.deserialize(obj, context);
-            int clusters = JSONUtils.getInt(obj, "clusters", 3);
-            if (clusters <= 0)
-            {
-                throw new JsonParseException("Clusters must be > 0");
-            }
-            return new ClusterVeinType(builder, clusters);
-        }
-    }
-
     static class VeinCluster extends Vein<ClusterVeinType>
     {
         private final Cluster[] spawnPoints;
 
-        VeinCluster(ClusterVeinType type, BlockPos pos, Random rand)
+        private VeinCluster(ClusterVeinType type, BlockPos pos, Random rand)
         {
             super(type, pos, rand);
 

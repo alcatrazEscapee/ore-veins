@@ -1,34 +1,44 @@
 /*
- * Part of the Ore Veins Mod by alcatrazEscapee
- * Work under Copyright. Licensed under the GPL-3.0.
- * See the project LICENSE.md for more information.
+ * Part of the Realistic Ore Veins Mod by AlcatrazEscapee
+ * Work under Copyright. See the project LICENSE.md for details.
  */
 
 package com.alcatrazescapee.oreveins.world.vein;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
+import static com.alcatrazescapee.oreveins.world.vein.CurveVeinType.VeinCurve;
+
 @ParametersAreNonnullByDefault
-public class CurveVeinType extends VeinType<CurveVeinType.VeinCurve>
+public class CurveVeinType extends VeinType<VeinCurve>
 {
     private final float radius;
     private final float angle;
 
-    private CurveVeinType(Builder builder, float radius, float angle)
+    public CurveVeinType(JsonObject obj, JsonDeserializationContext context) throws JsonParseException
     {
-        super(builder);
-        this.radius = radius;
-        this.angle = angle;
+        super(obj, context);
+        radius = JSONUtils.getFloat(obj, "radius", 5);
+        if (radius <= 0)
+        {
+            throw new JsonParseException("Radius must be > 0");
+        }
+        angle = JSONUtils.getFloat(obj, "angle", 45f);
+        if (angle < 0 || angle > 360)
+        {
+            throw new JsonParseException("Angle must be >= 0 and <= 360");
+        }
     }
 
     @Override
@@ -74,25 +84,6 @@ public class CurveVeinType extends VeinType<CurveVeinType.VeinCurve>
         );
 
         return new VeinCurve(this, pos, rand);
-    }
-
-    public enum Deserializer implements JsonDeserializer<CurveVeinType>
-    {
-        INSTANCE;
-
-        @Override
-        public CurveVeinType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
-        {
-            JsonObject obj = json.getAsJsonObject();
-            Builder builder = Builder.deserialize(obj, context);
-            float radius = JSONUtils.getFloat(obj, "radius", 5);
-            if (radius <= 0)
-            {
-                throw new JsonParseException("Radius must be > 0");
-            }
-            float angle = JSONUtils.getFloat(obj, "angle", 45f);
-            return new CurveVeinType(builder, radius, angle);
-        }
     }
 
     static class VeinCurve extends Vein<CurveVeinType>
