@@ -1,0 +1,86 @@
+{
+  "iron_ore": {
+    "type": "cone",
+    "ore": "minecraft:iron_ore",
+    "stone": "minecraft:stone",
+    "rarity": 5,
+    "min_y": 0,
+    "max_y": 60,
+    "density": 800,
+    "vertical_size": 4,
+    "horizontal_size": 6
+  },
+  "lapis_ore": {
+    "type": "cone",
+    "ore": "minecraft:lapis_ore",
+    "stone": "minecraft:stone",
+    "rarity": 10,
+    "min_y": 0,
+    "max_y": 25,
+    "density": 50,
+    "vertical_size": 6,
+    "horizontal_size": 4
+  },
+  "redstone_ore": {
+    "type": "sphere",
+    "ore": "minecraft:redstone_ore",
+    "stone": "minecraft:stone",
+    "rarity": 12,
+    "min_y": 0,
+    "max_y": 25,
+    "density": 80,
+    "vertical_size": 4,
+    "horizontal_size": 6
+  },
+  "gold_ore": {
+    "type": "cone",
+    "ore": "minecraft:gold_ore",
+    "stone": "minecraft:stone",
+    "rarity": 20,
+    "min_y": 0,
+    "max_y": 25,
+    "density": 120,
+    "vertical_size": 4,
+    "horizontal_size": 6
+  },
+  "coal_ore": {
+    "type": "sphere",
+    "ore": [
+      {
+        "ore": "oreCoal",
+        "weight": 40
+      },
+      {
+        "block": "minecraft:diamond_ore",
+        "weight": 2
+      }
+    ],
+    "stone": "minecraft:stone",
+    "rarity": 20,
+    "min_y": 0,
+    "max_y": 30,
+    "density": 360,
+    "vertical_size": 5,
+    "horizontal_size": 8
+  },
+  "emerald_ore": {
+    "type": "cluster",
+    "ore": "minecraft:emerald_ore",
+    "stone": "minecraft:stone",
+    "rarity": 40,
+    "count": 1,
+    "min_y": 0,
+    "max_y": 40,
+    "density": 30,
+    "vertical_size": 4,
+    "horizontal_size": 6,
+    "biomes": [
+      "mountain",
+      "cold",
+      "extreme_hills",
+      "extreme_hills_with_trees",
+      "mutated_extreme_hills",
+      "mutated_extreme_hills_with_trees"
+    ]
+  }
+}

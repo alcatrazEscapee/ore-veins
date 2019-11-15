@@ -9,15 +9,17 @@ package com.alcatrazescapee.oreveins.vein;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
 import net.minecraft.block.state.IBlockState;
@@ -75,7 +77,7 @@ public final class VeinRegistry
         {
             if (!worldGenFolder.exists() && !worldGenFolder.mkdir())
             {
-                OreVeins.getLog().warn("Error creating world gen config folder ");
+                OreVeins.getLog().error("Error creating world gen config folder!");
             }
             else
             {
@@ -110,72 +112,56 @@ public final class VeinRegistry
 
     public static void reloadVeins()
     {
-        File[] worldGenFiles = worldGenFolder.listFiles((file, name) -> name != null && name.toLowerCase(Locale.US).endsWith(".json"));
-        if (worldGenFiles == null)
+        Path[] recursivePathList;
+        try
         {
-            OreVeins.getLog().error("There are no valid files in the world gen directory! This mod will not do anything!");
+            recursivePathList = Files.walk(worldGenFolder.toPath()).filter(Files::isRegularFile).toArray(Path[]::new);
         }
-        else
+        catch (IOException e)
         {
-            String worldGenData;
-            for (File worldGenFile : worldGenFiles)
+            OreVeins.getLog().error("Unable to read files in the config directory! No veins will be generated!");
+            return;
+        }
+
+        for (Path path : recursivePathList)
+        {
+            try
             {
-                worldGenData = null;
-                if (worldGenFile.exists())
+                // Read each file, then json parse each file individually into a map, so each vein can be parsed by GSON independently
+                String fileContents = Files.readAllLines(path).stream().reduce((x, y) -> x + y).orElse("");
+                Set<Map.Entry<String, JsonElement>> allVeinsJson = new JsonParser().parse(fileContents).getAsJsonObject().entrySet();
+                for (Map.Entry<String, JsonElement> entry : allVeinsJson)
                 {
                     try
                     {
-                        worldGenData = FileUtils.readFileToString(worldGenFile, Charset.defaultCharset());
-                    }
-                    catch (IOException e)
-                    {
-                        OreVeins.getLog().warn("Error reading world gen file.", e);
-                        continue;
-                    }
-                }
-
-                if (Strings.isNullOrEmpty(worldGenData))
-                {
-                    OreVeins.getLog().warn("There is no data in a world gen file.");
-                    continue;
-                }
-
-                try
-                {
-                    Set<Map.Entry<String, JsonElement>> allVeinsJson = new JsonParser().parse(worldGenData).getAsJsonObject().entrySet();
-                    for (Map.Entry<String, JsonElement> entry : allVeinsJson)
-                    {
-                        try
+                        IVeinType<?> vein = GSON.fromJson(entry.getValue(), IVeinType.class);
+                        if (vein.isValid())
                         {
-                            IVeinType<?> vein = GSON.fromJson(entry.getValue(), IVeinType.class);
-                            if (vein.isValid())
+                            if (VEINS.containsKey(entry.getKey()))
                             {
-                                if (VEINS.containsKey(entry.getKey()))
-                                {
-                                    OreVeins.getLog().error("Duplicate Veins found for the name {}. One has been discarded.", entry.getKey());
-                                }
-                                else
-                                {
-                                    VEINS.put(entry.getKey(), vein);
-                                }
+                                OreVeins.getLog().error("Duplicate Veins found for the name {}. One has been discarded.", entry.getKey());
                             }
                             else
                             {
-                                OreVeins.getLog().error("Vein {} is invalid. This is likely caused by one or more required parameters being left out.", entry.getKey());
+                                VEINS.put(entry.getKey(), vein);
                             }
                         }
-                        catch (Exception e)
+                        else
                         {
-                            OreVeins.getLog().error("Vein {} failed to parse. This is most likely caused by incorrectly specified JSON.", entry.getKey());
-                            OreVeins.getLog().error("Error: ", e);
+                            OreVeins.getLog().error("Vein {} is invalid. This is likely caused by one or more required parameters being left out.", entry.getKey());
                         }
                     }
+                    catch (JsonParseException e)
+                    {
+                        OreVeins.getLog().error("Vein {} failed to parse. This is most likely caused by incorrectly specified JSON.", entry.getKey());
+                        OreVeins.getLog().error("Error: ", e);
+                    }
                 }
-                catch (Exception e)
-                {
-                    OreVeins.getLog().error("File {} failed to parse. This is most likely caused by invalid JSON. Error: {}", worldGenFile, e);
-                    OreVeins.getLog().error("Error: ", e);
-                }
+            }
+            catch (IOException e)
+            {
+                OreVeins.getLog().error("Unable to open the file at {}, skipping.", path);
+                OreVeins.getLog().error("Error: ", e);
             }
         }
 

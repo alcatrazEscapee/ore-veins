@@ -43,14 +43,14 @@ public class CommandVeinInfo extends CommandBase
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
-        if (args.length != 1) throw new WrongUsageException("1 argument required.");
+        if (args.length != 1) throw new WrongUsageException("Requires one argument: " + getUsage(sender));
         if (sender.getCommandSenderEntity() == null) throw new WrongUsageException("Can only be used by a player");
 
         sender.sendMessage(new TextComponentString("Registered Veins: "));
         if (args[0].equals("all"))
         {
             // Search for all veins
-            VeinRegistry.getNames().forEach(x -> sender.sendMessage(new TextComponentString("> Vein Type: " + x)));
+            VeinRegistry.getNames().forEach(x -> sender.sendMessage(new TextComponentString("> " + x)));
         }
         else
         {
@@ -60,7 +60,7 @@ public class CommandVeinInfo extends CommandBase
             {
                 throw new WrongUsageException("Vein supplied does not match any valid vein names. Use /veininfo all to see valid vein names");
             }
-            sender.sendMessage(new TextComponentString("> Vein Type: " + type.toString()));
+            sender.sendMessage(new TextComponentString("> " + type.toString()));
         }
     }
 

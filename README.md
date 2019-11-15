@@ -8,6 +8,8 @@ For example images of various types and configurations of veins see the cursefor
 
 Ore Veins will look for all files under config/oreveins/. When you first add ore veins, it will create a default file with some example configuration. Feel free to use or modify this. It is also found here on github at [src/main/resources/assets/ore_veins.json](https://github.com/alcatrazEscapee/ore-veins/blob/1.12/src/main/resources/assets/ore_veins.json).
 
+There's also an example vanilla-like config which can be found [here](https://github.com/alcatrazEscapee/ore-veins/blob/1.12/examples/example_vanilla_like_config.json)
+
 Each json file in config/oreveins/ should consist of a set of objects, each one being a different type of vein. These represent a single ore type or configuration that will be generated in the world. Each entry must contain the following values:
 
 * `type` is the registry name of the [Vein Type](#veins) that this entry will spawn. Based on what vein this is, there might be other required or optional values as well.
