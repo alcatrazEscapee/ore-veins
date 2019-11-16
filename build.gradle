@@ -70,7 +70,7 @@ curseforge {
         apiKey = envApiKey
         id = '296887'
         changelog = file('changelog.txt')
-        releaseType = 'release'
+        releaseType = "${mod_release_type}"
         addGameVersion "${mc_version}"
     }
 }
