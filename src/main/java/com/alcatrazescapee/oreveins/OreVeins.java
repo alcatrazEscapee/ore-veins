@@ -12,10 +12,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.ICrashCallable;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -30,7 +27,7 @@ import com.alcatrazescapee.oreveins.world.WorldGenReplacer;
 import com.alcatrazescapee.oreveins.world.WorldGenVeins;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-@Mod(modid = OreVeins.MOD_ID, version = OreVeins.VERSION, dependencies = OreVeins.DEPENDENCIES, acceptableRemoteVersions = "*", certificateFingerprint = "3c2d6be715971d1ed58a028cdb3fae72987fc934")
+@Mod(modid = OreVeins.MOD_ID, version = OreVeins.VERSION, dependencies = OreVeins.DEPENDENCIES, acceptableRemoteVersions = "*")
 public class OreVeins
 {
     public static final String MOD_ID = "oreveins";
@@ -48,8 +45,6 @@ public class OreVeins
     {
         return log;
     }
-
-    private boolean isSignedBuild = true;
 
     // This is necessary in order to catch the NewRegistry Event
     public OreVeins()
@@ -72,8 +67,6 @@ public class OreVeins
     {
         log = event.getModLog();
         log.debug("If you can see this, debug logging is working :)");
-        if (!isSignedBuild)
-            log.warn("You are not running an official build. This version will NOT be supported by the author.");
 
         VeinRegistry.preInit(event.getModConfigurationDirectory());
 
@@ -84,8 +77,6 @@ public class OreVeins
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
-        if (!isSignedBuild)
-            log.warn("You are not running an official build. This version will NOT be supported by the author.");
         VeinRegistry.reloadVeins();
     }
 
@@ -98,25 +89,5 @@ public class OreVeins
             event.registerServerCommand(new CommandVeinInfo());
             event.registerServerCommand(new CommandFindVeins());
         }
-    }
-
-    @Mod.EventHandler
-    public void onFingerprintViolation(FMLFingerprintViolationEvent event)
-    {
-        isSignedBuild = false;
-        FMLCommonHandler.instance().registerCrashCallable(new ICrashCallable()
-        {
-            @Override
-            public String getLabel()
-            {
-                return MOD_NAME;
-            }
-
-            @Override
-            public String call()
-            {
-                return "You are not running an official build. This version will NOT be supported by the author.";
-            }
-        });
     }
 }

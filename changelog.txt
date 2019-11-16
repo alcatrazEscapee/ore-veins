@@ -1,4 +1,0 @@
-v2.0.14
-
-Changes:
- - Added the ability to specify a dimension whitelist/blacklist for stopped vanilla ore gen calls. Veins still use the normal method to control dimensions, this is ONLY for the config setting controlling stopped vanilla ore gen calls (which may apply in various dimensions).

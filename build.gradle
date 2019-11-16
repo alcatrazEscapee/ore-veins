@@ -17,8 +17,6 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.matthewprenger.cursegradle'
 
-ext.priv = parseConfig(file('../../jar-signing/private.properties'))
-
 version = "${mod_version}"
 group = "com.alcatrazescapee.oreveins" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "oreveins"
@@ -43,9 +41,6 @@ minecraft {
     replace 'GRADLE:VERSION', "${mod_version}"
 }
 
-dependencies {
-}
-
 processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
@@ -66,44 +61,16 @@ processResources {
 }
 
 curseforge {
-    if (priv == null) {
+    def envApiKey = System.getenv('CURSEFORGE_API_KEY')
+    if (envApiKey == null) {
+        println 'Unable to locate api key in env variable'
         return
     }
     project {
-        apiKey = "${priv.curseforge_api_token}"
-        id = "296887"
-        changelog = file("changelog.txt")
-        releaseType = "release"
-
-        addGameVersion("${mc_version}")
-        afterEvaluate {
-            gameVersionStrings.remove('Java 9')
-        }
-    }
-}
-
-task signJar(type: SignJar, dependsOn: reobfJar) {
-    signJar.keyStore = "${priv.keyStore}"
-    signJar.alias = "${priv.keyStoreAlias}"
-    signJar.storePass = "${priv.keyStorePass}"
-    signJar.keyPass = "${priv.keyStoreKeyPass}"
-
-    inputFile = jar.archivePath
-    outputFile = jar.archivePath
-}
-
-build.dependsOn signJar
-tasks.curseforge.mustRunAfter signJar
-tasks.curseforge.dependsOn build
-
-def static parseConfig(File config) {
-    if (config.exists()) {
-        config.withReader {
-            def prop = new Properties()
-            prop.load(it)
-            return (new ConfigSlurper().parse(prop))
-        }
-    } else {
-        return null
+        apiKey = envApiKey
+        id = '296887'
+        changelog = file('changelog.txt')
+        releaseType = 'release'
+        addGameVersion "${mc_version}"
     }
 }
