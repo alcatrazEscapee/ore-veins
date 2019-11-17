@@ -2,7 +2,8 @@ name: Curseforge Build + Upload
 
 on:
   push:
-    - tags: '*'
+    tags:
+      - '*
 
 jobs:
   build:
