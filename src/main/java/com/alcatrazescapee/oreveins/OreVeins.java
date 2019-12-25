@@ -15,7 +15,6 @@ import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -41,7 +40,7 @@ public class OreVeins
         LOGGER.debug("Constructing");
 
         // Setup config
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SERVER_SPEC);
+        Config.register();
 
         // Condition for default vein loading
         CraftingHelper.register(DefaultVeinsCondition.Serializer.INSTANCE);
@@ -61,6 +60,8 @@ public class OreVeins
             ConfiguredFeature<?> feature = Biome.createDecoratedFeature(new VeinsFeature(), new NoFeatureConfig(), new AtChunk(), IPlacementConfig.NO_PLACEMENT_CONFIG);
             biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, feature);
         });
+
+        VanillaFeatureManager.onConfigReloading();
     }
 
     @SubscribeEvent

@@ -12,9 +12,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
-import com.alcatrazescapee.oreveins.commands.ClearWorldCommand;
-import com.alcatrazescapee.oreveins.commands.FindVeinsCommand;
-import com.alcatrazescapee.oreveins.commands.VeinInfoCommand;
+import com.alcatrazescapee.oreveins.command.ClearWorldCommand;
+import com.alcatrazescapee.oreveins.command.FindVeinsCommand;
+import com.alcatrazescapee.oreveins.command.VeinInfoCommand;
 import com.alcatrazescapee.oreveins.world.vein.VeinManager;
 import com.mojang.brigadier.CommandDispatcher;
 
@@ -37,7 +37,7 @@ public enum ForgeEventHandler
     {
         LOGGER.debug("On Server Starting");
 
-        if (Config.SERVER.debugCommands.get())
+        if (Config.COMMON.debugCommands.get())
         {
             LOGGER.info("Registering Debug Commands");
             CommandDispatcher<CommandSource> dispatcher = event.getCommandDispatcher();

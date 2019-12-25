@@ -26,7 +26,7 @@ import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
-import com.alcatrazescapee.oreveins.commands.ClearWorldCommand;
+import com.alcatrazescapee.oreveins.command.ClearWorldCommand;
 import com.alcatrazescapee.oreveins.util.IWeightedList;
 import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
 import com.alcatrazescapee.oreveins.util.json.LenientListDeserializer;
@@ -64,20 +64,11 @@ public class VeinManager extends JsonReloadListener
     }
 
     private final BiMap<ResourceLocation, VeinType<?>> veins;
-    private final Map<String, Class<? extends VeinType<?>>> veinTypes;
 
     private VeinManager()
     {
         super(GSON, "oreveins");
-
         this.veins = HashBiMap.create();
-        this.veinTypes = new HashMap<>();
-
-        veinTypes.put("sphere", SphereVeinType.class);
-        veinTypes.put("cluster", ClusterVeinType.class);
-        veinTypes.put("cone", ConeVeinType.class);
-        veinTypes.put("pipe", PipeVeinType.class);
-        veinTypes.put("curve", CurveVeinType.class);
     }
 
     @Nonnull

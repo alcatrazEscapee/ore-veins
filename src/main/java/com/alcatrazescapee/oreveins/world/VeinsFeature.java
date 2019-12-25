@@ -37,7 +37,7 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
 
     public static void resetChunkRadius()
     {
-        CHUNK_RADIUS = 1 + VeinManager.INSTANCE.getVeins().stream().mapToInt(VeinType::getChunkRadius).max().orElse(0) + Config.SERVER.extraChunkRange.get();
+        CHUNK_RADIUS = 1 + VeinManager.INSTANCE.getVeins().stream().mapToInt(VeinType::getChunkRadius).max().orElse(0) + Config.COMMON.extraChunkRange.get();
     }
 
     @Nonnull
@@ -132,9 +132,6 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                             BlockState indicatorState = veinIndicator.getStateToGenerate(random);
                             BlockState stateAt = world.getBlockState(posAt);
 
-                            // The indicator must pass canPlaceBlockAt
-                            // The previous state must be replaceable, non-liquid or the vein ignores liquids
-                            // The under state must pass validUnderState
                             if (indicatorState.isValidPosition(world, posAt) &&
                                     (veinIndicator.shouldIgnoreLiquids() || !stateAt.getMaterial().isLiquid()) &&
                                     veinIndicator.validUnderState(world.getBlockState(posAt.down())))

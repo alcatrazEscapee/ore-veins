@@ -15,23 +15,30 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
 
 import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
 
 public final class Config
 {
-    public static final ServerConfig SERVER;
+    public static final GeneralConfig COMMON;
 
-    static final ForgeConfigSpec SERVER_SPEC;
+    private static final ForgeConfigSpec COMMON_SPEC;
 
     static
     {
-        final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
-        SERVER_SPEC = specPair.getRight();
-        SERVER = specPair.getLeft();
+        final Pair<GeneralConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(GeneralConfig::new);
+        COMMON_SPEC = specPair.getRight();
+        COMMON = specPair.getLeft();
     }
 
-    public static final class ServerConfig
+    public static void register()
+    {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
+    }
+
+    public static final class GeneralConfig
     {
         public final ForgeConfigSpec.BooleanValue noOres;
         public final ForgeConfigSpec.BooleanValue debugCommands;
@@ -41,13 +48,13 @@ public final class Config
 
         private final ForgeConfigSpec.ConfigValue<List<? extends String>> disabledOres;
 
-        ServerConfig(ForgeConfigSpec.Builder builder)
+        GeneralConfig(ForgeConfigSpec.Builder builder)
         {
             builder.push("general");
 
             noOres = builder
                     .comment("Stop all vanilla ore gen calls? Warning: this includes calls such as andesite/diorite, and potentially others that internally behave the same as ores. For more customization, see the disabled ores option.")
-                    .define("noOres", false);
+                    .define("noOres", true);
 
             disabledOres = builder
                     .comment("Vanilla ore gen to disable. Must be specified as a list of block states, i.e. minecraft:gold_ore, minecraft:iron_ore, etc.")
@@ -62,7 +69,7 @@ public final class Config
                     .defineInRange("extraChunkRange", 0, 0, 20);
 
             enableDefaultVeins = builder
-                    .comment("Enable veins in the default data pack. (This is the 'oreveins:default_veins' condition")
+                    .comment("Enable veins in the default data pack. (This is the 'oreveins:default_veins' condition)")
                     .define("enableDefaultVeins", true);
 
             avoidVeinCutoffs = builder

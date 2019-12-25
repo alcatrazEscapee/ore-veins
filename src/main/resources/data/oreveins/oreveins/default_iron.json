@@ -4,12 +4,8 @@
   "stone": "minecraft:stone",
   "indicator": {
     "blocks": [
-      {
-        "block": "minecraft:poppy"
-      },
-      {
-        "block": "minecraft:cornflower"
-      }
+      "minecraft:poppy",
+      "minecraft:cornflower"
     ],
     "rarity": 3,
     "max_depth": 23

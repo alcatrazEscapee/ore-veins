@@ -6,6 +6,7 @@
 package com.alcatrazescapee.oreveins.world;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.world.biome.Biome;
@@ -30,22 +31,21 @@ public class VanillaFeatureManager
 
     public static void onConfigReloading()
     {
-        disabledBlockStates = Config.SERVER.disabledBlockStates();
-        disableAll = Config.SERVER.noOres.get();
+        disabledBlockStates = Config.COMMON.disabledBlockStates();
+        disableAll = Config.COMMON.noOres.get();
 
         ForgeRegistries.BIOMES.forEach(biome -> {
-            // Re-add previously disabled features
             List<ConfiguredFeature<?>> features = DISABLED_FEATURES.computeIfAbsent(biome, key -> new ArrayList<>());
-            for (ConfiguredFeature<?> feature : features)
-            {
-                if (!shouldDisable(feature))
-                {
-                    biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, feature);
-                }
-            }
 
-            // Disable previously enabled features
-            biome.getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).removeIf(VanillaFeatureManager::shouldDisable);
+            List<ConfiguredFeature<?>> toReAdd = features.stream().filter(x -> !shouldDisable(x)).collect(Collectors.toList());
+            List<ConfiguredFeature<?>> toRemove = biome.getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).stream().filter(VanillaFeatureManager::shouldDisable).collect(Collectors.toList());
+
+            features.addAll(toRemove);
+            features.removeAll(toReAdd);
+
+            List<ConfiguredFeature<?>> currentFeatures = biome.getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES);
+            currentFeatures.addAll(toReAdd);
+            currentFeatures.removeAll(toRemove);
         });
     }
 

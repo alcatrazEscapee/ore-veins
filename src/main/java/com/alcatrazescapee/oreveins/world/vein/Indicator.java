@@ -90,7 +90,7 @@ public class Indicator
             {
                 throw new JsonParseException("Block states cannot be empty!");
             }
-            List<BlockState> underStates = obj.has("blocks") ? context.deserialize(obj.get("blocks"), new TypeToken<List<BlockState>>() {}.getType()) : Collections.emptyList();
+            List<BlockState> underStates = obj.has("blocks_under") ? context.deserialize(obj.get("blocks_under"), new TypeToken<List<BlockState>>() {}.getType()) : Collections.emptyList();
             return new Indicator(maxDepth, rarity, ignoreLiquids, states, underStates);
         }
     }

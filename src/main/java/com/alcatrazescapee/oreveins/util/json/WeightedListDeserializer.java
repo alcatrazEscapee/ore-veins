@@ -36,9 +36,16 @@ public class WeightedListDeserializer<T> implements JsonDeserializer<IWeightedLi
             IWeightedList<T> states = new WeightedList<>();
             for (JsonElement element : array)
             {
-                JsonObject obj = element.getAsJsonObject();
-                float weight = JSONUtils.getFloat(obj, "weight", 1);
-                states.add(weight, context.deserialize(element, elementClass));
+                if (element.isJsonObject())
+                {
+                    JsonObject obj = element.getAsJsonObject();
+                    float weight = JSONUtils.getFloat(obj, "weight", 1);
+                    states.add(weight, context.deserialize(element, elementClass));
+                }
+                else
+                {
+                    states.add(1, context.deserialize(element, elementClass));
+                }
             }
             return states;
         }

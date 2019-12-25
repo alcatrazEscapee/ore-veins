@@ -3,14 +3,13 @@
  * Work under Copyright. See the project LICENSE.md for details.
  */
 
-package com.alcatrazescapee.oreveins.commands;
+package com.alcatrazescapee.oreveins.command;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import com.alcatrazescapee.oreveins.world.vein.VeinManager;
@@ -33,17 +32,15 @@ public final class VeinInfoCommand
 
     private static int veinInfo(CommandSource source, ResourceLocation veinName)
     {
-        source.sendFeedback(new TranslationTextComponent(MOD_ID + ".tooltip.registered_veins"), true);
-
         // Search for veins that match a type
         final VeinType<?> type = VeinManager.INSTANCE.getVein(veinName);
         if (type == null)
         {
-            source.sendErrorMessage(new TranslationTextComponent(MOD_ID + ".tooltip.unknown_vein", veinName));
+            source.sendErrorMessage(new TranslationTextComponent(MOD_ID + ".command.unknown_vein", veinName));
         }
         else
         {
-            source.sendFeedback(new StringTextComponent("> Vein Type: " + type.toString()), true);
+            source.sendFeedback(new TranslationTextComponent(MOD_ID + ".command.vein_info", type.toString()), true);
         }
         return 1;
     }

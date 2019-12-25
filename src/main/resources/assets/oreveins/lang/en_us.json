@@ -1,4 +1,6 @@
 {
-  "oreveins.tooltip.registered_veins": "Registered Veins: ",
-  "oreveins.tooltip.unknown_vein": "Unknown Vein '%s'"
+  "oreveins.command.clear_world_done": "Finished!",
+  "oreveins.command.unknown_vein": "Unknown vein name: '%s'",
+  "oreveins.command.veins_found": "Veins:",
+  "oreveins.command.vein_info": "> Vein: %s"
 }

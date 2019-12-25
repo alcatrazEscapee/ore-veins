@@ -30,7 +30,7 @@ public abstract class PredicateDeserializer<E, T extends Predicate<E>> implement
         if (json.isJsonObject())
         {
             JsonObject obj = json.getAsJsonObject();
-            String typeName = JSONUtils.getString(json, "type");
+            String typeName = JSONUtils.getString(obj, "type");
             switch (typeName)
             {
                 case "and":

@@ -4,7 +4,7 @@
  */
 
 
-package com.alcatrazescapee.oreveins.commands;
+package com.alcatrazescapee.oreveins.command;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,13 +15,15 @@ import net.minecraft.block.Blocks;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import com.alcatrazescapee.oreveins.world.vein.VeinManager;
 import com.alcatrazescapee.oreveins.world.vein.VeinType;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+
+import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
 @ParametersAreNonnullByDefault
 public final class ClearWorldCommand
@@ -55,21 +57,7 @@ public final class ClearWorldCommand
             }
         }
 
-        for (int x = -radius; x <= radius; x++)
-        {
-            for (int z = -radius; z <= radius; z++)
-            {
-                for (int y = 255 - center.getY(); y >= -center.getY(); y--)
-                {
-                    final BlockPos pos = center.add(x, y, z);
-                    if (!VEIN_STATES.contains(world.getBlockState(pos)) && !world.isAirBlock(pos))
-                    {
-                        world.setBlockState(pos, air, 2 | 16);
-                    }
-                }
-            }
-        }
-        source.sendFeedback(new StringTextComponent("Done."), true);
+        source.sendFeedback(new TranslationTextComponent(MOD_ID + ".command.clear_world_done"), true);
         return 1;
     }
 }

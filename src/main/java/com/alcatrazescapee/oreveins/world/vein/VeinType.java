@@ -33,17 +33,17 @@ import com.alcatrazescapee.oreveins.world.rule.IRule;
 @ParametersAreNonnullByDefault
 public abstract class VeinType<V extends Vein<?>>
 {
-    protected final int count;
-    protected final int rarity;
-    protected final int minY;
-    protected final int maxY;
     protected final int verticalSize;
     protected final int horizontalSize;
     protected final float density;
 
+    private final int count;
+    private final int rarity;
+    private final int minY;
+    private final int maxY;
+
     private final List<BlockState> stoneStates;
     private final IWeightedList<BlockState> oreStates;
-
     private final BiomeRule biomes;
     private final DimensionRule dimensions;
     private final List<IRule> rules;
@@ -281,7 +281,7 @@ public abstract class VeinType<V extends Vein<?>>
     protected final BlockPos defaultStartPos(int chunkX, int chunkZ, Random rand)
     {
         int spawnRange = maxY - minY, minRange = minY;
-        if (Config.SERVER.avoidVeinCutoffs.get())
+        if (Config.COMMON.avoidVeinCutoffs.get())
         {
             if (verticalSize * 2 < spawnRange)
             {

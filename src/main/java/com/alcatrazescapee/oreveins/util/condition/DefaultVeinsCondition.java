@@ -27,7 +27,7 @@ public class DefaultVeinsCondition implements ICondition
     @Override
     public boolean test()
     {
-        return Config.SERVER.enableDefaultVeins.get();
+        return Config.COMMON.enableDefaultVeins.get();
     }
 
     public enum Serializer implements IConditionSerializer<DefaultVeinsCondition>

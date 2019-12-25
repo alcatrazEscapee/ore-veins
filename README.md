@@ -46,8 +46,8 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `density` (Default: 50) Density of the ore vein. Higher values are more dense. (Tip: This number is not a percentage. For 100% density use values >1000)
 * `vertical_size` (Default: 15) Vertical radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
 * `horizontal_size` (Default: 8) Horizontal radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
-* `biomes` (Default: Allow any) This is a [Biome Rule](#biome-rule). It specifies a list of biomes to include or exclude, or tags to include or exclude.
-* `dimensions` (Default: Only Overworld) This is a [Dimension Rule](#dimension-rules). It specifies a list of dimensions to include or exclude.
+* `biomes` (Default: Allow any) This is a [Biome Rule](#biome--dimension-rules). It specifies a list of biomes to include or exclude, or tags to include or exclude.
+* `dimensions` (Default: Only Overworld) This is a [Dimension Rule](#biome--dimension-rules). It specifies a list of dimensions to include or exclude.
 * `indicator` (Default: None) This is an [Indicator](#indicators) which will spawn on the surface underneath where the vein is found.
 * `rules` (Default: None) This is a list of [Spawn Rules](#spawn-rules) which are checked for each ore block that attempts to spawn. Must be a list of json objects, where each object is a rule
 * `conditions` (Default: None) These are conditions that will enable or disable the vein. Realistic Ore Veins includes a condition `oreveins:default_veins`, which will disable the default veins if the relevant config value is set. For more information on conditions, consult the minecraft wiki
@@ -86,6 +86,13 @@ Biome and Dimension rules both can be a string, an array, or an object. The synt
 
 \*One exception is that biomes have the `"type": "tag"` ability, which dimensions do not.
 
+A biome / dimension rule entry can be a single string (which will match the single id provided), or it can be a json object. If it is an object, it requires a `type` property. Valid types are:
+
+ - `tag`: [Biomes only] Matches any tags found under `biomes`, which can be a string or string list
+ - `and`: Matches all conditions found within the `biomes` sub-entry.
+ - `not`: Inverts the condition found within the `biomes` sub-entry. 
+
+The Simplest Example:
 ```json
 "biomes": "minecraft:forest"
 ```
@@ -183,21 +190,24 @@ An example indicator that spawns roses when ore blocks are less than twenty bloc
 A Block Entry can be any of the following:
 
 1. A single string representing a block's registry name: `"ore": "minecraft:iron_ore"`
-2. A single object representing a block with various properties. Each property must be specified as a key-value pair. If left out, properties will assume their default value.
+2. An object with the field "block", where the block is the registry name:
 ```json
 {
-  "block": "minecraft:oak_stairs",
-  "half": "top",
-  "facing": "east"
+  "block": "minecraft:dirt"
 }
 ```
-3. A list of objects (as above). Note that these can be weighed (when used in `ore`) but are not necessary. If weight is not found for a particular object, it will default to 1. Properties are optional.
+2. A single string / object representing a block with properties. Properties should be specified the same way that they are in commands (such as /setblock)
+```json
+{
+  "block": "minecraft:oak_stairs[half=top,facing=east]"
+}
+```
+4. A list of objects (as above). Note that these can be weighed (when used in `ore`) but are not necessary. If weight is not found for a particular object, it will default to 1. Properties are optional.
 ```json
 {
   "ore": [
    {
-      "block": "minecraft:oak_stairs",
-      "half": "top",
+      "block": "minecraft:oak_stairs[half=top]",
       "weight": 12
     },
     {

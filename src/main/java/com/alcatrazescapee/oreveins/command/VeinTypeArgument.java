@@ -3,7 +3,7 @@
  * Work under Copyright. See the project LICENSE.md for details.
  */
 
-package com.alcatrazescapee.oreveins.commands;
+package com.alcatrazescapee.oreveins.command;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -26,7 +26,7 @@ import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 @ParametersAreNonnullByDefault
 public class VeinTypeArgument implements ArgumentType<ResourceLocation>
 {
-    private static final DynamicCommandExceptionType VEIN_NOT_FOUND = new DynamicCommandExceptionType(args -> new TranslationTextComponent(MOD_ID + ".tooltip.unknown_vein", args));
+    private static final DynamicCommandExceptionType VEIN_NOT_FOUND = new DynamicCommandExceptionType(args -> new TranslationTextComponent(MOD_ID + ".command.unknown_vein", args));
 
 
     static ResourceLocation getVein(CommandContext<?> context, @SuppressWarnings("SameParameterValue") String name)
