@@ -18,7 +18,7 @@ jobs:
       - name: Build
         run: ./gradlew build
       - name: Make Changelog
-        run: git log -1 --pretty=%B >> changelog.txt
+        run:  git log --pretty=%B $(git describe --tags --abbrev=0 @^)..@ >> changelog.txt
       - name: Upload
         run: ./gradlew curseforge
         env:
