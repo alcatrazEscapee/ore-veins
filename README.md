@@ -163,7 +163,7 @@ Indicators are configurable objects that will spawn on the surface when a vein i
 
 Indicators can also contain the following optional entries
 
-* `rarity` (Default: 10) 1 / N blocks will generate an indicator, provided there is a valid ore block directly underneath.
+* `rarity` (Default: 10) 1 per N blocks will generate an indicator, provided there is a valid ore block directly underneath.
 * `max_depth` (Default: 32) This is the maximum depth for an ore block to generate which would attempt to spawn an indicator.
 * `ignore_vegetation` (Default: true) If the vein should ignore vegetation when trying to spawn indicators. (i.e. should the indicators spawn underneath trees, leaves or huge mushrooms?)
 * `ignore_liquids` (Default: false) If the vein should ignore liquids when trying to spawn indicators. (i.e. should the indicator spawn inside lakes or the ocean?)
