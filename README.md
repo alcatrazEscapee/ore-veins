@@ -40,7 +40,7 @@ A vein must consist of a single json object, which contains at least the followi
 Each entry can also contain any or all of the following values. If they don't exist, they will assume a default value. These apply to all vein types:
 
 * `count` (Default: 1) Generate at most N veins per chunk. Rarity is applied to each attempt to generate a vein.
-* `rarity` (Default: 10) 1 / N chunks will spawn this ore vein.
+* `rarity` (Default: 10) 1 / N of chunks will spawn this ore vein.
 * `min_y` (Default: 16) Minimum y value for veins to generate at.
 * `max_y` (Default: 64) Maximum y value for veins to generate at.
 * `density` (Default: 50) Density of the ore vein. Higher values are more dense. (Tip: This number is not a percentage. For 100% density use values >1000)
