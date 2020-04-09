@@ -1,3 +1,8 @@
+/*
+ * Part of the Realistic Ore Veins Mod by AlcatrazEscapee
+ * Work under Copyright. See the project LICENSE.md for details.
+ */
+
 package com.alcatrazescapee.oreveins.world.rule;
 
 import java.lang.reflect.Type;
