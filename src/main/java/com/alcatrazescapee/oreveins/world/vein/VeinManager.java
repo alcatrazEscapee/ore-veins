@@ -35,6 +35,7 @@ import com.alcatrazescapee.oreveins.util.json.WeightedListDeserializer;
 import com.alcatrazescapee.oreveins.world.VeinsFeature;
 import com.alcatrazescapee.oreveins.world.rule.BiomeRule;
 import com.alcatrazescapee.oreveins.world.rule.DimensionRule;
+import com.alcatrazescapee.oreveins.world.rule.DistanceRule;
 import com.alcatrazescapee.oreveins.world.rule.IRule;
 
 @ParametersAreNonnullByDefault
@@ -53,6 +54,7 @@ public class VeinManager extends JsonReloadListener
             .registerTypeAdapter(Indicator.class, Indicator.Deserializer.INSTANCE)
             .registerTypeAdapter(BiomeRule.class, BiomeRule.Deserializer.INSTANCE)
             .registerTypeAdapter(DimensionRule.class, DimensionRule.Deserializer.INSTANCE)
+            .registerTypeAdapter(DistanceRule.class, DistanceRule.Deserializer.INSTANCE)
             .registerTypeAdapter(VeinType.class, VeinTypeDeserializer.INSTANCE)
             .disableHtmlEscaping()
             .create();

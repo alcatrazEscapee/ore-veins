@@ -21,15 +21,17 @@ import com.alcatrazescapee.oreveins.util.IWeightedList;
 public class Indicator
 {
     private final int maxDepth;
+    private final boolean replaceSurface;
     private final int rarity;
     private final boolean ignoreLiquids;
 
     private final IWeightedList<BlockState> states;
     private final List<BlockState> underStates;
 
-    private Indicator(int maxDepth, int rarity, boolean ignoreLiquids, IWeightedList<BlockState> states, List<BlockState> underStates)
+    private Indicator(int maxDepth, boolean replaceSurface, int rarity, boolean ignoreLiquids, IWeightedList<BlockState> states, List<BlockState> underStates)
     {
         this.maxDepth = maxDepth;
+        this.replaceSurface = replaceSurface;
         this.rarity = rarity;
         this.ignoreLiquids = ignoreLiquids;
         this.states = states;
@@ -50,6 +52,11 @@ public class Indicator
     public int getMaxDepth()
     {
         return maxDepth;
+    }
+
+    public boolean shouldReplaceSurface()
+    {
+        return replaceSurface;
     }
 
     public int getRarity()
@@ -91,7 +98,8 @@ public class Indicator
                 throw new JsonParseException("Block states cannot be empty!");
             }
             List<BlockState> underStates = obj.has("blocks_under") ? context.deserialize(obj.get("blocks_under"), new TypeToken<List<BlockState>>() {}.getType()) : Collections.emptyList();
-            return new Indicator(maxDepth, rarity, ignoreLiquids, states, underStates);
+            boolean replaceSurface = JSONUtils.getBoolean(obj, "replace_surface", false);
+            return new Indicator(maxDepth, replaceSurface, rarity, ignoreLiquids, states, underStates);
         }
     }
 }

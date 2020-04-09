@@ -26,7 +26,7 @@ public interface IRule extends BiPredicate<IBlockReader, BlockPos>
     {
         INSTANCE;
 
-        private final Map<String, Factory<? extends IRule>> types = new HashMap<>();
+        public final Map<String, Factory<? extends IRule>> types = new HashMap<>();
 
         Deserializer()
         {

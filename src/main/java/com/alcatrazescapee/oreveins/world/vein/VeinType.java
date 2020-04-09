@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -28,6 +29,7 @@ import com.alcatrazescapee.oreveins.Config;
 import com.alcatrazescapee.oreveins.util.IWeightedList;
 import com.alcatrazescapee.oreveins.world.rule.BiomeRule;
 import com.alcatrazescapee.oreveins.world.rule.DimensionRule;
+import com.alcatrazescapee.oreveins.world.rule.DistanceRule;
 import com.alcatrazescapee.oreveins.world.rule.IRule;
 
 @ParametersAreNonnullByDefault
@@ -46,6 +48,7 @@ public abstract class VeinType<V extends Vein<?>>
     private final IWeightedList<BlockState> oreStates;
     private final BiomeRule biomes;
     private final DimensionRule dimensions;
+    private final Predicate<BlockPos> originDistance;
     private final List<IRule> rules;
     private final IWeightedList<Indicator> indicator;
 
@@ -94,6 +97,7 @@ public abstract class VeinType<V extends Vein<?>>
         }
         biomes = json.has("biomes") ? context.deserialize(json.get("biomes"), BiomeRule.class) : BiomeRule.DEFAULT;
         dimensions = json.has("dimensions") ? context.deserialize(json.get("dimensions"), DimensionRule.class) : DimensionRule.DEFAULT;
+        originDistance = json.has("origin_distance") ? context.deserialize(json.get("origin_distance"), DistanceRule.class) : DistanceRule.DEFAULT;
         rules = json.has("rules") ? context.deserialize(json.get("rules"), new TypeToken<List<IRule>>() {}.getType()) : Collections.emptyList();
         indicator = json.has("indicator") ? context.deserialize(json.get("indicator"), new TypeToken<IWeightedList<Indicator>>() {}.getType()) : IWeightedList.empty();
     }
@@ -174,6 +178,16 @@ public abstract class VeinType<V extends Vein<?>>
     public boolean inRange(V vein, int xOffset, int zOffset)
     {
         return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize * vein.getSize();
+    }
+
+    /**
+     * Is the vein valid at a specific origin position?
+     * Returning false here stops the entire generation of the vein
+     */
+    public boolean isValidPos(BlockPos pos)
+    {
+        // Only thing that uses this right now is an origin distance test
+        return originDistance.test(pos);
     }
 
     /**

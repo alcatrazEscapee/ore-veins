@@ -64,7 +64,10 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                 if (RANDOM.nextInt(type.getRarity()) == 0)
                 {
                     Vein<?> vein = type.createVein(chunkX, chunkZ, RANDOM);
-                    veins.add(vein);
+                    if (vein.getType().isValidPos(vein.getPos()))
+                    {
+                        veins.add(vein);
+                    }
                 }
             }
         }
@@ -79,16 +82,18 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
     public boolean place(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, NoFeatureConfig config)
     {
         List<Vein<?>> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, worldIn.getSeed(), CHUNK_RADIUS);
-        if (veins.isEmpty()) return false;
-
-        for (Vein<?> vein : veins)
+        if (!veins.isEmpty())
         {
-            if (vein.getType().matchesDimension(worldIn.getDimension()))
+            for (Vein<?> vein : veins)
             {
-                generate(worldIn, rand, pos.getX(), pos.getZ(), vein);
+                if (vein.getType().matchesDimension(worldIn.getDimension()))
+                {
+                    generate(worldIn, rand, pos.getX(), pos.getZ(), vein);
+                }
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
     private void generate(IWorld world, Random random, int xOff, int zOff, Vein<?> vein)
@@ -116,7 +121,10 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                                 if (veinIndicator != null && !canGenerateIndicator)
                                 {
                                     int depth = world.getHeight(WORLD_SURFACE_WG, x, z) - y;
-                                    if (depth < 0) depth = -depth;
+                                    if (depth < 0)
+                                    {
+                                        depth = -depth;
+                                    }
                                     canGenerateIndicator = depth < veinIndicator.getMaxDepth();
                                 }
                             }
@@ -132,9 +140,12 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                             BlockState indicatorState = veinIndicator.getStateToGenerate(random);
                             BlockState stateAt = world.getBlockState(posAt);
 
-                            if (indicatorState.isValidPosition(world, posAt) &&
-                                    (veinIndicator.shouldIgnoreLiquids() || !stateAt.getMaterial().isLiquid()) &&
-                                    veinIndicator.validUnderState(world.getBlockState(posAt.down())))
+                            // This happens after, as we replace what was the "under_state"
+                            if (veinIndicator.shouldReplaceSurface())
+                            {
+                                posAt = posAt.down();
+                            }
+                            if (indicatorState.isValidPosition(world, posAt) && (veinIndicator.shouldIgnoreLiquids() || !stateAt.getMaterial().isLiquid()) && veinIndicator.validUnderState(world.getBlockState(posAt.down())))
                             {
                                 setBlockState(world, posAt, indicatorState);
                             }

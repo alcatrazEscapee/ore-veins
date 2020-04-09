@@ -52,6 +52,7 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `horizontal_size` (Default: 8) Horizontal radius. This is not an absolute number in blocks, but is close to. Experimentation is required.
 * `biomes` (Default: Allow any) This is a [Biome Rule](#biome--dimension-rules). It specifies a list of biomes to include or exclude, or tags to include or exclude.
 * `dimensions` (Default: Only Overworld) This is a [Dimension Rule](#biome--dimension-rules). It specifies a list of dimensions to include or exclude.
+* `origin_distance` (Default: None). This is a [Distance Rule](#distance-rules). It specifies that a vein must satisfy a distance from an origin point, typically (0, 0)
 * `indicator` (Default: None) This is an [Indicator](#indicators) which will spawn on the surface underneath where the vein is found.
 * `rules` (Default: None) This is a list of [Spawn Rules](#spawn-rules) which are checked for each ore block that attempts to spawn. Must be a list of json objects, where each object is a rule
 * `conditions` (Default: None) These are conditions that will enable or disable the vein. Realistic Ore Veins includes a condition `oreveins:default_veins`, which will disable the default veins if the relevant config value is set. For more information on conditions, consult the minecraft wiki
@@ -141,6 +142,18 @@ This will only match biomes that are hot AND dry.
 
 ---
 
+### Distance Rules
+
+A distance rule consists of a single JSON object. It has no required fields, and four optional fields:
+
+* `minimum_distance` (Default: 0). This is the minimum distance from the origin that is required for a vein to spawn.
+* `maximum_distance` (Default: Max Int = 2,147,483,647). This is the maximum distance from the origin that is required for a vein to spawn.
+* `origin_x` (Default: 0) This is the origin x position that is used when calculating distances.
+* `origin_z` (Default: 0) This is the origin z position that is used when calculating distances.
+* `use_manhattan_distances` (Default: false). This is a boolean which specifies if the distance rule should use [Manhattan Distance](https://en.wikipedia.org/wiki/Taxicab_geometry) or [Euclidean Distance](https://en.wikipedia.org/wiki/Euclidean_distance).
+
+---
+
 ### Spawn Rules
 
 Rules are conditions that are checked for each individual ore block. This allows ore blocks to only spawn on cave walls for example, by defining a rule that only spawns ores if it is touching an air block.
@@ -172,6 +185,7 @@ Indicators can also contain the following optional entries
 * `ignore_vegetation` (Default: true) If the vein should ignore vegetation when trying to spawn indicators. (i.e. should the indicators spawn underneath trees, leaves or huge mushrooms?)
 * `ignore_liquids` (Default: false) If the vein should ignore liquids when trying to spawn indicators. (i.e. should the indicator spawn inside lakes or the ocean?)
 * `blocks_under` (Default: accepts all blocks) This is a [Block Entry](#block-entries). The list of blocks that this indicator is allowed to spawn on.
+* `replace_surface` (Default: false). This ia a boolean which specifies if the indicator should replace the surface block, rather than spawn on top of it. In this case, `blocks_under` will be the list of blocks to be replaced, at the level of the surface.
 
 An example indicator that spawns roses when ore blocks are less than twenty blocks under the surface would be added to the ore entry as such:
 
@@ -193,20 +207,18 @@ An example indicator that spawns roses when ore blocks are less than twenty bloc
 
 A Block Entry can be any of the following:
 
-1. A single string representing a block's registry name: `"ore": "minecraft:iron_ore"`
-2. An object with the field "block", where the block is the registry name:
+1. A string, where the value of the string is a block as can be written in a command (such as `/setblock`). This includes:
+   - Specifying a block's registry name: `minecraft:iron_ore`
+   - A tag, prefixed with `#`: `#minecraft:sand`
+   - A block name with properties: `minecraft:oak_stairs[half=top,facing=east]`
+2. An JSON object with the field `"block"`, where the value is as above:
 ```json
 {
   "block": "minecraft:dirt"
 }
 ```
-2. A single string / object representing a block with properties. Properties should be specified the same way that they are in commands (such as /setblock)
-```json
-{
-  "block": "minecraft:oak_stairs[half=top,facing=east]"
-}
-```
-4. A list of objects (as above). Note that these can be weighed (when used in `ore`) but are not necessary. If weight is not found for a particular object, it will default to 1. Properties are optional.
+3. A JSON array consisting of either of the above forms of a block entry.
+   - These can be optionally weighted (e.g. for `ore`). If a weight is not provided, it will default to `1`.
 ```json
 {
   "ore": [
