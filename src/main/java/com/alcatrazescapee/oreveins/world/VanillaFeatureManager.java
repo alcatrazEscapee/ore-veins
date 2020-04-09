@@ -24,7 +24,7 @@ import com.alcatrazescapee.oreveins.Config;
  */
 public class VanillaFeatureManager
 {
-    private static final Map<Biome, List<ConfiguredFeature<?>>> DISABLED_FEATURES = new HashMap<>();
+    private static final Map<Biome, List<ConfiguredFeature<?, ?>>> DISABLED_FEATURES = new HashMap<>();
 
     private static Set<BlockState> disabledBlockStates;
     private static boolean disableAll;
@@ -35,21 +35,21 @@ public class VanillaFeatureManager
         disableAll = Config.COMMON.noOres.get();
 
         ForgeRegistries.BIOMES.forEach(biome -> {
-            List<ConfiguredFeature<?>> features = DISABLED_FEATURES.computeIfAbsent(biome, key -> new ArrayList<>());
+            List<ConfiguredFeature<?, ?>> features = DISABLED_FEATURES.computeIfAbsent(biome, key -> new ArrayList<>());
 
-            List<ConfiguredFeature<?>> toReAdd = features.stream().filter(x -> !shouldDisable(x)).collect(Collectors.toList());
-            List<ConfiguredFeature<?>> toRemove = biome.getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).stream().filter(VanillaFeatureManager::shouldDisable).collect(Collectors.toList());
+            List<ConfiguredFeature<?, ?>> toReAdd = features.stream().filter(x -> !shouldDisable(x)).collect(Collectors.toList());
+            List<ConfiguredFeature<?, ?>> toRemove = biome.getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).stream().filter(VanillaFeatureManager::shouldDisable).collect(Collectors.toList());
 
             features.addAll(toRemove);
             features.removeAll(toReAdd);
 
-            List<ConfiguredFeature<?>> currentFeatures = biome.getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES);
+            List<ConfiguredFeature<?, ?>> currentFeatures = biome.getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES);
             currentFeatures.addAll(toReAdd);
             currentFeatures.removeAll(toRemove);
         });
     }
 
-    private static boolean shouldDisable(ConfiguredFeature<?> feature)
+    private static boolean shouldDisable(ConfiguredFeature<?, ?> feature)
     {
         if (feature.config instanceof DecoratedFeatureConfig)
         {

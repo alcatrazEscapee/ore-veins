@@ -1,0 +1,57 @@
+name: Curseforge Build + Upload
+
+on:
+  push:
+    tags: '*'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Get the version
+        id: get_version
+        uses: actions/github-script@0.4.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            return '${{ github.ref }}'.replace('refs/tags/v', '');
+            - name: Build
+              run: ./gradlew build
+              env:
+                VERSION: ${{ steps.get_version.outputs.result }}
+            - name: Create Release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                tag_name: v${{ steps.get_version.outputs.result }}
+                release_name: Realistic Ore Veins 1.15.2-${{ steps.get_version.outputs.result }}
+                body: |
+                  [This was an automatic build]
+                  // todo: add changelog
+                draft: false
+                prerelease: false
+            - name: Upload Main Jar
+              id: upload_main_jar
+              uses: actions/upload-release-asset@v1.0.1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }}
+                asset_path: ./build/libs/oreveins-forge-1.15.2-${{ steps.get_version.outputs.result }}.jar
+                asset_name: oreveins-forge-1.15.2-${{ steps.get_version.outputs.result }}.jar
+                asset_content_type: application/java-archive
+            - name: Upload
+              run: ./gradlew curseforge
+              env:
+                CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+                VERSION: ${{ steps.get_version.outputs.result }}

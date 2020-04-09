@@ -7,7 +7,6 @@ package com.alcatrazescapee.oreveins;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
@@ -57,7 +56,7 @@ public class OreVeins
 
         // World Gen
         ForgeRegistries.BIOMES.forEach(biome -> {
-            ConfiguredFeature<?> feature = Biome.createDecoratedFeature(new VeinsFeature(), new NoFeatureConfig(), new AtChunk(), IPlacementConfig.NO_PLACEMENT_CONFIG);
+            ConfiguredFeature<?, ?> feature = new VeinsFeature().withConfiguration(new NoFeatureConfig()).withPlacement(new AtChunk().configure(IPlacementConfig.NO_PLACEMENT_CONFIG));
             biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, feature);
         });
 
@@ -65,7 +64,7 @@ public class OreVeins
     }
 
     @SubscribeEvent
-    public void onLoadConfig(final ModConfig.ConfigReloading event)
+    public void onLoadConfig(final ModConfig.Reloading event)
     {
         LOGGER.debug("Reloading config - reevaluating vanilla ore vein settings");
         if (event.getConfig().getType() == ModConfig.Type.SERVER)

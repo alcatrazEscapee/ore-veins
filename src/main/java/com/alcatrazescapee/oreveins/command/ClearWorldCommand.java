@@ -49,7 +49,7 @@ public final class ClearWorldCommand
         final BlockPos center = new BlockPos(source.getPos());
         final BlockState air = Blocks.AIR.getDefaultState();
 
-        for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBoxMutable(center.add(-radius, 255 - center.getY(), -radius), center.add(radius, -center.getY(), radius)))
+        for (BlockPos pos : BlockPos.Mutable.getAllInBoxMutable(center.add(-radius, 255 - center.getY(), -radius), center.add(radius, -center.getY(), radius)))
         {
             if (!VEIN_STATES.contains(world.getBlockState(pos)))
             {

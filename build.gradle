@@ -15,14 +15,23 @@ plugins {
 }
 apply plugin: 'net.minecraftforge.gradle'
 
-version = "${mod_version}"
+/**
+ * Version in dev is set to 'dev'
+ * Any builds produced by the github actions build script will have a version matching their tag.
+ * All version numbers should be Semantic Versioning 2.0 compliant
+ */
+if (System.getenv('VERSION') != null) {
+    version = System.getenv('VERSION')
+} else {
+    version = 'dev'
+}
 group = 'com.alcatrazescapee.oreveins' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "oreveins-forge-${mc_version}"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
-    mappings channel: 'snapshot', version: '20190828-1.14.3'
+    mappings channel: 'snapshot', version: '20200408-1.15.1'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -57,7 +66,7 @@ dependencies {
 // Puts the mod version into the jar for mods.toml to read from
 jar {
     manifest {
-        attributes "Implementation-Version": "${mod_version}"
+        attributes "Implementation-Version": "${version}"
     }
 }
 
@@ -67,11 +76,18 @@ curseforge {
         println 'Unable to locate api key in env variable'
         return
     }
+    def versionReleaseType = "release"
+    if (version.toString().contains("beta")) {
+        versionReleaseType = "beta"
+    } else if (version.toString().contains("alpha")) {
+        versionReleaseType = "alpha"
+    }
     project {
         apiKey = envApiKey
         id = '296887'
-        changelog = file('changelog.txt')
-        releaseType = "${mod_version_type}"
+        changelog = "[Release Notes ${version}](https://github.com/alcatrazEscapee/ore-veins/releases/tag/v${version})"
+        changelogType = "markdown"
+        releaseType = versionReleaseType
         addGameVersion "${mc_version}"
     }
 }
