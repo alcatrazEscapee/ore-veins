@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -46,7 +47,7 @@ public abstract class VeinType<V extends Vein<?>>
 
     private final List<BlockState> stoneStates;
     private final IWeightedList<BlockState> oreStates;
-    private final BiomeRule biomes;
+    private final BiomeRule biomeRule;
     private final DimensionRule dimensions;
     private final Predicate<BlockPos> originDistance;
     private final List<IRule> rules;
@@ -95,7 +96,7 @@ public abstract class VeinType<V extends Vein<?>>
         {
             throw new JsonParseException("Ore States cannot be empty.");
         }
-        biomes = json.has("biomes") ? context.deserialize(json.get("biomes"), BiomeRule.class) : BiomeRule.DEFAULT;
+        biomeRule = json.has("biomes") ? context.deserialize(json.get("biomes"), BiomeRule.class) : BiomeRule.DEFAULT;
         dimensions = json.has("dimensions") ? context.deserialize(json.get("dimensions"), DimensionRule.class) : DimensionRule.DEFAULT;
         originDistance = json.has("origin_distance") ? context.deserialize(json.get("origin_distance"), DistanceRule.class) : DistanceRule.DEFAULT;
         rules = json.has("rules") ? context.deserialize(json.get("rules"), new TypeToken<List<IRule>>() {}.getType()) : Collections.emptyList();
@@ -207,9 +208,10 @@ public abstract class VeinType<V extends Vein<?>>
      * @param biome a biome
      * @return true if the biome is valid
      */
-    public boolean matchesBiome(Biome biome)
+    public boolean matchesBiome(Supplier<Biome> biome)
     {
-        return biomes.test(biome);
+        // This is here to avoid querying for the biome in the case we don't need it
+        return biomeRule == BiomeRule.DEFAULT || biomeRule.test(biome.get());
     }
 
     /**

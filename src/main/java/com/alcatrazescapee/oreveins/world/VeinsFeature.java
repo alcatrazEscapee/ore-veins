@@ -8,6 +8,7 @@ package com.alcatrazescapee.oreveins.world;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -20,6 +21,7 @@ import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
+import net.minecraftforge.common.util.Lazy;
 
 import com.alcatrazescapee.oreveins.Config;
 import com.alcatrazescapee.oreveins.world.vein.Indicator;
@@ -81,79 +83,74 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
     @Override
     public boolean place(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, NoFeatureConfig config)
     {
-        List<Vein<?>> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, worldIn.getSeed(), CHUNK_RADIUS);
-        if (!veins.isEmpty())
+        // Get all nearby veins, filtering out those which are in the wrong dimension
+        List<Vein<?>> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, worldIn.getSeed(), CHUNK_RADIUS)
+                .stream()
+                .filter(vein -> vein.getType().matchesDimension(worldIn.getDimension()))
+                .collect(Collectors.toList());
+        for (int x = pos.getX(); x < 16 + pos.getX(); x++)
         {
-            for (Vein<?> vein : veins)
-            {
-                if (vein.getType().matchesDimension(worldIn.getDimension()))
-                {
-                    generate(worldIn, rand, pos.getX(), pos.getZ(), vein);
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private void generate(IWorld world, Random random, int xOff, int zOff, Vein<?> vein)
-    {
-        for (int x = xOff; x < 16 + xOff; x++)
-        {
-            for (int z = zOff; z < 16 + zOff; z++)
+            for (int z = pos.getZ(); z < 16 + pos.getZ(); z++)
             {
                 // Do checks here that are specific to the the horizontal position, not the vertical one
-                Biome biomeAt = world.getBiome(new BlockPos(x, 0, z));
-                if (vein.getType().matchesBiome(biomeAt) && vein.inRange(x, z))
-                {
-                    Indicator veinIndicator = vein.getType().getIndicator(random);
-                    boolean canGenerateIndicator = false;
+                // We load the biome only once and cache it for lazy purposes
+                BlockPos biomePos = new BlockPos(x, 0, z);
+                Lazy<Biome> lazyBiome = Lazy.of(() -> worldIn.getBiome(biomePos));
 
-                    for (int y = vein.getType().getMinY(); y <= vein.getType().getMaxY(); y++)
+                // Then we perform the same checks for each vein
+                for (Vein<?> vein : veins)
+                {
+                    if (vein.getType().matchesBiome(lazyBiome) && vein.inRange(x, z))
                     {
-                        BlockPos posAt = new BlockPos(x, y, z);
-                        if (random.nextFloat() < vein.getChanceToGenerate(posAt))
+                        Indicator veinIndicator = vein.getType().getIndicator(rand);
+                        boolean canGenerateIndicator = false;
+
+                        for (int y = vein.getType().getMinY(); y <= vein.getType().getMaxY(); y++)
                         {
-                            if (vein.getType().canGenerateAt(world, posAt))
+                            BlockPos posAt = new BlockPos(x, y, z);
+                            if (rand.nextFloat() < vein.getChanceToGenerate(posAt))
                             {
-                                BlockState oreState = vein.getType().getStateToGenerate(random);
-                                setBlockState(world, posAt, oreState);
-                                if (veinIndicator != null && !canGenerateIndicator)
+                                if (vein.getType().canGenerateAt(worldIn, posAt))
                                 {
-                                    int depth = world.getHeight(WORLD_SURFACE_WG, x, z) - y;
-                                    if (depth < 0)
+                                    BlockState oreState = vein.getType().getStateToGenerate(rand);
+                                    setBlockState(worldIn, posAt, oreState);
+                                    if (veinIndicator != null && !canGenerateIndicator)
                                     {
-                                        depth = -depth;
+                                        int depth = worldIn.getHeight(WORLD_SURFACE_WG, x, z) - y;
+                                        if (depth < 0)
+                                        {
+                                            depth = -depth;
+                                        }
+                                        canGenerateIndicator = depth < veinIndicator.getMaxDepth();
                                     }
-                                    canGenerateIndicator = depth < veinIndicator.getMaxDepth();
+                                }
+                            }
+                        }
+
+                        if (veinIndicator != null && canGenerateIndicator)
+                        {
+                            if (rand.nextInt(veinIndicator.getRarity()) == 0)
+                            {
+                                BlockPos posAt = worldIn.getHeight(Heightmap.Type.WORLD_SURFACE_WG, new BlockPos(x, 0, z));
+
+                                BlockState indicatorState = veinIndicator.getStateToGenerate(rand);
+                                BlockState stateAt = worldIn.getBlockState(posAt);
+
+                                // This happens after, as we replace what was the "under_state"
+                                if (veinIndicator.shouldReplaceSurface())
+                                {
+                                    posAt = posAt.down();
+                                }
+                                if (indicatorState.isValidPosition(worldIn, posAt) && (veinIndicator.shouldIgnoreLiquids() || !stateAt.getMaterial().isLiquid()) && veinIndicator.validUnderState(worldIn.getBlockState(posAt.down())))
+                                {
+                                    setBlockState(worldIn, posAt, indicatorState);
                                 }
                             }
                         }
                     }
-
-                    if (veinIndicator != null && canGenerateIndicator)
-                    {
-                        if (random.nextInt(veinIndicator.getRarity()) == 0)
-                        {
-                            BlockPos posAt = world.getHeight(Heightmap.Type.WORLD_SURFACE_WG, new BlockPos(x, 0, z));
-
-                            BlockState indicatorState = veinIndicator.getStateToGenerate(random);
-                            BlockState stateAt = world.getBlockState(posAt);
-
-                            // This happens after, as we replace what was the "under_state"
-                            if (veinIndicator.shouldReplaceSurface())
-                            {
-                                posAt = posAt.down();
-                            }
-                            if (indicatorState.isValidPosition(world, posAt) && (veinIndicator.shouldIgnoreLiquids() || !stateAt.getMaterial().isLiquid()) && veinIndicator.validUnderState(world.getBlockState(posAt.down())))
-                            {
-                                setBlockState(world, posAt, indicatorState);
-                            }
-                        }
-                    }
                 }
             }
         }
+        return true;
     }
-
 }
