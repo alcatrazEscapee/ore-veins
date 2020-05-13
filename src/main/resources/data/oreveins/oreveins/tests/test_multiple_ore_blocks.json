@@ -1,0 +1,8 @@
+{
+  "type": "sphere",
+  "ore": [
+    "minecraft:cyan_wool",
+    "minecraft:purple_wool"
+  ],
+  "stone": "minecraft:stone"
+}

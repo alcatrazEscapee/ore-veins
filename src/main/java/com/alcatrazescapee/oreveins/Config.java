@@ -43,7 +43,6 @@ public final class Config
         public final ForgeConfigSpec.BooleanValue noOres;
         public final ForgeConfigSpec.BooleanValue debugCommands;
         public final ForgeConfigSpec.IntValue extraChunkRange;
-        public final ForgeConfigSpec.BooleanValue enableDefaultVeins;
         public final ForgeConfigSpec.BooleanValue avoidVeinCutoffs;
 
         private final ForgeConfigSpec.ConfigValue<List<? extends String>> disabledOres;
@@ -67,10 +66,6 @@ public final class Config
             extraChunkRange = builder
                     .comment("Extra chunk search range when generating veins", "Use if your veins are getting cut off at chunk boundaries")
                     .defineInRange("extraChunkRange", 0, 0, 20);
-
-            enableDefaultVeins = builder
-                    .comment("Enable veins in the default data pack. (This is the 'oreveins:default_veins' condition)")
-                    .define("enableDefaultVeins", true);
 
             avoidVeinCutoffs = builder
                     .comment("Try to avoid placing veins on the edge of their range as defined by min / max y, so they don't get cut off at the border.")

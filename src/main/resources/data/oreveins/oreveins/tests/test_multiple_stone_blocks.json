@@ -1,0 +1,10 @@
+{
+  "type": "sphere",
+  "ore": "minecraft:lime_wool",
+  "stone": [
+    "minecraft:stone",
+    "minecraft:granite",
+    "minecraft:diorite",
+    "minecraft:andesite"
+  ]
+}

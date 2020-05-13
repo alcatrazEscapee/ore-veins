@@ -12,7 +12,6 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -20,7 +19,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import com.alcatrazescapee.oreveins.util.condition.DefaultVeinsCondition;
 import com.alcatrazescapee.oreveins.world.AtChunk;
 import com.alcatrazescapee.oreveins.world.VanillaFeatureManager;
 import com.alcatrazescapee.oreveins.world.VeinsFeature;
@@ -40,9 +38,6 @@ public class OreVeins
 
         // Setup config
         Config.register();
-
-        // Condition for default vein loading
-        CraftingHelper.register(DefaultVeinsCondition.Serializer.INSTANCE);
 
         // Register event handlers
         FMLJavaModLoadingContext.get().getModEventBus().register(this);

@@ -12,15 +12,15 @@ Despite the wide array of configuration options available, if you desire additio
 
 ## Configuration
 
-**This has changed in 1.14!**
+**This is different than it was in 1.12!**
 
-Veins are now loaded from datapacks. This has several advantages:
+Veins are loaded from datapacks. This has several advantages:
 
  - Veins can now by easily affected by recipe conditions (i.e. enabling or disabling the vein based on various factors)
  - Veins can be reloaded during play when reloading all data packs, allowing changes to be made without restarting minecraft or the world.
  - Configuration for veins can be present on the server only.
 
-Each vein must be a **separate** json file, located under the path `data/domain/oreveins/`. For instance, Realistic Ore Veins includes several default ore veins, which are found under `data/oreveins/oreveins/default_???.json`. (The first `oreveins` is the path required for the veins, the second is the domain of this mod / datapack)
+Each vein must be a **separate** json file, located under the path `data/domain/[namespace]/oreveins`, where `namespace` is the namespace of your mod or data pack. You should **not** be using either the `minecraft` or `oreveins` namespace! 
 
 ---
 
@@ -54,8 +54,8 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `dimensions` (Default: Only Overworld) This is a [Dimension Rule](#biome--dimension-rules). It specifies a list of dimensions to include or exclude.
 * `origin_distance` (Default: None). This is a [Distance Rule](#distance-rules). It specifies that a vein must satisfy a distance from an origin point, typically (0, 0)
 * `indicator` (Default: None) This is an [Indicator](#indicators) which will spawn on the surface underneath where the vein is found.
-* `rules` (Default: None) This is a list of [Spawn Rules](#spawn-rules) which are checked for each ore block that attempts to spawn. Must be a list of json objects, where each object is a rule
-* `conditions` (Default: None) These are conditions that will enable or disable the vein. Realistic Ore Veins includes a condition `oreveins:default_veins`, which will disable the default veins if the relevant config value is set. For more information on conditions, consult the minecraft wiki
+* `rules` (Default: None) This is a list of [Spawn Rules](#spawn-rules) which are checked for each ore block that attempts to spawn. Must be a list of json objects, where each object is a rule.
+* `conditions` (Default: None) These are conditions that will enable or disable the vein. For more information on conditions, consult the minecraft wiki.
 
 ---
 

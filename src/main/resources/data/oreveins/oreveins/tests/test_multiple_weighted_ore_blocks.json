@@ -1,0 +1,14 @@
+{
+  "type": "sphere",
+  "ore": [
+    {
+      "block": "minecraft:blue_wool",
+      "weight": 90
+    },
+    {
+      "block": "minecraft:brown_wool",
+      "weight": 10
+    }
+  ],
+  "stone": "minecraft:stone"
+}

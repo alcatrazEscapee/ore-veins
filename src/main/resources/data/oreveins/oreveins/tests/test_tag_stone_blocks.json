@@ -1,0 +1,5 @@
+{
+  "type": "sphere",
+  "ore": "minecraft:pink_wool",
+  "stone": "#forge:stone"
+}

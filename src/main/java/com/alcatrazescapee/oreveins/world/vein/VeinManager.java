@@ -5,7 +5,10 @@
 
 package com.alcatrazescapee.oreveins.world.vein;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -29,7 +32,7 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import com.alcatrazescapee.oreveins.command.ClearWorldCommand;
 import com.alcatrazescapee.oreveins.util.IWeightedList;
 import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
-import com.alcatrazescapee.oreveins.util.json.LenientListDeserializer;
+import com.alcatrazescapee.oreveins.util.json.BlockStatePredicateDeserializer;
 import com.alcatrazescapee.oreveins.util.json.VeinTypeDeserializer;
 import com.alcatrazescapee.oreveins.util.json.WeightedListDeserializer;
 import com.alcatrazescapee.oreveins.world.VeinsFeature;
@@ -48,7 +51,7 @@ public class VeinManager extends JsonReloadListener
             // Collections
             .registerTypeAdapter(new TypeToken<IWeightedList<BlockState>>() {}.getType(), new WeightedListDeserializer<>(BlockState.class))
             .registerTypeAdapter(new TypeToken<IWeightedList<Indicator>>() {}.getType(), new WeightedListDeserializer<>(Indicator.class))
-            .registerTypeAdapter(new TypeToken<List<BlockState>>() {}.getType(), new LenientListDeserializer<>(BlockState.class, Collections::singletonList, ArrayList::new))
+            .registerTypeAdapter(new TypeToken<Predicate<BlockState>>() {}.getType(), BlockStatePredicateDeserializer.INSTANCE)
             .registerTypeAdapter(BlockState.class, BlockStateDeserializer.INSTANCE)
             .registerTypeAdapter(IRule.class, IRule.Deserializer.INSTANCE)
             .registerTypeAdapter(Indicator.class, Indicator.Deserializer.INSTANCE)

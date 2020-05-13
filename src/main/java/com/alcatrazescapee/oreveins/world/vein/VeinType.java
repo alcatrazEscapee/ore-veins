@@ -45,7 +45,7 @@ public abstract class VeinType<V extends Vein<?>>
     private final int minY;
     private final int maxY;
 
-    private final List<BlockState> stoneStates;
+    private final Predicate<BlockState> stoneStates;
     private final IWeightedList<BlockState> oreStates;
     private final BiomeRule biomeRule;
     private final DimensionRule dimensions;
@@ -86,11 +86,9 @@ public abstract class VeinType<V extends Vein<?>>
         {
             throw new JsonParseException("Density must be > 0.");
         }
-        stoneStates = context.deserialize(json.get("stone"), new TypeToken<List<BlockState>>() {}.getType());
-        if (stoneStates.isEmpty())
-        {
-            throw new JsonParseException("Stone States cannot be empty.");
-        }
+
+        // Two methods to specify
+        stoneStates = context.deserialize(json.get("stone"), new TypeToken<Predicate<BlockState>>() {}.getType());
         oreStates = context.deserialize(json.get("ore"), new TypeToken<IWeightedList<BlockState>>() {}.getType());
         if (oreStates.isEmpty())
         {
@@ -150,7 +148,7 @@ public abstract class VeinType<V extends Vein<?>>
     public boolean canGenerateAt(IBlockReader world, BlockPos pos)
     {
         BlockState stoneState = world.getBlockState(pos);
-        if (stoneStates.contains(stoneState))
+        if (stoneStates.test(stoneState))
         {
             if (rules != null)
             {

@@ -1,0 +1,9 @@
+{
+  "type": "sphere",
+  "ore": "minecraft:light_gray_wool",
+  "stone": [
+    "minecraft:stone",
+    "minecraft:dirt",
+    "#forge:sand"
+  ]
+}
