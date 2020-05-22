@@ -15,8 +15,8 @@ import net.minecraft.util.JSONUtils;
 
 public abstract class PredicateDeserializer<E, T extends Predicate<E>> implements JsonDeserializer<T>
 {
-    private Class<T> elementType;
-    private String collectionName;
+    private final Class<T> elementType;
+    private final String collectionName;
 
     public PredicateDeserializer(Class<T> elementType, String collectionName)
     {
@@ -57,12 +57,12 @@ public abstract class PredicateDeserializer<E, T extends Predicate<E>> implement
         throw new JsonParseException("Rule should be an object, array, or string");
     }
 
-    protected T createSingleRule(JsonObject json, String typeName)
+    protected T createSingleRule(JsonObject json, String typeName) throws JsonParseException
     {
         throw new JsonParseException("Unknown type for rule: " + typeName);
     }
 
-    protected abstract T createSingleRule(String name);
+    protected abstract T createSingleRule(String name) throws JsonParseException;
 
     protected abstract T createPredicate(Predicate<E> predicate);
 

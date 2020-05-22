@@ -12,6 +12,7 @@ import com.google.gson.JsonParseException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import com.alcatrazescapee.oreveins.util.json.PredicateDeserializer;
 
@@ -48,11 +49,15 @@ public interface BiomeRule extends Predicate<Biome>
         }
 
         @Override
-        protected BiomeRule createSingleRule(String name)
+        protected BiomeRule createSingleRule(String name) throws JsonParseException
         {
             // Assume a single biome entry
-            final ResourceLocation biomeName = new ResourceLocation(name);
-            return biome -> biomeName.equals(biome.getRegistryName());
+            Biome biomeIn = ForgeRegistries.BIOMES.getValue(new ResourceLocation(name));
+            if (biomeIn == null)
+            {
+                throw new JsonParseException("Unknown biome: " + name);
+            }
+            return biomeIn::equals;
         }
 
         @Override
