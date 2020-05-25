@@ -13,6 +13,7 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -45,17 +46,21 @@ public class OreVeins
     }
 
     @SubscribeEvent
+    @SuppressWarnings("deprecation")
     public void setup(final FMLCommonSetupEvent event)
     {
         LOGGER.debug("Setup");
 
-        // World Gen
-        ForgeRegistries.BIOMES.forEach(biome -> {
-            ConfiguredFeature<?, ?> feature = new VeinsFeature().withConfiguration(new NoFeatureConfig()).withPlacement(new AtChunk().configure(IPlacementConfig.NO_PLACEMENT_CONFIG));
-            biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, feature);
-        });
+        // World Gen - needs to be ran on main thread to avoid concurrency errors with multiple mods trying to do the same ore generation modifications.
+        // Forge fix your stuff and either make not deprecate it or add an alternative.
+        DeferredWorkQueue.runLater(() -> {
+            ForgeRegistries.BIOMES.forEach(biome -> {
+                ConfiguredFeature<?, ?> feature = new VeinsFeature().withConfiguration(new NoFeatureConfig()).withPlacement(new AtChunk().configure(IPlacementConfig.NO_PLACEMENT_CONFIG));
+                biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, feature);
+            });
 
-        VanillaFeatureManager.onConfigReloading();
+            VanillaFeatureManager.onConfigReloading();
+        });
     }
 
     @SubscribeEvent
