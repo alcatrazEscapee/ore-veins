@@ -51,7 +51,7 @@ public interface IWeightedList<E> extends Iterable<E>
     {
         return new IWeightedList<E>()
         {
-            private Collection<E> elementSet = Collections.singleton(element);
+            private final Collection<E> elementSet = Collections.singleton(element);
 
             @Override
             public void add(double weight, E element) {}

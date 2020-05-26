@@ -89,8 +89,8 @@ public class CurveVeinType extends VeinType<VeinCurve>
     static class VeinCurve extends Vein<CurveVeinType>
     {
         private final Random rand;
+        private final List<CurveSegment> segmentList;
         private boolean isInitialized = false;
-        private List<CurveSegment> segmentList;
 
         VeinCurve(CurveVeinType type, BlockPos pos, Random random)
         {

@@ -29,7 +29,7 @@ public class SphereVeinType extends SimpleVeinType
         final double dz = Math.pow(vein.getPos().getZ() - pos.getZ(), 2);
 
         final float radius = (float) ((dx + dz) / (horizontalSize * horizontalSize * vein.getSize()) +
-                dy / (verticalSize * verticalSize * vein.getSize()));
+            dy / (verticalSize * verticalSize * vein.getSize()));
         return 0.005f * density * (1.0f - radius);
     }
 }

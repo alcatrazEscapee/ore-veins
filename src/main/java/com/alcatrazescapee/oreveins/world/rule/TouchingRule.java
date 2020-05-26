@@ -20,8 +20,9 @@ import net.minecraft.world.IBlockReader;
 @ParametersAreNonnullByDefault
 public class TouchingRule implements IRule
 {
-    private Predicate<BlockState> blockMatcher;
-    private int minMatches, maxMatches;
+    private final Predicate<BlockState> blockMatcher;
+    private final int minMatches;
+    private final int maxMatches;
 
     private TouchingRule(Predicate<BlockState> blockMatcher, int minMatches, int maxMatches)
     {

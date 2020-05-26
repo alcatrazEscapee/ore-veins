@@ -24,10 +24,10 @@ public final class VeinInfoCommand
     public static void register(CommandDispatcher<CommandSource> dispatcher)
     {
         dispatcher.register(
-                Commands.literal("veininfo").requires(source -> source.hasPermissionLevel(2))
-                        .then(Commands.argument("type", new VeinTypeArgument())
-                                .executes(cmd -> veinInfo(cmd.getSource(), VeinTypeArgument.getVein(cmd, "type")))
-                        ));
+            Commands.literal("veininfo").requires(source -> source.hasPermissionLevel(2))
+                .then(Commands.argument("type", new VeinTypeArgument())
+                    .executes(cmd -> veinInfo(cmd.getSource(), VeinTypeArgument.getVein(cmd, "type")))
+                ));
     }
 
     private static int veinInfo(CommandSource source, ResourceLocation veinName)

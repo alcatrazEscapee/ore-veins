@@ -27,7 +27,6 @@ import com.alcatrazescapee.oreveins.world.vein.VeinType;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
@@ -36,17 +35,17 @@ public final class FindVeinsCommand
 {
     private static final String TP_MESSAGE = "{\"text\":\"" + TextFormatting.BLUE + "[Click to Teleport]" + TextFormatting.RESET + "\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %d %d %d\"}}";
 
-    public static final SuggestionProvider<CommandSource> VEIN_TYPE_SUGGESTIONS = (context, builder) -> ISuggestionProvider.suggestIterable(VeinManager.INSTANCE.getKeys(), builder);
-
     public static void register(CommandDispatcher<CommandSource> dispatcher)
     {
         dispatcher.register(
-                Commands.literal("findveins").requires(source -> source.hasPermissionLevel(2))
-                        .then(Commands.argument("type", new VeinTypeArgument())
-                                .suggests((context, builder) -> ISuggestionProvider.suggestIterable(VeinManager.INSTANCE.getKeys(), builder))
-                                .then(Commands.argument("radius", IntegerArgumentType.integer(0, 250))
-                                        .executes(cmd -> findVeins(cmd.getSource(), VeinTypeArgument.getVein(cmd, "type"), IntegerArgumentType.getInteger(cmd, "radius")))
-                                )));
+            Commands.literal("findveins").requires(source -> source.hasPermissionLevel(2))
+                .then(Commands.argument("type", new VeinTypeArgument())
+                    .suggests((context, builder) -> ISuggestionProvider.suggestIterable(VeinManager.INSTANCE.getKeys(), builder))
+                    .then(Commands.argument("radius", IntegerArgumentType.integer(0, 250))
+                        .executes(cmd -> findVeins(cmd.getSource(), VeinTypeArgument.getVein(cmd, "type"), IntegerArgumentType.getInteger(cmd, "radius")))
+                    )
+                )
+        );
     }
 
     private static int findVeins(CommandSource source, ResourceLocation veinName, int radius) throws CommandSyntaxException
@@ -54,14 +53,15 @@ public final class FindVeinsCommand
         final BlockPos pos = new BlockPos(source.getPos());
         final int chunkX = pos.getX() >> 4, chunkZ = pos.getZ() >> 4;
         final List<Vein<?>> veins = VeinsFeature.getNearbyVeins(chunkX, chunkZ, source.getWorld().getSeed(), radius);
-        final VeinType type = VeinManager.INSTANCE.getVein(veinName);
+        final VeinType<?> type = VeinManager.INSTANCE.getVein(veinName);
         if (type == null)
         {
             source.sendErrorMessage(new TranslationTextComponent(MOD_ID + ".command.unknown_vein", veinName.toString()));
         }
 
         // Search for veins matching type
-        veins.removeIf(x -> x.getType() != type);
+        //noinspection EqualsBetweenInconvertibleTypes
+        veins.removeIf(x -> !x.getType().equals(type));
         source.sendFeedback(new TranslationTextComponent(MOD_ID + ".command.veins_found"), true);
         for (Vein<?> vein : veins)
         {

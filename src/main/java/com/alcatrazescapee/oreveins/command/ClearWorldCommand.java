@@ -38,9 +38,9 @@ public final class ClearWorldCommand
     public static void register(CommandDispatcher<CommandSource> dispatcher)
     {
         dispatcher.register(
-                Commands.literal("clearworld").requires(source -> source.hasPermissionLevel(2))
-                        .then(Commands.argument("radius", IntegerArgumentType.integer(1, 250))
-                                .executes(cmd -> clearWorld(cmd.getSource(), IntegerArgumentType.getInteger(cmd, "radius")))));
+            Commands.literal("clearworld").requires(source -> source.hasPermissionLevel(2))
+                .then(Commands.argument("radius", IntegerArgumentType.integer(1, 250))
+                    .executes(cmd -> clearWorld(cmd.getSource(), IntegerArgumentType.getInteger(cmd, "radius")))));
     }
 
     private static int clearWorld(CommandSource source, int radius)

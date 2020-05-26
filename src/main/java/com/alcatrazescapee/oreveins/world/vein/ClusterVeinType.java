@@ -49,7 +49,7 @@ public class ClusterVeinType extends VeinType<VeinCluster>
             final double dz = Math.pow(c.pos.getZ() - pos.getZ(), 2);
 
             final float radius = (float) ((dx + dz) / (horizontalSize * horizontalSize * vein.getSize() * c.size) +
-                    dy / (verticalSize * verticalSize * vein.getSize() * c.size));
+                dy / (verticalSize * verticalSize * vein.getSize() * c.size));
 
             if (shortestRadius == -1 || radius < shortestRadius) shortestRadius = radius;
         }
@@ -77,9 +77,9 @@ public class ClusterVeinType extends VeinType<VeinCluster>
             for (int i = 1; i < clusters; i++)
             {
                 final BlockPos clusterPos = pos.add(
-                        type.horizontalSize * (0.3f - 0.6f * rand.nextFloat()),
-                        type.verticalSize * (0.3f - 0.6f * rand.nextFloat()),
-                        type.horizontalSize * (0.3f - 0.6f * rand.nextFloat())
+                    type.horizontalSize * (0.3f - 0.6f * rand.nextFloat()),
+                    type.verticalSize * (0.3f - 0.6f * rand.nextFloat()),
+                    type.horizontalSize * (0.3f - 0.6f * rand.nextFloat())
                 );
                 spawnPoints[i] = new Cluster(clusterPos, 0.2f + 0.5f * rand.nextFloat());
             }

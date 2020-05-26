@@ -10,8 +10,8 @@ import javax.annotation.Nonnull;
 
 public class WeightedList<E> implements IWeightedList<E>
 {
+    private final NavigableMap<Double, E> map;
     private double totalWeight;
-    private NavigableMap<Double, E> map;
 
     public WeightedList()
     {
