@@ -1,0 +1,10 @@
+{
+  "type": "cluster",
+  "ore": "minecraft:green_wool",
+  "stone": "minecraft:stone",
+  "indicator": {
+    "blocks": "minecraft:black_wool",
+    "rarity": 3,
+    "ignore_liquids": false
+  }
+}

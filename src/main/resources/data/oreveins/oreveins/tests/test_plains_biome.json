@@ -2,7 +2,7 @@
   "type": "sphere",
   "stone": "minecraft:air",
   "ore": "minecraft:blue_wool",
-  "rarity": 1,
+  "rarity": 10,
   "max_y": 100,
   "min_y": 60,
   "biomes": "minecraft:plains"

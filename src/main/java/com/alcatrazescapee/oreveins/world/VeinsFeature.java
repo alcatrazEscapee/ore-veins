@@ -29,6 +29,7 @@ import com.alcatrazescapee.oreveins.world.vein.Vein;
 import com.alcatrazescapee.oreveins.world.vein.VeinManager;
 import com.alcatrazescapee.oreveins.world.vein.VeinType;
 
+import static net.minecraft.world.gen.Heightmap.Type.OCEAN_FLOOR_WG;
 import static net.minecraft.world.gen.Heightmap.Type.WORLD_SURFACE_WG;
 
 @ParametersAreNonnullByDefault
@@ -116,7 +117,8 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                                     setBlockState(worldIn, posAt, oreState);
                                     if (veinIndicator != null && !canGenerateIndicator)
                                     {
-                                        int depth = worldIn.getHeight(WORLD_SURFACE_WG, x, z) - y;
+                                        Heightmap.Type heightmap = veinIndicator.shouldIgnoreLiquids() ? OCEAN_FLOOR_WG : WORLD_SURFACE_WG;
+                                        int depth = worldIn.getHeight(heightmap, x, z) - y;
                                         if (depth < 0)
                                         {
                                             depth = -depth;
@@ -131,7 +133,8 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                         {
                             if (rand.nextInt(veinIndicator.getRarity()) == 0)
                             {
-                                BlockPos posAt = worldIn.getHeight(Heightmap.Type.WORLD_SURFACE_WG, new BlockPos(x, 0, z));
+                                Heightmap.Type heightmap = veinIndicator.shouldIgnoreLiquids() ? OCEAN_FLOOR_WG : WORLD_SURFACE_WG;
+                                BlockPos posAt = worldIn.getHeight(heightmap, new BlockPos(x, 0, z));
 
                                 BlockState indicatorState = veinIndicator.getStateToGenerate(rand);
                                 BlockState stateAt = worldIn.getBlockState(posAt);

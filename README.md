@@ -182,7 +182,6 @@ Indicators can also contain the following optional entries
 
 * `rarity` (Default: 10) 1 / N blocks will generate an indicator, provided there is a valid ore block directly underneath.
 * `max_depth` (Default: 32) This is the maximum depth for an ore block to generate which would attempt to spawn an indicator.
-* `ignore_vegetation` (Default: true) If the vein should ignore vegetation when trying to spawn indicators. (i.e. should the indicators spawn underneath trees, leaves or huge mushrooms?)
 * `ignore_liquids` (Default: false) If the vein should ignore liquids when trying to spawn indicators. (i.e. should the indicator spawn inside lakes or the ocean?)
 * `blocks_under` (Default: accepts all blocks) This is a [Block Entry](#block-entries). The list of blocks that this indicator is allowed to spawn on.
 * `replace_surface` (Default: false). This ia a boolean which specifies if the indicator should replace the surface block, rather than spawn on top of it. In this case, `blocks_under` will be the list of blocks to be replaced, at the level of the surface.
