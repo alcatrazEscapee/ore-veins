@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
@@ -35,7 +36,7 @@ public interface BiomeRule extends Predicate<Biome>
         {
             if ("tag".equals(typeName))
             {
-                final BiomeDictionary.Type type = BiomeDictionary.Type.getType(typeName);
+                final BiomeDictionary.Type type = BiomeDictionary.Type.getType(JSONUtils.getString(json, "biomes"));
                 return biome -> BiomeDictionary.getTypes(biome).contains(type);
             }
             else if ("biome".equals(typeName))

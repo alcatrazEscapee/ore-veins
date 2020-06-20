@@ -1,0 +1,12 @@
+{
+  "type": "sphere",
+  "stone": "minecraft:air",
+  "ore": "minecraft:black_concrete",
+  "rarity": 10,
+  "max_y": 100,
+  "min_y": 60,
+  "biomes": {
+    "type": "tag",
+    "biomes": "cold"
+  }
+}
