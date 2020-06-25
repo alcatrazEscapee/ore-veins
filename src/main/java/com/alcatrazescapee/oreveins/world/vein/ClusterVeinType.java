@@ -28,7 +28,7 @@ public class ClusterVeinType extends VeinType<VeinCluster>
         clusters = JSONUtils.getInt(obj, "clusters", 3);
         if (clusters <= 0)
         {
-            throw new JsonParseException("Clusters must be > 0");
+            throw new JsonParseException("Clusters must be > 0. If you set clusters=0 you should just use the sphere vein.");
         }
     }
 
@@ -71,7 +71,7 @@ public class ClusterVeinType extends VeinType<VeinCluster>
         {
             super(type, pos, rand);
 
-            int clusters = (int) (type.clusters * (0.5f + rand.nextFloat()));
+            int clusters = 1 + type.clusters; // main cluster + smaller outside ones
             spawnPoints = new Cluster[clusters];
             spawnPoints[0] = new Cluster(pos, 0.6f + 0.2f * rand.nextFloat());
             for (int i = 1; i < clusters; i++)
