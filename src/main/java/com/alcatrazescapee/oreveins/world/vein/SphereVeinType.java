@@ -11,25 +11,34 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 
 @ParametersAreNonnullByDefault
 public class SphereVeinType extends SimpleVeinType
 {
+    private final boolean uniform;
+
     public SphereVeinType(JsonObject obj, JsonDeserializationContext context) throws JsonParseException
     {
         super(obj, context);
+
+        uniform = JSONUtils.getBoolean(obj, "uniform", false);
     }
 
     @Override
     public float getChanceToGenerate(Vein<?> vein, BlockPos pos)
     {
-        final double dx = Math.pow(vein.getPos().getX() - pos.getX(), 2);
-        final double dy = Math.pow(vein.getPos().getY() - pos.getY(), 2);
-        final double dz = Math.pow(vein.getPos().getZ() - pos.getZ(), 2);
+        float dx = (vein.getPos().getX() - pos.getX()) * (vein.getPos().getX() - pos.getX());
+        float dy = (vein.getPos().getY() - pos.getY()) * (vein.getPos().getY() - pos.getY());
+        float dz = (vein.getPos().getZ() - pos.getZ()) * (vein.getPos().getZ() - pos.getZ());
 
-        final float radius = (float) ((dx + dz) / (horizontalSize * horizontalSize * vein.getSize()) +
+        float radius = ((dx + dz) / (horizontalSize * horizontalSize * vein.getSize()) +
             dy / (verticalSize * verticalSize * vein.getSize()));
+        if (uniform && radius < 1)
+        {
+            radius = 0;
+        }
         return 0.005f * density * (1.0f - radius);
     }
 }

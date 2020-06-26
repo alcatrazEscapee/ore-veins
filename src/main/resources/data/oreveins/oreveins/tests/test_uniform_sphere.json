@@ -1,0 +1,6 @@
+{
+  "type": "sphere",
+  "ore": "minecraft:white_concrete",
+  "stone": "minecraft:stone",
+  "uniform": true
+}

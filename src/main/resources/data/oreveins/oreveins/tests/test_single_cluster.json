@@ -1,0 +1,6 @@
+{
+  "type": "cluster",
+  "ore": "minecraft:orange_wool",
+  "stone": "minecraft:stone",
+  "clusters": 1
+}

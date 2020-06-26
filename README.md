@@ -20,7 +20,7 @@ Veins are loaded from datapacks. This has several advantages:
  - Veins can be reloaded during play when reloading all data packs, allowing changes to be made without restarting minecraft or the world.
  - Configuration for veins can be present on the server only.
 
-Each vein must be a **separate** json file, located under the path `data/domain/[namespace]/oreveins`, where `namespace` is the namespace of your mod or data pack. You should **not** be using either the `minecraft` or `oreveins` namespace! 
+Each vein must be a **separate** json file, located under the path `data/[namespace]/oreveins`, where `namespace` is the namespace of your mod or data pack. You should **not** be using either the `minecraft` or `oreveins` namespace! 
 
 ---
 
@@ -64,19 +64,23 @@ Each entry can also contain any or all of the following values. If they don't ex
 Vein types represent different types of shapes or structures that can be generated. A vein type must be specified for each vein.
 
 ##### Sphere: `"type": "sphere"`
-This represents a single sphere (or spheroid, if vertical and horizontal size values are different). This vein type has no additional parameters.
+This represents a single sphere (or spheroid, if vertical and horizontal size values are different). This vein type has one optional parameter:
+
+* `uniform` (Default: `false`). This is a boolean which determines if the density of the sphere will be uniformly distributed, or if it will be denser towards the center.
 
 ##### Clusters: `"type": "cluster"`
-This vein represents a scattered group of spheroids.  This vein type has an optional parameter:
-* `clusters` (Default: 3) This represents the average number of other clusters that will spawn as part of this vein.
+This vein represents a scattered group of spheroids. This vein type has an optional parameter:
+
+* `clusters` (Default: 3) This represents the average number of other clusters that will spawn as part of this vein. This must be a strictly positive integer. Setting this to zero makes this the same as a sphere vein.
 
 ##### Vertical Pipe: `"type": "pipe"`
 This vein represents a single vertical column / cylinder. This vein type has no additional parameters.
 
 ##### Cone: `"type": "cone"`
 This vein represents a vertical cone. The pointy end of the cone can point upwards or downwards. This vein type has two optional parameters:
-* `inverted` (Default: false) If true, the cone will have a pointy end facing down. If false, the pointy end will face up
-* `shape` (Default: 0.5) This value determines how pointy the cone will be. It should be between 0.0 and 1.0. Higher values mean less pointy (more cylindrical). Smaller values are more pointy
+
+* `inverted` (Default: false) If true, the cone will have a pointy end facing down. If false, the pointy end will face up.
+* `shape` (Default: 0.5) This value determines how pointy the cone will be. It should be between 0.0 and 1.0. Higher values mean less pointy (more cylindrical). Smaller values are more pointy.
 
 ##### Curve: `"type": "curve"`
 This vein represents a curve (created with a cubic Bezier curve.) It has two optional parameters:
