@@ -95,11 +95,12 @@ Biome and Dimension rules both can be a string, an array, or an object. The synt
 
 \*One exception is that biomes have the `"type": "tag"` ability, which dimensions do not.
 
-A biome / dimension rule entry can be a single string (which will match the single id provided), or it can be a json object. If it is an object, it requires a `type` property. Valid types are:
+A biome / dimension rule entry can be a single string (which will match the single id provided), or it can be a json object, or it can be a list of objects (which will function the same as the `or` type below). If it is an object, it requires a `type` property. Valid types are:
 
  - `tag`: [Biomes only] Matches any tags found under `biomes`, which can be a string or string list
- - `and`: Matches all conditions found within the `biomes` sub-entry.
- - `not`: Inverts the condition found within the `biomes` sub-entry. 
+ - `and`: Matches all conditions found within the `biomes` sub-entry. `biomes` must be a list of conditions to match.
+ - `or`: Matches any condition found within the `biomes` sub-entry. `biomes` must be a list of conditions to match.
+ - `not`: Inverts the condition found within the `biomes` sub-entry.
 
 The Simplest Example:
 ```json

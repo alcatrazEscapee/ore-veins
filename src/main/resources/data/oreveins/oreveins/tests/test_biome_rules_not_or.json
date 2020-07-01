@@ -1,0 +1,15 @@
+{
+  "type": "sphere",
+  "ore": "minecraft:white_wool",
+  "stone": "minecraft:stone",
+  "biomes": {
+    "type": "not",
+    "biomes": {
+      "type": "or",
+      "biomes": [
+        "minecraft:plains",
+        "minecraft:forest"
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "sphere",
+  "ore": "minecraft:white_wool",
+  "stone": "minecraft:stone",
+  "biomes": [
+    "minecraft:plains",
+    "minecraft:forest"
+  ]
+}

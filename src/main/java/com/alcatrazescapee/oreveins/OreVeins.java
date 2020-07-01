@@ -11,7 +11,9 @@ import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.placement.IPlacementConfig;
+import net.minecraft.world.gen.placement.Placement;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.common.Mod;
@@ -20,9 +22,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import com.alcatrazescapee.oreveins.world.AtChunk;
+import com.alcatrazescapee.oreveins.world.ModFeatures;
 import com.alcatrazescapee.oreveins.world.VanillaFeatureManager;
-import com.alcatrazescapee.oreveins.world.VeinsFeature;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
@@ -41,7 +42,11 @@ public class OreVeins
         Config.register();
 
         // Register event handlers
-        FMLJavaModLoadingContext.get().getModEventBus().register(this);
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        modEventBus.register(this);
+        ModFeatures.FEATURES.register(modEventBus);
+
         MinecraftForge.EVENT_BUS.register(ForgeEventHandler.INSTANCE);
     }
 
@@ -55,7 +60,7 @@ public class OreVeins
         // Forge fix your stuff and either make not deprecate it or add an alternative.
         DeferredWorkQueue.runLater(() -> {
             ForgeRegistries.BIOMES.forEach(biome -> {
-                ConfiguredFeature<?, ?> feature = new VeinsFeature().withConfiguration(new NoFeatureConfig()).withPlacement(new AtChunk().configure(IPlacementConfig.NO_PLACEMENT_CONFIG));
+                ConfiguredFeature<?, ?> feature = ModFeatures.VEINS.get().withConfiguration(new NoFeatureConfig()).withPlacement(Placement.NOPE.configure(IPlacementConfig.NO_PLACEMENT_CONFIG));
                 biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, feature);
             });
 
