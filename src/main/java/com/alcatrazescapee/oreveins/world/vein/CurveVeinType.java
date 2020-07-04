@@ -8,8 +8,6 @@ package com.alcatrazescapee.oreveins.world.vein;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
@@ -20,8 +18,7 @@ import net.minecraft.util.math.Vec3d;
 
 import static com.alcatrazescapee.oreveins.world.vein.CurveVeinType.VeinCurve;
 
-@ParametersAreNonnullByDefault
-public class CurveVeinType extends VeinType<VeinCurve>
+public class CurveVeinType extends SingleVeinType<VeinCurve>
 {
     private final float radius;
     private final float angle;
@@ -74,7 +71,6 @@ public class CurveVeinType extends VeinType<VeinCurve>
         return 0.0f;
     }
 
-    @Nonnull
     @Override
     public VeinCurve createVein(int chunkX, int chunkZ, Random rand)
     {
@@ -106,7 +102,7 @@ public class CurveVeinType extends VeinType<VeinCurve>
         }
 
         @Override
-        public double getChanceToGenerate(@Nonnull BlockPos pos)
+        public double getChanceToGenerate(BlockPos pos)
         {
             if (!isInitialized)
             {

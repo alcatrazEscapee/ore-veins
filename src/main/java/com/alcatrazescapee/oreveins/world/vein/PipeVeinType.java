@@ -5,15 +5,12 @@
 
 package com.alcatrazescapee.oreveins.world.vein;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.util.math.BlockPos;
 
-@ParametersAreNonnullByDefault
-public class PipeVeinType extends SimpleVeinType
+public class PipeVeinType extends SingleVeinType<Vein<?>>
 {
     public PipeVeinType(JsonObject obj, JsonDeserializationContext context) throws JsonParseException
     {

@@ -14,21 +14,21 @@ import net.minecraft.world.dimension.DimensionType;
 import com.alcatrazescapee.oreveins.util.json.PredicateDeserializer;
 
 @FunctionalInterface
-public interface DimensionRule extends Predicate<Dimension>
+public interface IDimensionRule extends Predicate<Dimension>
 {
-    DimensionRule DEFAULT = dim -> dim.getType() == DimensionType.OVERWORLD;
+    IDimensionRule DEFAULT = dim -> dim.getType() == DimensionType.OVERWORLD;
 
-    class Deserializer extends PredicateDeserializer<Dimension, DimensionRule>
+    class Deserializer extends PredicateDeserializer<Dimension, IDimensionRule>
     {
         public static final Deserializer INSTANCE = new Deserializer();
 
         private Deserializer()
         {
-            super(DimensionRule.class, "dimensions");
+            super(IDimensionRule.class, "dimensions");
         }
 
         @Override
-        protected DimensionRule createSingleRule(String name)
+        protected IDimensionRule createSingleRule(String name)
         {
             // Assume a single biome entry
             final ResourceLocation biomeName = new ResourceLocation(name);
@@ -36,7 +36,7 @@ public interface DimensionRule extends Predicate<Dimension>
         }
 
         @Override
-        protected DimensionRule createPredicate(Predicate<Dimension> predicate)
+        protected IDimensionRule createPredicate(Predicate<Dimension> predicate)
         {
             return predicate::test;
         }

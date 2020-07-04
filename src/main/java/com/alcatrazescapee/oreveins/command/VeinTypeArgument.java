@@ -6,7 +6,6 @@
 package com.alcatrazescapee.oreveins.command;
 
 import java.util.concurrent.CompletableFuture;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.util.ResourceLocation;
@@ -23,7 +22,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
-@ParametersAreNonnullByDefault
 public class VeinTypeArgument implements ArgumentType<ResourceLocation>
 {
     private static final DynamicCommandExceptionType VEIN_NOT_FOUND = new DynamicCommandExceptionType(args -> new TranslationTextComponent(MOD_ID + ".command.unknown_vein", args));

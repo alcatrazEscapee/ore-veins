@@ -6,7 +6,6 @@
 package com.alcatrazescapee.oreveins.world.vein;
 
 import java.util.Random;
-import javax.annotation.Nonnull;
 
 import net.minecraft.util.math.BlockPos;
 
@@ -33,7 +32,6 @@ public class Vein<T extends VeinType<?>>
      *
      * @return a block pos
      */
-    @Nonnull
     public BlockPos getPos()
     {
         return pos;

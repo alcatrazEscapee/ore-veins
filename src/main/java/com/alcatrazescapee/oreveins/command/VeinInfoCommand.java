@@ -5,7 +5,6 @@
 
 package com.alcatrazescapee.oreveins.command;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -18,7 +17,6 @@ import com.mojang.brigadier.CommandDispatcher;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
-@ParametersAreNonnullByDefault
 public final class VeinInfoCommand
 {
     public static void register(CommandDispatcher<CommandSource> dispatcher)

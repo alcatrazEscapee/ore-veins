@@ -10,8 +10,8 @@ import java.lang.reflect.Type;
 import com.google.gson.*;
 import net.minecraft.util.JSONUtils;
 
-import com.alcatrazescapee.oreveins.util.IWeightedList;
-import com.alcatrazescapee.oreveins.util.WeightedList;
+import com.alcatrazescapee.oreveins.util.collections.IWeightedList;
+import com.alcatrazescapee.oreveins.util.collections.WeightedList;
 
 public class WeightedListDeserializer<T> implements JsonDeserializer<IWeightedList<T>>
 {

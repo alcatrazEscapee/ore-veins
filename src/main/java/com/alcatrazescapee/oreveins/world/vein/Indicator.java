@@ -9,14 +9,13 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import javax.annotation.Nonnull;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.JSONUtils;
 
-import com.alcatrazescapee.oreveins.util.IWeightedList;
+import com.alcatrazescapee.oreveins.util.collections.IWeightedList;
 
 public class Indicator
 {
@@ -38,7 +37,6 @@ public class Indicator
         this.underStates = underStates;
     }
 
-    @Nonnull
     public BlockState getStateToGenerate(Random random)
     {
         return states.get(random);

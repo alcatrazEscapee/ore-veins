@@ -6,8 +6,6 @@
 package com.alcatrazescapee.oreveins.world.rule;
 
 import java.util.function.Predicate;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
@@ -17,7 +15,6 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
-@ParametersAreNonnullByDefault
 public class TouchingRule implements IRule
 {
     private final Predicate<BlockState> blockMatcher;
@@ -52,7 +49,6 @@ public class TouchingRule implements IRule
     public static final class Factory implements IRule.Factory<TouchingRule>
     {
         @Override
-        @Nonnull
         public TouchingRule parse(JsonObject json, JsonDeserializationContext context)
         {
             BlockState stateToMatch = context.deserialize(json.get("block"), BlockState.class);

@@ -6,8 +6,6 @@
 package com.alcatrazescapee.oreveins.world.vein;
 
 import java.util.Random;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
@@ -17,8 +15,7 @@ import net.minecraft.util.math.BlockPos;
 
 import static com.alcatrazescapee.oreveins.world.vein.ClusterVeinType.VeinCluster;
 
-@ParametersAreNonnullByDefault
-public class ClusterVeinType extends VeinType<VeinCluster>
+public class ClusterVeinType extends SingleVeinType<VeinCluster>
 {
     private final int clusters;
 
@@ -56,7 +53,6 @@ public class ClusterVeinType extends VeinType<VeinCluster>
         return 0.005f * density * (1.0f - shortestRadius);
     }
 
-    @Nonnull
     @Override
     public VeinCluster createVein(int chunkX, int chunkZ, Random rand)
     {
@@ -92,7 +88,7 @@ public class ClusterVeinType extends VeinType<VeinCluster>
         }
 
         @Override
-        public double getChanceToGenerate(@Nonnull BlockPos pos)
+        public double getChanceToGenerate(BlockPos pos)
         {
             return getType().getChanceToGenerate(this, pos);
         }

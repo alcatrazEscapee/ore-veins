@@ -8,7 +8,6 @@ package com.alcatrazescapee.oreveins.command;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,7 +24,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
-@ParametersAreNonnullByDefault
 public final class ClearWorldCommand
 {
     private static final Set<BlockState> VEIN_STATES = new HashSet<>();

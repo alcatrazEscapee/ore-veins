@@ -5,17 +5,13 @@
 
 package com.alcatrazescapee.oreveins.world.vein;
 
-
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 
-@ParametersAreNonnullByDefault
-public class SphereVeinType extends SimpleVeinType
+public class SphereVeinType extends SingleVeinType<Vein<?>>
 {
     private final boolean uniform;
 

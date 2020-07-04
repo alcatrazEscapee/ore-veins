@@ -6,7 +6,6 @@
 package com.alcatrazescapee.oreveins.command;
 
 import java.util.List;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.gson.JsonParseException;
 import net.minecraft.command.CommandSource;
@@ -30,7 +29,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import static com.alcatrazescapee.oreveins.OreVeins.MOD_ID;
 
-@ParametersAreNonnullByDefault
 public final class FindVeinsCommand
 {
     private static final String TP_MESSAGE = "{\"text\":\"" + TextFormatting.BLUE + "[Click to Teleport]" + TextFormatting.RESET + "\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tp %d %d %d\"}}";
