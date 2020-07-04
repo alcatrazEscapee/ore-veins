@@ -41,10 +41,12 @@ if (version != 'dev') {
     }
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 minecraft {
     mappings channel: 'snapshot', version: '20200408-1.15.1'
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Run configurations
     runs {
@@ -67,11 +69,35 @@ minecraft {
                 }
             }
         }
+
+        serverTest {
+            parent server // This run config inherits settings from the server config
+            workingDirectory project.file('run')
+            main 'com.alcatrazescapee.mcjunitlib.DedicatedTestServerLauncher' // The main class which launches a customized server which then runs JUnit tests
+            ideaModule "${project.name}.test" // Tell IDEA to use the classpath of the test module
+            property 'forge.logging.console.level', 'unittest' // This logging level prevents any other server information messages and leaves only the unit test output
+            environment 'MOD_CLASSES', String.join(File.pathSeparator,
+                    "oreveins%%${sourceSets.main.output.resourcesDir}",
+                    "oreveins%%${sourceSets.main.output.classesDir}",
+                    "oreveins%%${sourceSets.test.output.resourcesDir}",
+                    "oreveins%%${sourceSets.test.output.classesDir}",
+            ) // Forge will ignore all test sources unless we explicitly tell it to include them as mod sources
+            environment 'target', 'fmltestserver' // This is a custom service used to launch with ModLauncher's transforming class loader
+            mods {
+                oreveins { // The mod that is being tested
+                    sources sourceSets.main
+                }
+            }
+        }
     }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+
+    testImplementation fg.deobf('com.github.alcatrazEscapee:mcjunitlib:1.0.0-1.15.2') {
+        transitive = false
+    }
 }
 
 // Puts the mod version into the jar for mods.toml to read from
