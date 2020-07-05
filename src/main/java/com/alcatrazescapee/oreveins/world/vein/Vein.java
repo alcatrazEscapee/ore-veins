@@ -7,30 +7,22 @@ package com.alcatrazescapee.oreveins.world.vein;
 
 import java.util.Random;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 
 public class Vein<T extends VeinType<?>>
 {
     protected final T type;
-    protected final BlockPos pos;
-    protected final float size;
+    protected BlockPos pos;
 
-    public Vein(T type, BlockPos pos, float size)
+    public Vein(T type, BlockPos pos)
     {
         this.pos = pos;
         this.type = type;
-        this.size = size;
-    }
-
-    public Vein(T type, BlockPos pos, Random random)
-    {
-        this(type, pos, 0.7f + random.nextFloat() * 0.3f);
     }
 
     /**
      * Gets the centre position of this vein
-     *
-     * @return a block pos
      */
     public BlockPos getPos()
     {
@@ -38,18 +30,19 @@ public class Vein<T extends VeinType<?>>
     }
 
     /**
+     * Sets the center pos of this vein
+     */
+    public void setPos(BlockPos pos)
+    {
+        this.pos = pos;
+    }
+
+    /**
      * Gets the type of this vein instance
-     *
-     * @return a vein type
      */
     public T getType()
     {
         return type;
-    }
-
-    public float getSize()
-    {
-        return size;
     }
 
     @Override
@@ -78,9 +71,14 @@ public class Vein<T extends VeinType<?>>
      * @param pos a position to generate at
      * @return a chance, with <= 0 meaning no chance, >= 1 indicating 100% chance
      */
-    public double getChanceToGenerate(BlockPos pos)
+    public float getChanceToGenerate(BlockPos pos)
     {
         return getTypeRaw().getChanceToGenerate(this, pos);
+    }
+
+    public BlockState getStateToGenerate(BlockPos pos, Random random)
+    {
+        return getTypeRaw().getStateToGenerate(this, pos, random);
     }
 
     @SuppressWarnings("unchecked")

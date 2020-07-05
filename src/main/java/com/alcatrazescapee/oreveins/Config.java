@@ -22,13 +22,13 @@ import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
 
 public final class Config
 {
-    public static final GeneralConfig COMMON;
+    public static final CommonConfig COMMON;
 
     private static final ForgeConfigSpec COMMON_SPEC;
 
     static
     {
-        final Pair<GeneralConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(GeneralConfig::new);
+        final Pair<CommonConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
         COMMON_SPEC = specPair.getRight();
         COMMON = specPair.getLeft();
     }
@@ -38,7 +38,7 @@ public final class Config
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
     }
 
-    public static final class GeneralConfig
+    public static final class CommonConfig
     {
         public final ForgeConfigSpec.BooleanValue noOres;
         public final ForgeConfigSpec.BooleanValue debugCommands;
@@ -47,17 +47,17 @@ public final class Config
 
         private final ForgeConfigSpec.ConfigValue<List<? extends String>> disabledOres;
 
-        GeneralConfig(ForgeConfigSpec.Builder builder)
+        CommonConfig(ForgeConfigSpec.Builder builder)
         {
             builder.push("general");
 
             noOres = builder
-                    .comment("Stop all vanilla ore gen calls? Warning: this includes calls such as andesite/diorite, and potentially others that internally behave the same as ores. For more customization, see the disabled ores option.")
-                    .define("noOres", true);
+                .comment("Stop all vanilla ore gen calls? Warning: this includes calls such as andesite/diorite, and potentially others that internally behave the same as ores. For more customization, see the disabled ores option.")
+                .define("noOres", true);
 
             disabledOres = builder
-                    .comment("Vanilla ore gen to disable. Must be specified as a list of block states, i.e. minecraft:gold_ore, minecraft:iron_ore, etc.")
-                    .defineList("disabledOres", this::defaultDisabledBlockStates, obj -> BlockStateDeserializer.INSTANCE.isBlockState(obj.toString()));
+                .comment("Vanilla ore gen to disable. Must be specified as a list of block states, i.e. minecraft:gold_ore, minecraft:iron_ore, etc.")
+                .defineList("disabledOres", this::defaultDisabledBlockStates, obj -> BlockStateDeserializer.INSTANCE.isBlockState(obj.toString()));
 
             debugCommands = builder
                     .comment("Enable debug commands such as /veininfo, /clearworld, /findveins")

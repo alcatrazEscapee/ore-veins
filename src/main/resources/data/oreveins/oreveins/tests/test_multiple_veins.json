@@ -1,0 +1,27 @@
+{
+  "type": "multiple",
+  "min_y": 100,
+  "max_y": 120,
+  "rarity": 40,
+  "veins": [
+    {
+      "type": "sphere",
+      "horizontal_size": 30,
+      "vertical_size": 30,
+      "min_y": 100,
+      "max_y": 120,
+      "ore": "minecraft:blue_terracotta",
+      "stone": "minecraft:air"
+    },
+    {
+      "type": "sphere",
+      "horizontal_size": 10,
+      "vertical_size": 10,
+      "min_y": 100,
+      "max_y": 120,
+      "ore": "minecraft:red_terracotta",
+      "stone": "minecraft:air",
+      "density": 1000
+    }
+  ]
+}

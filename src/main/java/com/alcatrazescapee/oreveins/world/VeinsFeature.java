@@ -62,11 +62,7 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
             {
                 if (RANDOM.nextInt(type.getRarity()) == 0)
                 {
-                    Vein<?> vein = type.createVein(chunkX, chunkZ, RANDOM);
-                    if (vein.getType().isValidPos(vein.getPos()))
-                    {
-                        veins.add(vein);
-                    }
+                    type.createVeins(veins, chunkX, chunkZ, RANDOM);
                 }
             }
         }
@@ -109,7 +105,7 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                             {
                                 if (vein.getType().canGenerateAt(worldIn, posAt))
                                 {
-                                    BlockState oreState = vein.getType().getStateToGenerate(rand);
+                                    BlockState oreState = vein.getStateToGenerate(pos, rand);
                                     setBlockState(worldIn, posAt, oreState);
                                     if (veinIndicator != null && !canGenerateIndicator)
                                     {

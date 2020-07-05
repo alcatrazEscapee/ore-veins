@@ -29,6 +29,7 @@ public enum VeinTypeDeserializer implements JsonDeserializer<VeinType<?>>
         factories.put("cone", ConeVeinType::new);
         factories.put("pipe", PipeVeinType::new);
         factories.put("curve", CurveVeinType::new);
+        factories.put("multiple", MultipleVeinType::new);
     }
 
     @Override

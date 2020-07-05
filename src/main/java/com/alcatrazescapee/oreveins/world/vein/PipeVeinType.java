@@ -5,6 +5,8 @@
 
 package com.alcatrazescapee.oreveins.world.vein;
 
+import java.util.Random;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -18,9 +20,15 @@ public class PipeVeinType extends SingleVeinType<Vein<?>>
     }
 
     @Override
+    public Vein<?> createVein(int chunkX, int chunkZ, Random random)
+    {
+        return createDefaultVein(chunkX, chunkZ, random);
+    }
+
+    @Override
     public float getChanceToGenerate(Vein<?> vein, BlockPos pos)
     {
-        float sizeMod = verticalSize * vein.getSize();
+        float sizeMod = verticalSize;
         if (Math.abs(vein.getPos().getY() - pos.getY()) < sizeMod * 0.7f)
         {
             return 0.005f * density;

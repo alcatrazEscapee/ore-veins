@@ -41,7 +41,7 @@ public class CurveVeinType extends SingleVeinType<VeinCurve>
     @Override
     public boolean inRange(VeinCurve vein, int xOffset, int zOffset)
     {
-        return (xOffset < horizontalSize * vein.getSize()) && (zOffset < horizontalSize * vein.getSize());
+        return (xOffset < horizontalSize) && (zOffset < horizontalSize);
     }
 
     @Override
@@ -76,9 +76,7 @@ public class CurveVeinType extends SingleVeinType<VeinCurve>
     {
         int maxOffY = getMaxY() - getMinY() - verticalSize;
         int posY = getMinY() + verticalSize / 2 + ((maxOffY > 0) ? rand.nextInt(maxOffY) : 0);
-        BlockPos pos = new BlockPos(chunkX * 16 + rand.nextInt(16), posY, chunkZ * 16 + rand.nextInt(16)
-        );
-
+        BlockPos pos = new BlockPos(chunkX * 16 + rand.nextInt(16), posY, chunkZ * 16 + rand.nextInt(16));
         return new VeinCurve(this, pos, rand);
     }
 
@@ -90,7 +88,7 @@ public class CurveVeinType extends SingleVeinType<VeinCurve>
 
         VeinCurve(CurveVeinType type, BlockPos pos, Random random)
         {
-            super(type, pos, 0.5f * (1.0f + random.nextFloat()));
+            super(type, pos);
             this.rand = new Random(random.nextLong());
             this.segmentList = new ArrayList<>();
         }
@@ -102,7 +100,7 @@ public class CurveVeinType extends SingleVeinType<VeinCurve>
         }
 
         @Override
-        public double getChanceToGenerate(BlockPos pos)
+        public float getChanceToGenerate(BlockPos pos)
         {
             if (!isInitialized)
             {
@@ -130,7 +128,7 @@ public class CurveVeinType extends SingleVeinType<VeinCurve>
             double kxy = Math.tan(angle * (1.0f - 2.0f * rand.nextFloat()));
             double kyz = Math.tan(angle * (1.0f - 2.0f * rand.nextFloat()));
 
-            final double h2Size = hSize * size / 2d;
+            final double h2Size = hSize / 2d;
             final double v2Size = vSize / 2d;
 
             // four points for cubic Bezier curve

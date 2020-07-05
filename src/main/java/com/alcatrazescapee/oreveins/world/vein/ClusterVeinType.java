@@ -32,7 +32,7 @@ public class ClusterVeinType extends SingleVeinType<VeinCluster>
     @Override
     public boolean inRange(VeinCluster vein, int xOffset, int zOffset)
     {
-        return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize * vein.getSize();
+        return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize;
     }
 
     @Override
@@ -45,8 +45,8 @@ public class ClusterVeinType extends SingleVeinType<VeinCluster>
             final double dy = Math.pow(c.pos.getY() - pos.getY(), 2);
             final double dz = Math.pow(c.pos.getZ() - pos.getZ(), 2);
 
-            final float radius = (float) ((dx + dz) / (horizontalSize * horizontalSize * vein.getSize() * c.size) +
-                dy / (verticalSize * verticalSize * vein.getSize() * c.size));
+            final float radius = (float) ((dx + dz) / (horizontalSize * horizontalSize * c.size) +
+                dy / (verticalSize * verticalSize * c.size));
 
             if (shortestRadius == -1 || radius < shortestRadius) shortestRadius = radius;
         }
@@ -54,9 +54,9 @@ public class ClusterVeinType extends SingleVeinType<VeinCluster>
     }
 
     @Override
-    public VeinCluster createVein(int chunkX, int chunkZ, Random rand)
+    public VeinCluster createVein(int chunkX, int chunkZ, Random random)
     {
-        return new VeinCluster(this, defaultStartPos(chunkX, chunkZ, rand), rand);
+        return new VeinCluster(this, defaultStartPos(chunkX, chunkZ, random), random);
     }
 
     static class VeinCluster extends Vein<ClusterVeinType>
@@ -65,7 +65,7 @@ public class ClusterVeinType extends SingleVeinType<VeinCluster>
 
         private VeinCluster(ClusterVeinType type, BlockPos pos, Random rand)
         {
-            super(type, pos, rand);
+            super(type, pos);
 
             int clusters = 1 + type.clusters; // main cluster + smaller outside ones
             spawnPoints = new Cluster[clusters];
@@ -88,7 +88,7 @@ public class ClusterVeinType extends SingleVeinType<VeinCluster>
         }
 
         @Override
-        public double getChanceToGenerate(BlockPos pos)
+        public float getChanceToGenerate(BlockPos pos)
         {
             return getType().getChanceToGenerate(this, pos);
         }

@@ -26,9 +26,12 @@ Each vein must be a **separate** json file, located under the path `data/[namesp
 
 ### Veins
 
-A vein must consist of a single json object, which contains at least the following entries:
+Each vein must contain at least one entry, which identifies what kind of vein it is:
 
-* `type` is the registry name of the [Vein Type](#vein-types) that this entry will spawn. Based on what vein this is, there might be other required or optional values as well.
+* `type` is an identifier of the [Vein Type](#vein-types) that this entry will spawn. Based on what vein this is, there might be other required or optional values as well.
+
+There are two main types of vein types: **Single**, and **Multiple** types. Any **Single** vein type must contain the following entries. Except for `"type": "multiple"`, every vein type is a **Single** vein type, and thus must contain:
+
 * `stone` is a [Block Entry](#block-entries). This represents the block states that the ore can spawn in.
 * `ore` is a [Block Entry](#block-entries), with optional weights. This represents the possible states that the vein will spawn. This **does** support weighted entries.
 
@@ -38,7 +41,6 @@ A vein must consist of a single json object, which contains at least the followi
   "stone": "minecraft:stone",
   "ore": "minecraft:iron_ore"
 }
-
 ```
 
 Each entry can also contain any or all of the following values. If they don't exist, they will assume a default value. These apply to all vein types:
@@ -56,6 +58,17 @@ Each entry can also contain any or all of the following values. If they don't ex
 * `indicator` (Default: None) This is an [Indicator](#indicators) which will spawn on the surface underneath where the vein is found.
 * `rules` (Default: None) This is a list of [Spawn Rules](#spawn-rules) which are checked for each ore block that attempts to spawn. Must be a list of json objects, where each object is a rule.
 * `conditions` (Default: None) These are conditions that will enable or disable the vein. For more information on conditions, consult the minecraft wiki.
+
+
+The **Multiple** vein type allows you to group a series of other vein types to all spawn at the exact same location. For example, nested spheres made of different materials, or denser veins inside larger, more sparse veins. This requires the following entry:
+
+* `veins` is a JSON array of [Vein Type](#vein-types) objects. When this vein spawns, each individual vein type specified here will create a vein according to the rules given by the individual vein type. As all of the optional fields above can be present both in the parent vein and the children veins, different fields will be ignored or used:
+  * `count` and `rarity`, are only applied from the parent vein. When the parent vein spawns, each child vein will also spawn.
+  * `min_y` and `max_y` can be used by both the parent and child veins, however the parent vein's y values will determine where the center of the vein is located, although the child vein will determine the range at which the vein can generate ores.
+  * `density`, `vertical_size` and `horizontal_size` of the parent vein is completely ignored.
+  
+  
+
 
 ---
 

@@ -37,16 +37,16 @@ public abstract class VeinType<V extends Vein<?>>
     protected final int horizontalSize;
     protected final float density;
 
-    protected final int count;
-    protected final int rarity;
-    protected final int minY;
-    protected final int maxY;
+    private final int count;
+    private final int rarity;
+    private final int minY;
+    private final int maxY;
 
-    protected final IBiomeRule biomeRule;
-    protected final IDimensionRule dimensions;
-    protected final Predicate<BlockPos> originDistance;
-    protected final List<IRule> rules;
-    protected final IWeightedList<Indicator> indicator;
+    private final IBiomeRule biomeRule;
+    private final IDimensionRule dimensions;
+    private final Predicate<BlockPos> originDistance;
+    private final List<IRule> rules;
+    private final IWeightedList<Indicator> indicator;
 
     protected VeinType(JsonObject json, JsonDeserializationContext context) throws JsonParseException
     {
@@ -93,10 +93,9 @@ public abstract class VeinType<V extends Vein<?>>
      * Gets the state to generate at a point.
      * Handled by {@link VeinType} using a weighted list
      *
-     * @param rand A random to use in generation
      * @return A block state
      */
-    public abstract BlockState getStateToGenerate(Random rand);
+    public abstract BlockState getStateToGenerate(V vein, BlockPos pos, Random random);
 
     /**
      * Gets all possible ore states spawned by this vein.
@@ -151,7 +150,7 @@ public abstract class VeinType<V extends Vein<?>>
      */
     public boolean inRange(V vein, int xOffset, int zOffset)
     {
-        return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize * vein.getSize();
+        return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize;
     }
 
     /**
@@ -253,18 +252,10 @@ public abstract class VeinType<V extends Vein<?>>
     public abstract float getChanceToGenerate(V vein, BlockPos pos);
 
     /**
-     * Creates an instance of a vein
-     *
-     * @param chunkX The chunkX
-     * @param chunkZ The chunkZ
-     * @param rand   a random to use in generation
-     * @return a new vein instance
+     * Creates veins for this type for a given chunk position and random.
+     * This is called after rarity + chance rolls are done.
      */
-    @SuppressWarnings("unchecked")
-    public V createVein(int chunkX, int chunkZ, Random rand)
-    {
-        return (V) new Vein<>(this, defaultStartPos(chunkX, chunkZ, rand), rand);
-    }
+    public abstract void createVeins(List<Vein<?>> veins, int chunkX, int chunkZ, Random random);
 
     protected final BlockPos defaultStartPos(int chunkX, int chunkZ, Random rand)
     {

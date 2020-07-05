@@ -2,8 +2,8 @@ package com.alcatrazescapee.oreveins;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class MinecraftReferences
 {
     public static MinecraftServer server = null;
-    public static World world = null;
+    public static ServerWorld world = null;
     public static BlockPos pos = new BlockPos(0, 60, 0);
 
     @SubscribeEvent
@@ -33,7 +33,7 @@ public class MinecraftReferences
     {
         if (event.getWorld().getDimension().getType() == DimensionType.OVERWORLD)
         {
-            world = (World) event.getWorld();
+            world = (ServerWorld) event.getWorld();
         }
     }
 

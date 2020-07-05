@@ -1,5 +1,6 @@
 package com.alcatrazescapee.oreveins;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -158,14 +159,16 @@ class TestVeins
     @Test
     void testMultipleOreBlocks()
     {
-        VeinType<?> vein = VeinManager.INSTANCE.getVein(new ResourceLocation(MOD_ID, "tests/test_multiple_ore_blocks"));
+        SingleVeinType<?> vein = (SingleVeinType<?>) VeinManager.INSTANCE.getVein(new ResourceLocation(MOD_ID, "tests/test_multiple_ore_blocks"));
 
         assertNotNull(vein);
 
+        Random random = new Random();
+        Vein<?> instance = vein.createVein(0, 0, random);
         List<BlockState> ores = Arrays.asList(Blocks.CYAN_WOOL.getDefaultState(), Blocks.PURPLE_WOOL.getDefaultState());
         for (int i = 0; i < 10; i++)
         {
-            assertTrue(ores.contains(vein.getStateToGenerate(new Random())));
+            assertTrue(ores.contains(instance.getStateToGenerate(pos, random)));
         }
     }
 
@@ -200,15 +203,16 @@ class TestVeins
     @Test
     void testMultipleWeightedOreBlocks()
     {
-        VeinType<?> vein = VeinManager.INSTANCE.getVein(new ResourceLocation(MOD_ID, "tests/test_multiple_weighted_ore_blocks"));
+        SingleVeinType<?> vein = (SingleVeinType<?>) VeinManager.INSTANCE.getVein(new ResourceLocation(MOD_ID, "tests/test_multiple_weighted_ore_blocks"));
 
         assertNotNull(vein);
 
         Random random = new Random();
+        Vein<?> instance = vein.createVein(0, 0, random);
         List<BlockState> ores = Arrays.asList(Blocks.BLUE_WOOL.getDefaultState(), Blocks.BROWN_WOOL.getDefaultState());
         for (int i = 0; i < 10; i++)
         {
-            assertTrue(ores.contains(vein.getStateToGenerate(random)));
+            assertTrue(ores.contains(instance.getStateToGenerate(pos, random)));
         }
     }
 
@@ -272,5 +276,19 @@ class TestVeins
 
         assertNotNull(vein);
         assertEquals(SphereVeinType.class, vein.getClass());
+    }
+
+    @Test
+    void testMultipleVeins()
+    {
+        VeinType<?> vein = VeinManager.INSTANCE.getVein(new ResourceLocation(MOD_ID, "tests/test_multiple_veins"));
+
+        assertNotNull(vein);
+        assertEquals(MultipleVeinType.class, vein.getClass());
+
+        List<Vein<?>> veins = new ArrayList<>();
+        vein.createVeins(veins, 0, 0, new Random());
+        assertEquals(3, veins.size());
+        assertTrue(veins.stream().anyMatch(x -> x instanceof MultipleVeinType.MultipleVein));
     }
 }
