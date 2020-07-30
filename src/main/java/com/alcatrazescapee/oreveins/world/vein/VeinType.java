@@ -11,9 +11,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
@@ -27,13 +25,12 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 
 import com.alcatrazescapee.oreveins.Config;
-import com.alcatrazescapee.oreveins.util.IWeightedList;
-import com.alcatrazescapee.oreveins.world.rule.BiomeRule;
-import com.alcatrazescapee.oreveins.world.rule.DimensionRule;
+import com.alcatrazescapee.oreveins.util.collections.IWeightedList;
 import com.alcatrazescapee.oreveins.world.rule.DistanceRule;
+import com.alcatrazescapee.oreveins.world.rule.IBiomeRule;
+import com.alcatrazescapee.oreveins.world.rule.IDimensionRule;
 import com.alcatrazescapee.oreveins.world.rule.IRule;
 
-@ParametersAreNonnullByDefault
 public abstract class VeinType<V extends Vein<?>>
 {
     protected final int verticalSize;
@@ -45,10 +42,8 @@ public abstract class VeinType<V extends Vein<?>>
     private final int minY;
     private final int maxY;
 
-    private final Predicate<BlockState> stoneStates;
-    private final IWeightedList<BlockState> oreStates;
-    private final BiomeRule biomeRule;
-    private final DimensionRule dimensions;
+    private final IBiomeRule biomeRule;
+    private final IDimensionRule dimensions;
     private final Predicate<BlockPos> originDistance;
     private final List<IRule> rules;
     private final IWeightedList<Indicator> indicator;
@@ -87,15 +82,8 @@ public abstract class VeinType<V extends Vein<?>>
             throw new JsonParseException("Density must be > 0.");
         }
 
-        // Two methods to specify
-        stoneStates = context.deserialize(json.get("stone"), new TypeToken<Predicate<BlockState>>() {}.getType());
-        oreStates = context.deserialize(json.get("ore"), new TypeToken<IWeightedList<BlockState>>() {}.getType());
-        if (oreStates.isEmpty())
-        {
-            throw new JsonParseException("Ore States cannot be empty.");
-        }
-        biomeRule = json.has("biomes") ? context.deserialize(json.get("biomes"), BiomeRule.class) : BiomeRule.DEFAULT;
-        dimensions = json.has("dimensions") ? context.deserialize(json.get("dimensions"), DimensionRule.class) : DimensionRule.DEFAULT;
+        biomeRule = json.has("biomes") ? context.deserialize(json.get("biomes"), IBiomeRule.class) : IBiomeRule.DEFAULT;
+        dimensions = json.has("dimensions") ? context.deserialize(json.get("dimensions"), IDimensionRule.class) : IDimensionRule.DEFAULT;
         originDistance = json.has("origin_distance") ? context.deserialize(json.get("origin_distance"), DistanceRule.class) : DistanceRule.DEFAULT;
         rules = json.has("rules") ? context.deserialize(json.get("rules"), new TypeToken<List<IRule>>() {}.getType()) : Collections.emptyList();
         indicator = json.has("indicator") ? context.deserialize(json.get("indicator"), new TypeToken<IWeightedList<Indicator>>() {}.getType()) : IWeightedList.empty();
@@ -105,14 +93,9 @@ public abstract class VeinType<V extends Vein<?>>
      * Gets the state to generate at a point.
      * Handled by {@link VeinType} using a weighted list
      *
-     * @param rand A random to use in generation
      * @return A block state
      */
-    @Nonnull
-    public BlockState getStateToGenerate(Random rand)
-    {
-        return oreStates.get(rand);
-    }
+    public abstract BlockState getStateToGenerate(V vein, BlockPos pos, Random random);
 
     /**
      * Gets all possible ore states spawned by this vein.
@@ -120,11 +103,7 @@ public abstract class VeinType<V extends Vein<?>>
      *
      * @return a collection of block states
      */
-    @Nonnull
-    public Collection<BlockState> getOreStates()
-    {
-        return oreStates.values();
-    }
+    public abstract Collection<BlockState> getOreStates();
 
     /**
      * Gets an indicator for this vein type
@@ -147,22 +126,17 @@ public abstract class VeinType<V extends Vein<?>>
      */
     public boolean canGenerateAt(IBlockReader world, BlockPos pos)
     {
-        BlockState stoneState = world.getBlockState(pos);
-        if (stoneStates.test(stoneState))
+        if (rules != null)
         {
-            if (rules != null)
+            for (IRule rule : rules)
             {
-                for (IRule rule : rules)
+                if (!rule.test(world, pos))
                 {
-                    if (!rule.test(world, pos))
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
-            return true;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -176,7 +150,7 @@ public abstract class VeinType<V extends Vein<?>>
      */
     public boolean inRange(V vein, int xOffset, int zOffset)
     {
-        return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize * vein.getSize();
+        return xOffset * xOffset + zOffset * zOffset < horizontalSize * horizontalSize;
     }
 
     /**
@@ -209,7 +183,7 @@ public abstract class VeinType<V extends Vein<?>>
     public boolean matchesBiome(Supplier<Biome> biome)
     {
         // This is here to avoid querying for the biome in the case we don't need it
-        return biomeRule == BiomeRule.DEFAULT || biomeRule.test(biome.get());
+        return biomeRule == IBiomeRule.DEFAULT || biomeRule.test(biome.get());
     }
 
     /**
@@ -265,7 +239,7 @@ public abstract class VeinType<V extends Vein<?>>
     @Override
     public String toString()
     {
-        return String.format("[%s: Count: %d, Rarity: %d, Y: %d - %d, Size: %d / %d, Density: %2.2f, Ores: %s, Stones: %s]", VeinManager.INSTANCE.getName(this), count, rarity, minY, maxY, horizontalSize, verticalSize, density, oreStates, stoneStates);
+        return String.format("[%s: Count: %d, Rarity: %d, Y: %d - %d, Size: %d / %d, Density: %2.2f", VeinManager.INSTANCE.getName(this), count, rarity, minY, maxY, horizontalSize, verticalSize, density);
     }
 
     /**
@@ -278,19 +252,10 @@ public abstract class VeinType<V extends Vein<?>>
     public abstract float getChanceToGenerate(V vein, BlockPos pos);
 
     /**
-     * Creates an instance of a vein
-     *
-     * @param chunkX The chunkX
-     * @param chunkZ The chunkZ
-     * @param rand   a random to use in generation
-     * @return a new vein instance
+     * Creates veins for this type for a given chunk position and random.
+     * This is called after rarity + chance rolls are done.
      */
-    @Nonnull
-    @SuppressWarnings("unchecked")
-    public V createVein(int chunkX, int chunkZ, Random rand)
-    {
-        return (V) new Vein<>(this, defaultStartPos(chunkX, chunkZ, rand), rand);
-    }
+    public abstract void createVeins(List<Vein<?>> veins, int chunkX, int chunkZ, Random random);
 
     protected final BlockPos defaultStartPos(int chunkX, int chunkZ, Random rand)
     {

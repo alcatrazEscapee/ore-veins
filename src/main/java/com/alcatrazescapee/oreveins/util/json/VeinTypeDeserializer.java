@@ -8,7 +8,6 @@ package com.alcatrazescapee.oreveins.util.json;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nonnull;
 
 import com.google.gson.*;
 import net.minecraft.util.JSONUtils;
@@ -30,6 +29,7 @@ public enum VeinTypeDeserializer implements JsonDeserializer<VeinType<?>>
         factories.put("cone", ConeVeinType::new);
         factories.put("pipe", PipeVeinType::new);
         factories.put("curve", CurveVeinType::new);
+        factories.put("multiple", MultipleVeinType::new);
     }
 
     @Override
@@ -50,7 +50,6 @@ public enum VeinTypeDeserializer implements JsonDeserializer<VeinType<?>>
      */
     interface Factory
     {
-        @Nonnull
         VeinType<?> create(JsonObject json, JsonDeserializationContext context);
     }
 }

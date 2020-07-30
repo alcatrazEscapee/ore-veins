@@ -9,9 +9,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -30,33 +28,32 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
 import com.alcatrazescapee.oreveins.command.ClearWorldCommand;
-import com.alcatrazescapee.oreveins.util.IWeightedList;
+import com.alcatrazescapee.oreveins.util.collections.IWeightedList;
 import com.alcatrazescapee.oreveins.util.json.BlockStateDeserializer;
 import com.alcatrazescapee.oreveins.util.json.BlockStatePredicateDeserializer;
 import com.alcatrazescapee.oreveins.util.json.VeinTypeDeserializer;
 import com.alcatrazescapee.oreveins.util.json.WeightedListDeserializer;
 import com.alcatrazescapee.oreveins.world.VeinsFeature;
-import com.alcatrazescapee.oreveins.world.rule.BiomeRule;
-import com.alcatrazescapee.oreveins.world.rule.DimensionRule;
 import com.alcatrazescapee.oreveins.world.rule.DistanceRule;
+import com.alcatrazescapee.oreveins.world.rule.IBiomeRule;
+import com.alcatrazescapee.oreveins.world.rule.IDimensionRule;
 import com.alcatrazescapee.oreveins.world.rule.IRule;
 
-@ParametersAreNonnullByDefault
 public class VeinManager extends JsonReloadListener
 {
     public static final VeinManager INSTANCE;
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new GsonBuilder()
-            // Collections
-            .registerTypeAdapter(new TypeToken<IWeightedList<BlockState>>() {}.getType(), new WeightedListDeserializer<>(BlockState.class))
-            .registerTypeAdapter(new TypeToken<IWeightedList<Indicator>>() {}.getType(), new WeightedListDeserializer<>(Indicator.class))
-            .registerTypeAdapter(new TypeToken<Predicate<BlockState>>() {}.getType(), BlockStatePredicateDeserializer.INSTANCE)
-            .registerTypeAdapter(BlockState.class, BlockStateDeserializer.INSTANCE)
-            .registerTypeAdapter(IRule.class, IRule.Deserializer.INSTANCE)
-            .registerTypeAdapter(Indicator.class, Indicator.Deserializer.INSTANCE)
-            .registerTypeAdapter(BiomeRule.class, BiomeRule.Deserializer.INSTANCE)
-            .registerTypeAdapter(DimensionRule.class, DimensionRule.Deserializer.INSTANCE)
+        // Collections
+        .registerTypeAdapter(new TypeToken<IWeightedList<BlockState>>() {}.getType(), new WeightedListDeserializer<>(BlockState.class))
+        .registerTypeAdapter(new TypeToken<IWeightedList<Indicator>>() {}.getType(), new WeightedListDeserializer<>(Indicator.class))
+        .registerTypeAdapter(new TypeToken<Predicate<BlockState>>() {}.getType(), BlockStatePredicateDeserializer.INSTANCE)
+        .registerTypeAdapter(BlockState.class, BlockStateDeserializer.INSTANCE)
+        .registerTypeAdapter(IRule.class, IRule.Deserializer.INSTANCE)
+        .registerTypeAdapter(Indicator.class, Indicator.Deserializer.INSTANCE)
+        .registerTypeAdapter(IBiomeRule.class, IBiomeRule.Deserializer.INSTANCE)
+        .registerTypeAdapter(IDimensionRule.class, IDimensionRule.Deserializer.INSTANCE)
             .registerTypeAdapter(DistanceRule.class, DistanceRule.Deserializer.INSTANCE)
             .registerTypeAdapter(VeinType.class, VeinTypeDeserializer.INSTANCE)
             .disableHtmlEscaping()
@@ -76,13 +73,11 @@ public class VeinManager extends JsonReloadListener
         this.veins = HashBiMap.create();
     }
 
-    @Nonnull
     public Collection<VeinType<?>> getVeins()
     {
         return veins.values();
     }
 
-    @Nonnull
     public Set<ResourceLocation> getKeys()
     {
         return veins.keySet();
@@ -94,7 +89,6 @@ public class VeinManager extends JsonReloadListener
         return veins.get(key);
     }
 
-    @Nonnull
     public ResourceLocation getName(VeinType<?> key)
     {
         return veins.inverse().get(key);

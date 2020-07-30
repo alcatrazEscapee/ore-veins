@@ -5,8 +5,7 @@
 
 package com.alcatrazescapee.oreveins.world.vein;
 
-
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Random;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
@@ -14,8 +13,7 @@ import com.google.gson.JsonParseException;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 
-@ParametersAreNonnullByDefault
-public class SphereVeinType extends SimpleVeinType
+public class SphereVeinType extends SingleVeinType<Vein<?>>
 {
     private final boolean uniform;
 
@@ -27,14 +25,19 @@ public class SphereVeinType extends SimpleVeinType
     }
 
     @Override
+    public Vein<?> createVein(int chunkX, int chunkZ, Random random)
+    {
+        return createDefaultVein(chunkX, chunkZ, random);
+    }
+
+    @Override
     public float getChanceToGenerate(Vein<?> vein, BlockPos pos)
     {
         float dx = (vein.getPos().getX() - pos.getX()) * (vein.getPos().getX() - pos.getX());
         float dy = (vein.getPos().getY() - pos.getY()) * (vein.getPos().getY() - pos.getY());
         float dz = (vein.getPos().getZ() - pos.getZ()) * (vein.getPos().getZ() - pos.getZ());
 
-        float radius = ((dx + dz) / (horizontalSize * horizontalSize * vein.getSize()) +
-            dy / (verticalSize * verticalSize * vein.getSize()));
+        float radius = ((dx + dz) / (horizontalSize * horizontalSize) + dy / (verticalSize * verticalSize));
         if (uniform && radius < 1)
         {
             radius = 0;

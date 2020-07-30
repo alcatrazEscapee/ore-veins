@@ -3,7 +3,7 @@
  * Work under Copyright. See the project LICENSE.md for details.
  */
 
-package com.alcatrazescapee.oreveins.util;
+package com.alcatrazescapee.oreveins.util.collections;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,8 +38,8 @@ public interface IWeightedList<E> extends Iterable<E>
                 return true;
             }
 
-            @Override
             @Nonnull
+            @Override
             public Iterator<E> iterator()
             {
                 return Collections.emptyIterator();
@@ -74,8 +74,8 @@ public interface IWeightedList<E> extends Iterable<E>
                 return false;
             }
 
-            @Override
             @Nonnull
+            @Override
             public Iterator<E> iterator()
             {
                 return elementSet.iterator();

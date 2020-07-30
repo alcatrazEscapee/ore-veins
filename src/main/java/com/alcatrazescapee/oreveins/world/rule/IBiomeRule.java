@@ -18,21 +18,21 @@ import net.minecraftforge.registries.ForgeRegistries;
 import com.alcatrazescapee.oreveins.util.json.PredicateDeserializer;
 
 @FunctionalInterface
-public interface BiomeRule extends Predicate<Biome>
+public interface IBiomeRule extends Predicate<Biome>
 {
-    BiomeRule DEFAULT = biome -> true;
+    IBiomeRule DEFAULT = biome -> true;
 
-    class Deserializer extends PredicateDeserializer<Biome, BiomeRule>
+    class Deserializer extends PredicateDeserializer<Biome, IBiomeRule>
     {
         public static final Deserializer INSTANCE = new Deserializer();
 
         private Deserializer()
         {
-            super(BiomeRule.class, "biomes");
+            super(IBiomeRule.class, "biomes");
         }
 
         @Override
-        protected BiomeRule createSingleRule(JsonObject json, String typeName)
+        protected IBiomeRule createSingleRule(JsonObject json, String typeName)
         {
             if ("tag".equals(typeName))
             {
@@ -50,7 +50,7 @@ public interface BiomeRule extends Predicate<Biome>
         }
 
         @Override
-        protected BiomeRule createSingleRule(String name) throws JsonParseException
+        protected IBiomeRule createSingleRule(String name) throws JsonParseException
         {
             // Assume a single biome entry
             Biome biomeIn = ForgeRegistries.BIOMES.getValue(new ResourceLocation(name));
@@ -62,7 +62,7 @@ public interface BiomeRule extends Predicate<Biome>
         }
 
         @Override
-        protected BiomeRule createPredicate(Predicate<Biome> predicate)
+        protected IBiomeRule createPredicate(Predicate<Biome> predicate)
         {
             return predicate::test;
         }

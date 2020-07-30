@@ -3,7 +3,7 @@
  * Work under Copyright. See the project LICENSE.md for details.
  */
 
-package com.alcatrazescapee.oreveins.util;
+package com.alcatrazescapee.oreveins.util.collections;
 
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -52,8 +52,8 @@ public class WeightedList<E> implements IWeightedList<E>
         return map.toString();
     }
 
-    @Override
     @Nonnull
+    @Override
     public Iterator<E> iterator()
     {
         return map.values().iterator();

@@ -13,28 +13,28 @@ import net.minecraft.world.dimension.DimensionType;
 import com.alcatrazescapee.oreveins.util.json.PredicateDeserializer;
 
 @FunctionalInterface
-public interface DimensionRule extends Predicate<DimensionType>
+public interface IDimensionRule extends Predicate<DimensionType>
 {
-    DimensionRule DEFAULT = dim -> dim == DimensionType.OVERWORLD;
+    IDimensionRule DEFAULT = dim -> dim == DimensionType.OVERWORLD;
 
-    class Deserializer extends PredicateDeserializer<DimensionType, DimensionRule>
+    class Deserializer extends PredicateDeserializer<DimensionType, IDimensionRule>
     {
         public static final Deserializer INSTANCE = new Deserializer();
 
         private Deserializer()
         {
-            super(DimensionRule.class, "dimensions");
+            super(IDimensionRule.class, "dimensions");
         }
 
         @Override
-        protected DimensionRule createSingleRule(String name)
+        protected IDimensionRule createSingleRule(String name)
         {
             final ResourceLocation typeName = new ResourceLocation(name);
             return type -> typeName.equals(type.getRegistryName());
         }
 
         @Override
-        protected DimensionRule createPredicate(Predicate<DimensionType> predicate)
+        protected IDimensionRule createPredicate(Predicate<DimensionType> predicate)
         {
             return predicate::test;
         }

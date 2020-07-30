@@ -7,13 +7,11 @@ package com.alcatrazescapee.oreveins.world.rule;
 
 import java.lang.reflect.Type;
 import java.util.function.Predicate;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.gson.*;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 
-@ParametersAreNonnullByDefault
 public class DistanceRule implements Predicate<BlockPos>
 {
     public static final Predicate<BlockPos> DEFAULT = pos -> true;

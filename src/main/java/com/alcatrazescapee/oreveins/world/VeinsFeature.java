@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -32,7 +30,6 @@ import com.alcatrazescapee.oreveins.world.vein.VeinType;
 import static net.minecraft.world.gen.Heightmap.Type.OCEAN_FLOOR_WG;
 import static net.minecraft.world.gen.Heightmap.Type.WORLD_SURFACE_WG;
 
-@ParametersAreNonnullByDefault
 public class VeinsFeature extends Feature<NoFeatureConfig>
 {
     private static final Random RANDOM = new Random();
@@ -43,7 +40,6 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
         CHUNK_RADIUS = 1 + VeinManager.INSTANCE.getVeins().stream().mapToInt(VeinType::getChunkRadius).max().orElse(0) + Config.COMMON.extraChunkRange.get();
     }
 
-    @Nonnull
     public static List<Vein<?>> getNearbyVeins(int chunkX, int chunkZ, long worldSeed, int radius)
     {
         List<Vein<?>> veins = new ArrayList<>();
@@ -66,11 +62,7 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
             {
                 if (RANDOM.nextInt(type.getRarity()) == 0)
                 {
-                    Vein<?> vein = type.createVein(chunkX, chunkZ, RANDOM);
-                    if (vein.getType().isValidPos(vein.getPos()))
-                    {
-                        veins.add(vein);
-                    }
+                    type.createVeins(veins, chunkX, chunkZ, RANDOM);
                 }
             }
         }
@@ -113,7 +105,7 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
                             {
                                 if (vein.getType().canGenerateAt(worldIn, posAt))
                                 {
-                                    BlockState oreState = vein.getType().getStateToGenerate(rand);
+                                    BlockState oreState = vein.getStateToGenerate(pos, rand);
                                     setBlockState(worldIn, posAt, oreState);
                                     if (veinIndicator != null && !canGenerateIndicator)
                                     {
