@@ -1,0 +1,15 @@
+{
+  "type": "sphere",
+  "ore": "minecraft:white_wool",
+  "stone": "minecraft:stone",
+  "dimensions": {
+    "type": "not",
+    "dimensions": {
+      "type": "or",
+      "dimensions": [
+        "minecraft:overworld",
+        "minecraft:the_nether"
+      ]
+    }
+  }
+}

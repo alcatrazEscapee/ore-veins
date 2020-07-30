@@ -24,7 +24,7 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.dimension.DimensionType;
 
 import com.alcatrazescapee.oreveins.Config;
 import com.alcatrazescapee.oreveins.util.IWeightedList;
@@ -195,7 +195,7 @@ public abstract class VeinType<V extends Vein<?>>
      * @param dimension a dimension
      * @return true if the dimension is valid
      */
-    public boolean matchesDimension(Dimension dimension)
+    public boolean matchesDimension(DimensionType dimension)
     {
         return dimensions.test(dimension);
     }

@@ -86,8 +86,8 @@ public class VeinsFeature extends Feature<NoFeatureConfig>
     {
         // Get all nearby veins, filtering out those which are in the wrong dimension
         List<Vein<?>> veins = getNearbyVeins(pos.getX() >> 4, pos.getZ() >> 4, worldIn.getSeed(), CHUNK_RADIUS)
-                .stream()
-                .filter(vein -> vein.getType().matchesDimension(worldIn.getDimension()))
+            .stream()
+            .filter(vein -> vein.getType().matchesDimension(worldIn.getDimension().getType()))
                 .collect(Collectors.toList());
         for (int x = pos.getX(); x < 16 + pos.getX(); x++)
         {

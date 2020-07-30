@@ -9,6 +9,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -272,5 +273,38 @@ class TestVeins
 
         assertNotNull(vein);
         assertEquals(SphereVeinType.class, vein.getClass());
+    }
+
+    @Test
+    void testDimensionRulesNotOr()
+    {
+        VeinType<?> vein = VeinManager.INSTANCE.getVein(new ResourceLocation(MOD_ID, "tests/test_dimension_rules_not_or"));
+
+        assertNotNull(vein);
+        assertFalse(vein.matchesDimension(DimensionType.OVERWORLD));
+        assertFalse(vein.matchesDimension(DimensionType.THE_NETHER));
+        assertTrue(vein.matchesDimension(DimensionType.THE_END));
+    }
+
+    @Test
+    void testDimensionRulesNotOrArray()
+    {
+        VeinType<?> vein = VeinManager.INSTANCE.getVein(new ResourceLocation(MOD_ID, "tests/test_dimension_rules_not_or_array"));
+
+        assertNotNull(vein);
+        assertFalse(vein.matchesDimension(DimensionType.OVERWORLD));
+        assertFalse(vein.matchesDimension(DimensionType.THE_NETHER));
+        assertTrue(vein.matchesDimension(DimensionType.THE_END));
+    }
+
+    @Test
+    void testDimensionRulesOr()
+    {
+        VeinType<?> vein = VeinManager.INSTANCE.getVein(new ResourceLocation(MOD_ID, "tests/test_dimension_rules_or"));
+
+        assertNotNull(vein);
+        assertTrue(vein.matchesDimension(DimensionType.OVERWORLD));
+        assertTrue(vein.matchesDimension(DimensionType.THE_NETHER));
+        assertFalse(vein.matchesDimension(DimensionType.THE_END));
     }
 }

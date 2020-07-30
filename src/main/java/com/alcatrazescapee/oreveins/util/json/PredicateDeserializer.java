@@ -39,7 +39,6 @@ public abstract class PredicateDeserializer<E, T extends Predicate<E>> implement
                     return createCollectionRule(JSONUtils.getJsonArray(obj, collectionName), context, true);
                 case "not":
                     T innerRule = context.deserialize(obj.get(collectionName), elementType);
-                    innerRule.test(null);
                     return createPredicate(item -> !innerRule.test(item));
                 default:
                     return createSingleRule(obj, typeName);
