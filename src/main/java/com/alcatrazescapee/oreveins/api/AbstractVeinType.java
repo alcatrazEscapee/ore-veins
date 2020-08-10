@@ -9,6 +9,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -47,7 +48,7 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     @SerializedName("ore")
     private IWeightedList<IBlockState> oreStates = null;
 
-    private List<String> biomes = null;
+    private List<ResourceLocation> biomes = null;
     private List<Integer> dimensions = null;
     private List<ICondition> conditions = null;
     private IWeightedList<Indicator> indicator = null;
@@ -121,17 +122,17 @@ public abstract class AbstractVeinType<V extends AbstractVein<?>> implements IVe
     public boolean matchesBiome(Biome biome)
     {
         if (biomes == null) return true;
-        for (String s : biomes)
+        for (ResourceLocation s : biomes)
         {
             //noinspection ConstantConditions
-            String biomeName = biome.getRegistryName().getResourcePath();
+            ResourceLocation biomeName = biome.getRegistryName();
             if (biomeName.equals(s))
             {
                 return biomesIsWhitelist;
             }
             for (BiomeDictionary.Type type : BiomeDictionary.getTypes(biome))
             {
-                if (s.equalsIgnoreCase(type.getName()))
+                if (s.getResourcePath().equalsIgnoreCase(type.getName()))
                 {
                     return biomesIsWhitelist;
                 }
