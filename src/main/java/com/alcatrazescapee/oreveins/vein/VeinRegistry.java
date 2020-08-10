@@ -21,6 +21,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.FileUtils;
 import net.minecraft.block.state.IBlockState;
 
@@ -45,6 +46,7 @@ public final class VeinRegistry
             .registerTypeAdapter(new TypeToken<IWeightedList<Indicator>>() {}.getType(), new WeightedListDeserializer<>(Indicator.class))
             .registerTypeAdapter(IBlockState.class, new BlockStateDeserializer())
             .registerTypeAdapter(ICondition.class, new ConditionDeserializer())
+            .registerTypeAdapter(ResourceLocation.class, new ResourceLocationDeserializer())
             .create();
     private static File worldGenFolder;
 
